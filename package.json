@@ -3,7 +3,10 @@
   "version": "0.2.2",
   "description": "Famo.us is a JavaScript framework for everyone who wants to build beautiful experiences on any device.",
   "scripts": {
-    "test": "grunt test"
+    "test": "npm run lint -s",
+    "lint-eslint": "eslint core/ events/ inputs/ math/ modifiers/ physics/ surfaces/ transitions/ utilities/ views/ widgets/",
+    "lint-jscs": "jscs core/ events/ inputs/ math/ modifiers/ physics/ surfaces/ transitions/ utilities/ views/ widgets/",
+    "lint": "npm run lint-eslint && npm run lint-jscs"
   },
   "repository": {
     "type": "git",
@@ -12,12 +15,6 @@
   "keywords": [
     "famous"
   ],
-  "scripts": {
-    "test": "npm run lint -s",
-    "lint-eslint": "eslint core/ events/ inputs/ math/ modifiers/ physics/ surfaces/ transitions/ utilities/ views/ widgets/",
-    "lint-jscs": "jscs core/ events/ inputs/ math/ modifiers/ physics/ surfaces/ transitions/ utilities/ views/ widgets/",
-    "lint": "npm run lint-eslint && npm run lint-jscs"
-  },
   "author": "famous",
   "license": "MPL v2.0",
   "bugs": {
@@ -27,5 +24,9 @@
   "devDependencies": {
     "eslint": "^0.7.4",
     "jscs": "^1.5.9"
+  },
+  "dependencies": {
+    "grunt": "~0.4.5",
+    "grunt-contrib-requirejs": "~0.4.4"
   }
 }
