@@ -223,5 +223,5 @@ define(function(require, exports, module) {
         return this._eventOutput.unpipe(target);
     };
 
-    module.exports = Context;
+    module.exports = famous.core.Context = Context;
 });

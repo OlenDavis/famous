@@ -43,5 +43,5 @@ define(function(require, exports, module) {
         return Math.sqrt(distanceSquared);
     };
 
-    module.exports = Utilities;
+    module.exports = famous.math.Utilities = Utilities;
 });

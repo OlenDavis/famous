@@ -190,5 +190,5 @@ define(function(require, exports, module) {
         if (this._rows !== '') target.rows = this._rows;
     };
 
-    module.exports = TextareaSurface;
+    module.exports = famous.surfaces.TextareaSurface = TextareaSurface;
 });

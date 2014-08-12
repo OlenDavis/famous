@@ -118,5 +118,5 @@ define(function(require, exports, module) {
         target.src = '';
     };
 
-    module.exports = ImageSurface;
+    module.exports = famous.surfaces.ImageSurface = ImageSurface;
 });

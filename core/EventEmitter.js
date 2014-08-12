@@ -91,5 +91,5 @@ define(function(require, exports, module) {
         this._owner = owner;
     };
 
-    module.exports = EventEmitter;
+    module.exports = famous.core.EventEmitter = EventEmitter;
 });

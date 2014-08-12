@@ -195,5 +195,5 @@ define(function(require, exports, module) {
         if (options.stallTime !== undefined) this.options.stallTime = options.stallTime;
     };
 
-    module.exports = ScrollSync;
+    module.exports = famous.inputs.ScrollSync = ScrollSync;
 });

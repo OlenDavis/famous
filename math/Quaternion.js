@@ -427,6 +427,6 @@ define(function(require, exports, module) {
         return register.set(this.scalarMultiply(scaleFrom/scaleTo).add(q).multiply(scaleTo));
     };
 
-    module.exports = Quaternion;
+    module.exports = famous.math.Quaternion = Quaternion;
 
 });

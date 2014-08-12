@@ -220,5 +220,5 @@ define(function(require, exports, module) {
         if (options.propogate !== undefined) this.options.propogate = options.propogate;
     };
 
-    module.exports = MouseSync;
+    module.exports = famous.inputs.MouseSync = MouseSync;
 });

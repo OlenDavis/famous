@@ -199,5 +199,5 @@ define(function(require, exports, module) {
         };
     };
 
-    module.exports = FlexibleLayout;
+    module.exports = famous.views.FlexibleLayout = FlexibleLayout;
 });

@@ -147,5 +147,5 @@ define(function(require, exports, module) {
         }
     };
 
-    module.exports = TabBar;
+    module.exports = famous.widgets.TabBar = TabBar;
 });

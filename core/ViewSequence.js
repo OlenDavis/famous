@@ -278,5 +278,5 @@ define(function(require, exports, module) {
         return target ? target.render.apply(target, arguments) : null;
     };
 
-    module.exports = ViewSequence;
+    module.exports = famous.core.ViewSequence = ViewSequence;
 });

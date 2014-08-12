@@ -229,5 +229,5 @@ define(function(require, exports, module) {
         Body.INTEGRATOR.integrateOrientation(this, dt);
     };
 
-    module.exports = Body;
+    module.exports = famous.physics.bodies.Body = Body;
 });

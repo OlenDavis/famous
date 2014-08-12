@@ -458,5 +458,5 @@ define(function(require, exports, module) {
         this._eventHandler.on(event, fn);
     };
 
-    module.exports = PhysicsEngine;
+    module.exports = famous.physics.PhysicsEngine = PhysicsEngine;
 });

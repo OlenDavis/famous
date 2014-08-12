@@ -1,3 +1,21 @@
+this.famous = {
+	core     : {},
+	events   : {},
+	inputs   : {},
+	math     : {},
+	modifiers: {},
+	physics  : {
+		bodies     : {},
+		constraints: {},
+		forces     : {},
+		integrators: {}
+	},
+	surfaces   : {},
+	transitions: {},
+	utilities  : {},
+	views      : {},
+	widgets    : {}
+};
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -7,7 +25,7 @@
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/core/Entity',['require','exports','module'],function(require, exports, module) {
+define('famous/core/Entity.js',['require','exports','module'],function(require, exports, module) {
     /**
      * A singleton that maintains a global registry of Surfaces.
      *   Private.
@@ -68,7 +86,7 @@ define('famous/core/Entity',['require','exports','module'],function(require, exp
         set(id, null);
     }
 
-    module.exports = {
+    module.exports = famous.core.Entity = {
         register: register,
         unregister: unregister,
         get: get,
@@ -85,7 +103,7 @@ define('famous/core/Entity',['require','exports','module'],function(require, exp
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/core/Transform',['require','exports','module'],function(require, exports, module) {
+define('famous/core/Transform.js',['require','exports','module'],function(require, exports, module) {
 
     /**
      *  A high-performance static matrix math library used to calculate
@@ -264,6 +282,7 @@ define('famous/core/Transform',['require','exports','module'],function(require, 
      */
     Transform.scale = function scale(x, y, z) {
         if (z === undefined) z = 1;
+        if (y === undefined) y = x;
         return [x, 0, 0, 0, 0, y, 0, 0, 0, 0, z, 0, 0, 0, 0, 1];
     };
 
@@ -410,7 +429,7 @@ define('famous/core/Transform',['require','exports','module'],function(require, 
      * @return {Transform}
      */
     Transform.skew = function skew(phi, theta, psi) {
-        return [1, 0, 0, 0, Math.tan(psi), 1, 0, 0, Math.tan(theta), Math.tan(phi), 1, 0, 0, 0, 0, 1];
+        return [1, Math.tan(theta), 0, 0, Math.tan(psi), 1, 0, 0, 0, Math.tan(phi), 1, 0, 0, 0, 0, 1];
     };
 
     /**
@@ -755,7 +774,7 @@ define('famous/core/Transform',['require','exports','module'],function(require, 
      */
     Transform.behind = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, -1e-3, 1];
 
-    module.exports = Transform;
+    module.exports = famous.core.Transform = Transform;
 });
 
 
@@ -768,7 +787,7 @@ define('famous/core/Transform',['require','exports','module'],function(require, 
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/core/SpecParser',['require','exports','module','./Transform'],function(require, exports, module) {
+define('famous/core/SpecParser.js',['require','exports','module','./Transform'],function(require, exports, module) {
     var Transform = require('./Transform');
 
     /**
@@ -924,7 +943,7 @@ define('famous/core/SpecParser',['require','exports','module','./Transform'],fun
         }
     };
 
-    module.exports = SpecParser;
+    module.exports = famous.core.SpecParser = SpecParser;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -936,7 +955,7 @@ define('famous/core/SpecParser',['require','exports','module','./Transform'],fun
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/core/RenderNode',['require','exports','module','./Entity','./SpecParser'],function(require, exports, module) {
+define('famous/core/RenderNode.js',['require','exports','module','./Entity','./SpecParser'],function(require, exports, module) {
     var Entity = require('./Entity');
     var SpecParser = require('./SpecParser');
 
@@ -1092,7 +1111,7 @@ define('famous/core/RenderNode',['require','exports','module','./Entity','./Spec
         return this._isModifier ? this._object.modify(result) : result;
     };
 
-    module.exports = RenderNode;
+    module.exports = famous.core.RenderNode = RenderNode;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -1104,7 +1123,7 @@ define('famous/core/RenderNode',['require','exports','module','./Entity','./Spec
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/core/EventEmitter',['require','exports','module'],function(require, exports, module) {
+define('famous/core/EventEmitter.js',['require','exports','module'],function(require, exports, module) {
     /**
      * EventEmitter represents a channel for events.
      *
@@ -1169,8 +1188,11 @@ define('famous/core/EventEmitter',['require','exports','module'],function(requir
      * @return {EventEmitter} this
      */
     EventEmitter.prototype.removeListener = function removeListener(type, handler) {
-        var index = this.listeners[type].indexOf(handler);
-        if (index >= 0) this.listeners[type].splice(index, 1);
+        var listener = this.listeners[type];
+        if (listener !== undefined) {
+            var index = listener.indexOf(handler);
+            if (index >= 0) listener.splice(index, 1);
+        }
         return this;
     };
 
@@ -1185,7 +1207,7 @@ define('famous/core/EventEmitter',['require','exports','module'],function(requir
         this._owner = owner;
     };
 
-    module.exports = EventEmitter;
+    module.exports = famous.core.EventEmitter = EventEmitter;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -1197,7 +1219,7 @@ define('famous/core/EventEmitter',['require','exports','module'],function(requir
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/core/EventHandler',['require','exports','module','./EventEmitter'],function(require, exports, module) {
+define('famous/core/EventHandler.js',['require','exports','module','./EventEmitter'],function(require, exports, module) {
     var EventEmitter = require('./EventEmitter');
 
     /**
@@ -1392,7 +1414,7 @@ define('famous/core/EventHandler',['require','exports','module','./EventEmitter'
         return this;
     };
 
-    module.exports = EventHandler;
+    module.exports = famous.core.EventHandler = EventHandler;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -1404,7 +1426,7 @@ define('famous/core/EventHandler',['require','exports','module','./EventEmitter'
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/core/ElementAllocator',['require','exports','module'],function(require, exports, module) {
+define('famous/core/ElementAllocator.js',['require','exports','module'],function(require, exports, module) {
 
     /**
      * Internal helper object to Context that handles the process of
@@ -1499,7 +1521,7 @@ define('famous/core/ElementAllocator',['require','exports','module'],function(re
         return this.nodeCount;
     };
 
-    module.exports = ElementAllocator;
+    module.exports = famous.core.ElementAllocator = ElementAllocator;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -1511,7 +1533,7 @@ define('famous/core/ElementAllocator',['require','exports','module'],function(re
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/utilities/Utility',['require','exports','module'],function(require, exports, module) {
+define('famous/utilities/Utility.js',['require','exports','module'],function(require, exports, module) {
     /**
      * This namespace holds standalone functionality.
      *  Currently includes name mapping for transition curves,
@@ -1589,7 +1611,39 @@ define('famous/utilities/Utility',['require','exports','module'],function(requir
         return result;
     };
 
-    module.exports = Utility;
+    /*
+     *  Deep clone an object.
+     *  @param b {Object} Object to clone
+     *  @return a {Object} Cloned object.
+     */
+    Utility.clone = function clone(b) {
+        var a;
+        if (typeof b === 'object') {
+            a = {};
+            for (var key in b) {
+                if (typeof b[key] === 'object' && b[key] !== null) {
+                    if (b[key] instanceof Array) {
+                        a[key] = new Array(b[key].length);
+                        for (var i = 0; i < b[key].length; i++) {
+                            a[key][i] = Utility.clone(b[key][i]);
+                        }
+                    }
+                    else {
+                      a[key] = Utility.clone(b[key]);
+                    }
+                }
+                else {
+                    a[key] = b[key];
+                }
+            }
+        }
+        else {
+            a = b;
+        }
+        return a;
+    };
+
+    module.exports = famous.utilities.Utility = Utility;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -1601,7 +1655,7 @@ define('famous/utilities/Utility',['require','exports','module'],function(requir
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/transitions/MultipleTransition',['require','exports','module','famous/utilities/Utility'],function(require, exports, module) {
+define('famous/transitions/MultipleTransition.js',['require','exports','module','famous/utilities/Utility'],function(require, exports, module) {
     var Utility = require('famous/utilities/Utility');
 
     /**
@@ -1667,7 +1721,7 @@ define('famous/transitions/MultipleTransition',['require','exports','module','fa
         }
     };
 
-    module.exports = MultipleTransition;
+    module.exports = famous.transitions.MultipleTransition = MultipleTransition;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -1679,7 +1733,7 @@ define('famous/transitions/MultipleTransition',['require','exports','module','fa
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/transitions/TweenTransition',['require','exports','module'],function(require, exports, module) {
+define('famous/transitions/TweenTransition.js',['require','exports','module'],function(require, exports, module) {
 
     /**
      *
@@ -2094,7 +2148,7 @@ define('famous/transitions/TweenTransition',['require','exports','module'],funct
         };
     };
 
-    module.exports = TweenTransition;
+    module.exports = famous.transitions.TweenTransition = TweenTransition;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -2106,7 +2160,7 @@ define('famous/transitions/TweenTransition',['require','exports','module'],funct
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/transitions/Transitionable',['require','exports','module','./MultipleTransition','./TweenTransition'],function(require, exports, module) {
+define('famous/transitions/Transitionable.js',['require','exports','module','./MultipleTransition','./TweenTransition'],function(require, exports, module) {
     var MultipleTransition = require('./MultipleTransition');
     var TweenTransition = require('./TweenTransition');
 
@@ -2305,10 +2359,10 @@ define('famous/transitions/Transitionable',['require','exports','module','./Mult
      * @method halt
      */
     Transitionable.prototype.halt = function halt() {
-        this.set(this.get());
+        return this.set(this.get());
     };
 
-    module.exports = Transitionable;
+    module.exports = famous.transitions.Transitionable = Transitionable;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -2536,7 +2590,7 @@ define('famous/core/Context',['require','exports','module','./RenderNode','./Eve
         return this._eventOutput.unpipe(target);
     };
 
-    module.exports = Context;
+    module.exports = famous.core.Context = Context;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -2548,7 +2602,7 @@ define('famous/core/Context',['require','exports','module','./RenderNode','./Eve
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/core/OptionsManager',['require','exports','module','./EventHandler'],function(require, exports, module) {
+define('famous/core/OptionsManager.js',['require','exports','module','./EventHandler'],function(require, exports, module) {
     var EventHandler = require('./EventHandler');
 
     /**
@@ -2749,7 +2803,7 @@ define('famous/core/OptionsManager',['require','exports','module','./EventHandle
         return this.unpipe.apply(this, arguments);
     };
 
-    module.exports = OptionsManager;
+    module.exports = famous.core.OptionsManager = OptionsManager;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -2799,7 +2853,8 @@ define('famous/core/Engine',['require','exports','module','./Context','./EventHa
         containerType: 'div',
         containerClass: 'famous-container',
         fpsCap: undefined,
-        runLoop: true
+        runLoop: true,
+        appMode: true
     };
     var optionsManager = new OptionsManager(options);
 
@@ -2870,10 +2925,22 @@ define('famous/core/Engine',['require','exports','module','./Context','./EventHa
     window.addEventListener('resize', handleResize, false);
     handleResize();
 
-    // prevent scrolling via browser
-    window.addEventListener('touchmove', function(event) {
-        event.preventDefault();
-    }, true);
+    /**
+     * Initialize famous for app mode
+     *
+     * @static
+     * @private
+     * @method initialize
+     */
+    function initialize() {
+        // prevent scrolling via browser
+        window.addEventListener('touchmove', function(event) {
+            event.preventDefault();
+        }, true);
+        document.body.classList.add('famous-root');
+        document.documentElement.classList.add('famous-root');
+    }
+    var initialized = false;
 
     /**
      * Add event handler object to set of downstream handlers.
@@ -3022,6 +3089,8 @@ define('famous/core/Engine',['require','exports','module','./Context','./EventHa
      * @return {Context} new Context within el
      */
     Engine.createContext = function createContext(el) {
+        if (!initialized && options.appMode) initialize();
+
         var needMountContainer = false;
         if (!el) {
             el = document.createElement(options.containerType);
@@ -3051,6 +3120,31 @@ define('famous/core/Engine',['require','exports','module','./Context','./EventHa
     Engine.registerContext = function registerContext(context) {
         contexts.push(context);
         return context;
+    };
+
+    /**
+     * Returns a list of all contexts.
+     *
+     * @static
+     * @method getContexts
+     * @return {Array} contexts that are updated on each tick
+     */
+    Engine.getContexts = function getContexts() {
+        return contexts;
+    };
+
+    /**
+     * Removes a context from the run loop. Note: this does not do any
+     *     cleanup.
+     *
+     * @static
+     * @method deregisterContext
+     *
+     * @param {Context} context Context to deregister
+     */
+    Engine.deregisterContext = function deregisterContext(context) {
+        var i = contexts.indexOf(context);
+        if (i >= 0) contexts.splice(i, 1);
     };
 
     /**
@@ -3090,7 +3184,7 @@ define('famous/core/Engine',['require','exports','module','./Context','./EventHa
         }
     });
 
-    module.exports = Engine;
+    module.exports = famous.core.Engine = Engine;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -3102,13 +3196,343 @@ define('famous/core/Engine',['require','exports','module','./Context','./EventHa
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/core/Surface',['require','exports','module','./Entity','./EventHandler','./Transform'],function(require, exports, module) {
+define('famous/core/ElementOutput',['require','exports','module','./Entity','./EventHandler','./Transform'],function(require, exports, module) {
     var Entity = require('./Entity');
     var EventHandler = require('./EventHandler');
     var Transform = require('./Transform');
 
+    var usePrefix = document.body.style.webkitTransform !== undefined;
     var devicePixelRatio = window.devicePixelRatio || 1;
-    var usePrefix = document.createElement('div').style.webkitTransform !== undefined;
+
+    /**
+     * A base class for viewable content and event
+     *   targets inside a Famo.us application, containing a renderable document
+     *   fragment. Like an HTML div, it can accept internal markup,
+     *   properties, classes, and handle events.
+     *
+     * @class ElementOutput
+     * @constructor
+     *
+     * @param {Node} element document parent of this container
+     */
+    function ElementOutput(element) {
+        this._matrix = null;
+        this._opacity = 1;
+        this._origin = null;
+        this._size = null;
+
+        this._eventOutput = new EventHandler();
+        this._eventOutput.bindThis(this);
+
+        /** @ignore */
+        this.eventForwarder = function eventForwarder(event) {
+            this._eventOutput.emit(event.type, event);
+        }.bind(this);
+
+        this.id = Entity.register(this);
+        this._element = null;
+        this._sizeDirty = false;
+        this._originDirty = false;
+        this._transformDirty = false;
+
+        this._invisible = false;
+        if (element) this.attach(element);
+    }
+
+    /**
+     * Bind a callback function to an event type handled by this object.
+     *
+     * @method "on"
+     *
+     * @param {string} type event type key (for example, 'click')
+     * @param {function(string, Object)} fn handler callback
+     * @return {EventHandler} this
+     */
+    ElementOutput.prototype.on = function on(type, fn) {
+        if (this._element) this._element.addEventListener(type, this.eventForwarder);
+        this._eventOutput.on(type, fn);
+    };
+
+    /**
+     * Unbind an event by type and handler.
+     *   This undoes the work of "on"
+     *
+     * @method removeListener
+     * @param {string} type event type key (for example, 'click')
+     * @param {function(string, Object)} fn handler
+     */
+    ElementOutput.prototype.removeListener = function removeListener(type, fn) {
+        this._eventOutput.removeListener(type, fn);
+    };
+
+    /**
+     * Trigger an event, sending to all downstream handlers
+     *   listening for provided 'type' key.
+     *
+     * @method emit
+     *
+     * @param {string} type event type key (for example, 'click')
+     * @param {Object} [event] event data
+     * @return {EventHandler} this
+     */
+    ElementOutput.prototype.emit = function emit(type, event) {
+        if (event && !event.origin) event.origin = this;
+        var handled = this._eventOutput.emit(type, event);
+        if (handled && event && event.stopPropagation) event.stopPropagation();
+        return handled;
+    };
+
+    /**
+     * Add event handler object to set of downstream handlers.
+     *
+     * @method pipe
+     *
+     * @param {EventHandler} target event handler target object
+     * @return {EventHandler} passed event handler
+     */
+    ElementOutput.prototype.pipe = function pipe(target) {
+        return this._eventOutput.pipe(target);
+    };
+
+    /**
+     * Remove handler object from set of downstream handlers.
+     *   Undoes work of "pipe"
+     *
+     * @method unpipe
+     *
+     * @param {EventHandler} target target handler object
+     * @return {EventHandler} provided target
+     */
+    ElementOutput.prototype.unpipe = function unpipe(target) {
+        return this._eventOutput.unpipe(target);
+    };
+
+    /**
+     * Return spec for this surface. Note that for a base surface, this is
+     *    simply an id.
+     *
+     * @method render
+     * @private
+     * @return {Object} render spec for this surface (spec id)
+     */
+    ElementOutput.prototype.render = function render() {
+        return this.id;
+    };
+
+    //  Attach Famous event handling to document events emanating from target
+    //    document element.  This occurs just after attachment to the document.
+    //    Calling this enables methods like #on and #pipe.
+    function _addEventListeners(target) {
+        for (var i in this._eventOutput.listeners) {
+            target.addEventListener(i, this.eventForwarder);
+        }
+    }
+
+    //  Detach Famous event handling from document events emanating from target
+    //  document element.  This occurs just before detach from the document.
+    function _removeEventListeners(target) {
+        for (var i in this._eventOutput.listeners) {
+            target.removeEventListener(i, this.eventForwarder);
+        }
+    }
+
+    /**
+     * Return a Matrix's webkit css representation to be used with the
+     *    CSS3 -webkit-transform style.
+     *    Example: -webkit-transform: matrix3d(1,0,0,0,0,1,0,0,0,0,1,0,716,243,0,1)
+     *
+     * @method _formatCSSTransform
+     * @private
+     * @param {FamousMatrix} m matrix
+     * @return {string} matrix3d CSS style representation of the transform
+     */
+    function _formatCSSTransform(m) {
+        m[12] = Math.round(m[12] * devicePixelRatio) / devicePixelRatio;
+        m[13] = Math.round(m[13] * devicePixelRatio) / devicePixelRatio;
+
+        var result = 'matrix3d(';
+        for (var i = 0; i < 15; i++) {
+            result += (m[i] < 0.000001 && m[i] > -0.000001) ? '0,' : m[i] + ',';
+        }
+        result += m[15] + ')';
+        return result;
+    }
+
+    /**
+     * Directly apply given FamousMatrix to the document element as the
+     *   appropriate webkit CSS style.
+     *
+     * @method setMatrix
+     *
+     * @static
+     * @private
+     * @param {Element} element document element
+     * @param {FamousMatrix} matrix
+     */
+
+    var _setMatrix;
+    if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
+        _setMatrix = function(element, matrix) {
+            element.style.zIndex = (matrix[14] * 1000000) | 0;    // fix for Firefox z-buffer issues
+            element.style.transform = _formatCSSTransform(matrix);
+        };
+    }
+    else if (usePrefix) {
+        _setMatrix = function(element, matrix) {
+            element.style.webkitTransform = _formatCSSTransform(matrix);
+        };
+    }
+    else {
+        _setMatrix = function(element, matrix) {
+            element.style.transform = _formatCSSTransform(matrix);
+        };
+    }
+
+    // format origin as CSS percentage string
+    function _formatCSSOrigin(origin) {
+        return (100 * origin[0]) + '% ' + (100 * origin[1]) + '%';
+    }
+
+    // Directly apply given origin coordinates to the document element as the
+    // appropriate webkit CSS style.
+    var _setOrigin = usePrefix ? function(element, origin) {
+        element.style.webkitTransformOrigin = _formatCSSOrigin(origin);
+    } : function(element, origin) {
+        element.style.transformOrigin = _formatCSSOrigin(origin);
+    };
+
+    // Shrink given document element until it is effectively invisible.
+    var _setInvisible = usePrefix ? function(element) {
+        element.style.webkitTransform = 'scale3d(0.0001,0.0001,0.0001)';
+        element.style.opacity = 0;
+    } : function(element) {
+        element.style.transform = 'scale3d(0.0001,0.0001,0.0001)';
+        element.style.opacity = 0;
+    };
+
+    function _xyNotEquals(a, b) {
+        return (a && b) ? (a[0] !== b[0] || a[1] !== b[1]) : a !== b;
+    }
+
+    /**
+     * Apply changes from this component to the corresponding document element.
+     * This includes changes to classes, styles, size, content, opacity, origin,
+     * and matrix transforms.
+     *
+     * @private
+     * @method commit
+     * @param {Context} context commit context
+     */
+    ElementOutput.prototype.commit = function commit(context) {
+        var target = this._element;
+        if (!target) return;
+
+        var matrix = context.transform;
+        var opacity = context.opacity;
+        var origin = context.origin;
+        var size = context.size;
+
+        if (!matrix && this._matrix) {
+            this._matrix = null;
+            this._opacity = 0;
+            _setInvisible(target);
+            return;
+        }
+
+        if (_xyNotEquals(this._origin, origin)) this._originDirty = true;
+        if (_xyNotEquals(this._size, size)) this._sizeDirty = true;
+        if (Transform.notEquals(this._matrix, matrix)) this._transformDirty = true;
+
+        if (this._invisible) {
+            this._invisible = false;
+            this._element.style.display = '';
+        }
+
+        if (this._opacity !== opacity) {
+            this._opacity = opacity;
+            target.style.opacity = (opacity >= 1) ? '0.999999' : opacity;
+        }
+
+        if (this._transformDirty || this._originDirty || this._sizeDirty) {
+            if (this._sizeDirty) {
+                if (!this._size) this._size = [0, 0];
+                this._size[0] = size[0];
+                this._size[1] = size[1];
+                this._sizeDirty = false;
+            }
+
+            if (this._originDirty) {
+                if (origin) {
+                    if (!this._origin) this._origin = [0, 0];
+                    this._origin[0] = origin[0];
+                    this._origin[1] = origin[1];
+                }
+                else this._origin = null;
+                _setOrigin(target, this._origin);
+                this._originDirty = false;
+            }
+
+            if (!matrix) matrix = Transform.identity;
+            this._matrix = matrix;
+            var aaMatrix = this._size ? Transform.thenMove(matrix, [-this._size[0]*origin[0], -this._size[1]*origin[1], 0]) : matrix;
+            _setMatrix(target, aaMatrix);
+            this._transformDirty = false;
+        }
+    };
+
+    ElementOutput.prototype.cleanup = function cleanup() {
+        if (this._element) {
+            this._invisible = true;
+            this._element.style.display = 'none';
+        }
+    };
+
+    /**
+     * Place the document element that this component manages into the document.
+     *
+     * @private
+     * @method attach
+     * @param {Node} target document parent of this container
+     */
+    ElementOutput.prototype.attach = function attach(target) {
+        this._element = target;
+        _addEventListeners.call(this, target);
+    };
+
+    /**
+     * Remove any contained document content associated with this surface
+     *   from the actual document.
+     *
+     * @private
+     * @method detach
+     */
+    ElementOutput.prototype.detach = function detach() {
+        var target = this._element;
+        if (target) {
+            _removeEventListeners.call(this, target);
+            if (this._invisible) {
+                this._invisible = false;
+                this._element.style.display = '';
+            }
+        }
+        this._element = null;
+        return target;
+    };
+
+    module.exports = famous.core.ElementOutput = ElementOutput;
+});
+
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Owner: mark@famo.us
+ * @license MPL 2.0
+ * @copyright Famous Industries, Inc. 2014
+ */
+
+define('famous/core/Surface.js',['require','exports','module','./ElementOutput'],function(require, exports, module) {
+    var ElementOutput = require('./ElementOutput');
 
     /**
      * A base class for viewable content and event
@@ -3121,11 +3545,13 @@ define('famous/core/Surface',['require','exports','module','./Entity','./EventHa
      *
      * @param {Object} [options] default option overrides
      * @param {Array.Number} [options.size] [width, height] in pixels
-     * @param {Array.string} [options.classes] CSS classes to set on inner content
+     * @param {Array.string} [options.classes] CSS classes to set on target div
      * @param {Array} [options.properties] string dictionary of HTML attributes to set on target div
      * @param {string} [options.content] inner (HTML) content of surface
      */
     function Surface(options) {
+        ElementOutput.call(this);
+
         this.options = {};
 
         this.properties = {};
@@ -3140,106 +3566,14 @@ define('famous/core/Surface',['require','exports','module','./Entity','./EventHa
 
         this._dirtyClasses = [];
 
-        this._matrix = null;
-        this._opacity = 1;
-        this._origin = null;
-        this._size = null;
-
-        /** @ignore */
-        this.eventForwarder = function eventForwarder(event) {
-            this.emit(event.type, event);
-        }.bind(this);
-        this.eventHandler = new EventHandler();
-        this.eventHandler.bindThis(this);
-
-        this.id = Entity.register(this);
-
         if (options) this.setOptions(options);
 
-        this._currTarget = null;
+        this._currentTarget = null;
     }
+    Surface.prototype = Object.create(ElementOutput.prototype);
+    Surface.prototype.constructor = Surface;
     Surface.prototype.elementType = 'div';
     Surface.prototype.elementClass = 'famous-surface';
-
-    /**
-     * Bind a callback function to an event type handled by this object.
-     *
-     * @method "on"
-     *
-     * @param {string} type event type key (for example, 'click')
-     * @param {function(string, Object)} fn handler callback
-     * @return {EventHandler} this
-     */
-    Surface.prototype.on = function on(type, fn) {
-        if (this._currTarget) this._currTarget.addEventListener(type, this.eventForwarder);
-        this.eventHandler.on(type, fn);
-    };
-
-    /**
-     * Unbind an event by type and handler.
-     *   This undoes the work of "on"
-     *
-     * @method removeListener
-     * @param {string} type event type key (for example, 'click')
-     * @param {function(string, Object)} fn handler
-     */
-    Surface.prototype.removeListener = function removeListener(type, fn) {
-        this.eventHandler.removeListener(type, fn);
-    };
-
-    /**
-     * Trigger an event, sending to all downstream handlers
-     *   listening for provided 'type' key.
-     *
-     * @method emit
-     *
-     * @param {string} type event type key (for example, 'click')
-     * @param {Object} [event] event data
-     * @return {EventHandler} this
-     */
-    Surface.prototype.emit = function emit(type, event) {
-        if (event && !event.origin) event.origin = this;
-        var handled = this.eventHandler.emit(type, event);
-        if (handled && event && event.stopPropagation) event.stopPropagation();
-        return handled;
-    };
-
-    /**
-     * Add event handler object to set of downstream handlers.
-     *
-     * @method pipe
-     *
-     * @param {EventHandler} target event handler target object
-     * @return {EventHandler} passed event handler
-     */
-    Surface.prototype.pipe = function pipe(target) {
-        return this.eventHandler.pipe(target);
-    };
-
-    /**
-     * Remove handler object from set of downstream handlers.
-     *   Undoes work of "pipe"
-     *
-     * @method unpipe
-     *
-     * @param {EventHandler} target target handler object
-     * @return {EventHandler} provided target
-     */
-    Surface.prototype.unpipe = function unpipe(target) {
-        return this.eventHandler.unpipe(target);
-    };
-
-    /**
-     * Return spec for this surface. Note that for a base surface, this is
-     *    simply an id.
-     *
-     * @method render
-     * @private
-     * @return {Object} render spec for this surface (spec id)
-     */
-    Surface.prototype.render = function render() {
-        return this.id;
-    };
 
     /**
      * Set CSS-style properties on this Surface. Note that this will cause
@@ -3294,6 +3628,23 @@ define('famous/core/Surface',['require','exports','module','./Entity','./EventHa
         if (i >= 0) {
             this._dirtyClasses.push(this.classList.splice(i, 1)[0]);
             this._classesDirty = true;
+        }
+    };
+
+    /**
+     * Toggle CSS-style class from the list of classes on this Surface.
+     *   Note this will map directly to the HTML property of the actual
+     *   corresponding rendered <div>.
+     *
+     * @method toggleClass
+     * @param {string} className name of class to toggle
+     */
+    Surface.prototype.toggleClass = function toggleClass(className) {
+        var i = this.classList.indexOf(className);
+        if (i >= 0) {
+            this.removeClass(className);
+        } else {
+            this.addClass(className);
         }
     };
 
@@ -3361,24 +3712,7 @@ define('famous/core/Surface',['require','exports','module','./Entity','./EventHa
         if (options.content) this.setContent(options.content);
     };
 
-    //  Attach Famous event handling to document events emanating from target
-    //    document element.  This occurs just after deployment to the document.
-    //    Calling this enables methods like #on and #pipe.
-    function _addEventListeners(target) {
-        for (var i in this.eventHandler.listeners) {
-            target.addEventListener(i, this.eventForwarder);
-        }
-    }
-
-    //  Detach Famous event handling from document events emanating from target
-    //  document element.  This occurs just before recall from the document.
-    function _removeEventListeners(target) {
-        for (var i in this.eventHandler.listeners) {
-            target.removeEventListener(i, this.eventForwarder);
-        }
-    }
-
-     //  Apply to document all changes from removeClass() since last setup().
+    //  Apply to document all changes from removeClass() since last setup().
     function _cleanupClasses(target) {
         for (var i = 0; i < this._dirtyClasses.length; i++) target.classList.remove(this._dirtyClasses[i]);
         this._dirtyClasses = [];
@@ -3399,80 +3733,6 @@ define('famous/core/Surface',['require','exports','module','./Entity','./EventHa
             target.style[n] = '';
         }
     }
-
-    /**
-     * Return a Matrix's webkit css representation to be used with the
-     *    CSS3 -webkit-transform style.
-     *    Example: -webkit-transform: matrix3d(1,0,0,0,0,1,0,0,0,0,1,0,716,243,0,1)
-     *
-     * @method _formatCSSTransform
-     * @private
-     * @param {FamousMatrix} m matrix
-     * @return {string} matrix3d CSS style representation of the transform
-     */
-    function _formatCSSTransform(m) {
-        m[12] = Math.round(m[12] * devicePixelRatio) / devicePixelRatio;
-        m[13] = Math.round(m[13] * devicePixelRatio) / devicePixelRatio;
-
-        var result = 'matrix3d(';
-        for (var i = 0; i < 15; i++) {
-            result += (m[i] < 0.000001 && m[i] > -0.000001) ? '0,' : m[i] + ',';
-        }
-        result += m[15] + ')';
-        return result;
-    }
-
-    /**
-     * Directly apply given FamousMatrix to the document element as the
-     *   appropriate webkit CSS style.
-     *
-     * @method setMatrix
-     *
-     * @static
-     * @private
-     * @param {Element} element document element
-     * @param {FamousMatrix} matrix
-     */
-
-    var _setMatrix;
-    if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
-        _setMatrix = function(element, matrix) {
-            element.style.zIndex = (matrix[14] * 1000000) | 0;    // fix for Firefox z-buffer issues
-            element.style.transform = _formatCSSTransform(matrix);
-        };
-    }
-    else if (usePrefix) {
-        _setMatrix = function(element, matrix) {
-            element.style.webkitTransform = _formatCSSTransform(matrix);
-        };
-    }
-    else {
-        _setMatrix = function(element, matrix) {
-            element.style.transform = _formatCSSTransform(matrix);
-        };
-    }
-
-    // format origin as CSS percentage string
-    function _formatCSSOrigin(origin) {
-        return (100 * origin[0]) + '% ' + (100 * origin[1]) + '%';
-    }
-
-     // Directly apply given origin coordinates to the document element as the
-     // appropriate webkit CSS style.
-    var _setOrigin = usePrefix ? function(element, origin) {
-        element.style.webkitTransformOrigin = _formatCSSOrigin(origin);
-    } : function(element, origin) {
-        element.style.transformOrigin = _formatCSSOrigin(origin);
-    };
-
-     // Shrink given document element until it is effectively invisible.
-    var _setInvisible = usePrefix ? function(element) {
-        element.style.webkitTransform = 'scale3d(0.0001,0.0001,1)';
-        element.style.opacity = 0;
-    } : function(element) {
-        element.style.transform = 'scale3d(0.0001,0.0001,1)';
-        element.style.opacity = 0;
-    };
 
     function _xyNotEquals(a, b) {
         return (a && b) ? (a[0] !== b[0] || a[1] !== b[1]) : a !== b;
@@ -3499,16 +3759,13 @@ define('famous/core/Surface',['require','exports','module','./Entity','./EventHa
             }
         }
         target.style.display = '';
-        _addEventListeners.call(this, target);
-        this._currTarget = target;
+        this.attach(target);
+        this._currentTarget = target;
         this._stylesDirty = true;
         this._classesDirty = true;
         this._sizeDirty = true;
         this._contentDirty = true;
-        this._matrix = null;
-        this._opacity = undefined;
-        this._origin = null;
-        this._size = null;
+        this._transformDirty = true;
     };
 
     /**
@@ -3521,12 +3778,8 @@ define('famous/core/Surface',['require','exports','module','./Entity','./EventHa
      * @param {Context} context commit context
      */
     Surface.prototype.commit = function commit(context) {
-        if (!this._currTarget) this.setup(context.allocator);
-        var target = this._currTarget;
-
-        var matrix = context.transform;
-        var opacity = context.opacity;
-        var origin = context.origin;
+        if (!this._currentTarget) this.setup(context.allocator);
+        var target = this._currentTarget;
         var size = context.size;
 
         if (this._classesDirty) {
@@ -3541,53 +3794,20 @@ define('famous/core/Surface',['require','exports','module','./Entity','./EventHa
             this._stylesDirty = false;
         }
 
-        if (this._contentDirty) {
-            this.deploy(target);
-            this.eventHandler.emit('deploy');
-            this._contentDirty = false;
-        }
-
         if (this.size) {
-            var origSize = size;
+            var origSize = context.size;
             size = [this.size[0], this.size[1]];
-            if (size[0] === undefined && origSize[0]) size[0] = origSize[0];
-            if (size[1] === undefined && origSize[1]) size[1] = origSize[1];
+            if (size[0] === undefined) size[0] = origSize[0];
+            else if (size[0] === true) size[0] = target.clientWidth;
+            if (size[1] === undefined) size[1] = origSize[1];
+            else if (size[1] === true) size[1] = target.clientHeight;
         }
-
-        if (size[0] === true) size[0] = target.clientWidth;
-        if (size[1] === true) size[1] = target.clientHeight;
 
         if (_xyNotEquals(this._size, size)) {
             if (!this._size) this._size = [0, 0];
             this._size[0] = size[0];
             this._size[1] = size[1];
             this._sizeDirty = true;
-        }
-
-        if (!matrix && this._matrix) {
-            this._matrix = null;
-            this._opacity = 0;
-            _setInvisible(target);
-            return;
-        }
-
-        if (this._opacity !== opacity) {
-            this._opacity = opacity;
-            target.style.opacity = (opacity >= 1) ? '0.999999' : opacity;
-        }
-
-        if (_xyNotEquals(this._origin, origin) || Transform.notEquals(this._matrix, matrix) || this._sizeDirty) {
-            if (!matrix) matrix = Transform.identity;
-            this._matrix = matrix;
-            var aaMatrix = matrix;
-            if (origin) {
-                if (!this._origin) this._origin = [0, 0];
-                this._origin[0] = origin[0];
-                this._origin[1] = origin[1];
-                aaMatrix = Transform.thenMove(matrix, [-this._size[0] * origin[0], -this._size[1] * origin[1], 0]);
-                _setOrigin(target, origin);
-            }
-            _setMatrix(target, aaMatrix);
         }
 
         if (this._sizeDirty) {
@@ -3597,6 +3817,14 @@ define('famous/core/Surface',['require','exports','module','./Entity','./EventHa
             }
             this._sizeDirty = false;
         }
+
+        if (this._contentDirty) {
+            this.deploy(target);
+            this._eventOutput.emit('deploy');
+            this._contentDirty = false;
+        }
+
+        ElementOutput.prototype.commit.call(this, context);
     };
 
     /**
@@ -3610,8 +3838,8 @@ define('famous/core/Surface',['require','exports','module','./Entity','./EventHa
      */
     Surface.prototype.cleanup = function cleanup(allocator) {
         var i = 0;
-        var target = this._currTarget;
-        this.eventHandler.emit('recall');
+        var target = this._currentTarget;
+        this._eventOutput.emit('recall');
         this.recall(target);
         target.style.display = 'none';
         target.style.width = '';
@@ -3631,10 +3859,9 @@ define('famous/core/Surface',['require','exports','module','./Entity','./EventHa
                 target.classList.remove(this.elementClass);
             }
         }
-        _removeEventListeners.call(this, target);
-        this._currTarget = null;
+        this.detach(target);
+        this._currentTarget = null;
         allocator.deallocate(target);
-        _setInvisible(target);
     };
 
     /**
@@ -3670,11 +3897,10 @@ define('famous/core/Surface',['require','exports','module','./Entity','./EventHa
      *  Get the x and y dimensions of the surface.
      *
      * @method getSize
-     * @param {boolean} actual return computed size rather than provided
      * @return {Array.Number} [x,y] size of surface
      */
-    Surface.prototype.getSize = function getSize(actual) {
-        return actual ? this._size : (this.size || this._size);
+    Surface.prototype.getSize = function getSize() {
+        return this._size;
     };
 
     /**
@@ -3688,7 +3914,7 @@ define('famous/core/Surface',['require','exports','module','./Entity','./EventHa
         this._sizeDirty = true;
     };
 
-    module.exports = Surface;
+    module.exports = famous.core.Surface = Surface;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -3813,7 +4039,7 @@ define('famous/core/Group',['require','exports','module','./Context','./Transfor
         return result;
     };
 
-    module.exports = Group;
+    module.exports = famous.core.Group = Group;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -3825,7 +4051,7 @@ define('famous/core/Group',['require','exports','module','./Context','./Transfor
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/transitions/TransitionableTransform',['require','exports','module','./Transitionable','famous/core/Transform','famous/utilities/Utility'],function(require, exports, module) {
+define('famous/transitions/TransitionableTransform.js',['require','exports','module','./Transitionable','famous/core/Transform','famous/utilities/Utility'],function(require, exports, module) {
     var Transitionable = require('./Transitionable');
     var Transform = require('famous/core/Transform');
     var Utility = require('famous/utilities/Utility');
@@ -4030,7 +4256,7 @@ define('famous/transitions/TransitionableTransform',['require','exports','module
         this.scale.halt();
     };
 
-    module.exports = TransitionableTransform;
+    module.exports = famous.transitions.TransitionableTransform = TransitionableTransform;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -4409,7 +4635,7 @@ define('famous/core/Modifier',['require','exports','module','./Transform','famou
         return this._output;
     };
 
-    module.exports = Modifier;
+    module.exports = famous.core.Modifier = Modifier;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -4496,6 +4722,9 @@ define('famous/core/Scene',['require','exports','module','./Transform','./Modifi
                     transform = Transform.multiply(transform, _resolveTransformMatrix(transformDefinition[i]));
                 }
             }
+        }
+        else if (transformDefinition instanceof Function) {
+            transform = transformDefinition;
         }
         else if (transformDefinition instanceof Object) {
             transform = _resolveTransformMatrix(transformDefinition);
@@ -4586,7 +4815,7 @@ define('famous/core/Scene',['require','exports','module','./Transform','./Modifi
         return this.node.render.apply(this.node, arguments);
     };
 
-    module.exports = Scene;
+    module.exports = famous.core.Scene = Scene;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -4598,10 +4827,11 @@ define('famous/core/Scene',['require','exports','module','./Transform','./Modifi
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/core/View',['require','exports','module','./EventHandler','./OptionsManager','./RenderNode'],function(require, exports, module) {
+define('famous/core/View',['require','exports','module','./EventHandler','./OptionsManager','./RenderNode','famous/utilities/Utility'],function(require, exports, module) {
     var EventHandler = require('./EventHandler');
     var OptionsManager = require('./OptionsManager');
     var RenderNode = require('./RenderNode');
+    var Utility = require('famous/utilities/Utility');
 
     /**
      * Useful for quickly creating elements within applications
@@ -4623,7 +4853,7 @@ define('famous/core/View',['require','exports','module','./EventHandler','./Opti
         EventHandler.setInputHandler(this, this._eventInput);
         EventHandler.setOutputHandler(this, this._eventOutput);
 
-        this.options = Object.create(this.constructor.DEFAULT_OPTIONS || View.DEFAULT_OPTIONS);
+        this.options = Utility.clone(this.constructor.DEFAULT_OPTIONS || View.DEFAULT_OPTIONS);
         this._optionsManager = new OptionsManager(this.options);
 
         if (options) this.setOptions(options);
@@ -4696,7 +4926,7 @@ define('famous/core/View',['require','exports','module','./EventHandler','./Opti
         else return this.options.size;
     };
 
-    module.exports = View;
+    module.exports = famous.core.View = View;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -4979,7 +5209,7 @@ define('famous/core/ViewSequence',['require','exports','module'],function(requir
         return target ? target.render.apply(target, arguments) : null;
     };
 
-    module.exports = ViewSequence;
+    module.exports = famous.core.ViewSequence = ViewSequence;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -4991,7 +5221,7 @@ define('famous/core/ViewSequence',['require','exports','module'],function(requir
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/events/EventArbiter',['require','exports','module','famous/core/EventHandler'],function(require, exports, module) {
+define('famous/events/EventArbiter.js',['require','exports','module','famous/core/EventHandler'],function(require, exports, module) {
     var EventHandler = require('famous/core/EventHandler');
 
     /**
@@ -5064,7 +5294,7 @@ define('famous/events/EventArbiter',['require','exports','module','famous/core/E
         if (dispatcher) return dispatcher.trigger(eventType, event);
     };
 
-    module.exports = EventArbiter;
+    module.exports = famous.events.EventArbiter = EventArbiter;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -5076,7 +5306,7 @@ define('famous/events/EventArbiter',['require','exports','module','famous/core/E
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/events/EventFilter',['require','exports','module','famous/core/EventHandler'],function(require, exports, module) {
+define('famous/events/EventFilter.js',['require','exports','module','famous/core/EventHandler'],function(require, exports, module) {
     var EventHandler = require('famous/core/EventHandler');
 
     /**
@@ -5122,7 +5352,7 @@ define('famous/events/EventFilter',['require','exports','module','famous/core/Ev
      */
     EventFilter.prototype.trigger = EventFilter.prototype.emit;
 
-    module.exports = EventFilter;
+    module.exports = famous.events.EventFilter = EventFilter;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -5134,7 +5364,7 @@ define('famous/events/EventFilter',['require','exports','module','famous/core/Ev
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/events/EventMapper',['require','exports','module','famous/core/EventHandler'],function(require, exports, module) {
+define('famous/events/EventMapper.js',['require','exports','module','famous/core/EventHandler'],function(require, exports, module) {
     var EventHandler = require('famous/core/EventHandler');
 
     /**
@@ -5178,87 +5408,7 @@ define('famous/events/EventMapper',['require','exports','module','famous/core/Ev
      */
     EventMapper.prototype.trigger = EventMapper.prototype.emit;
 
-    module.exports = EventMapper;
-});
-
-define('famous/inputs/Accumulator',['require','exports','module','famous/core/EventHandler','famous/transitions/Transitionable'],function(require, exports, module) {
-    var EventHandler = require('famous/core/EventHandler');
-    var Transitionable = require('famous/transitions/Transitionable');
-
-    /**
-     * Accumulates differentials of event sources that emit a `delta`
-     *  attribute taking a Number or Array of Number types. The accumulated
-     *  value is stored in a getter/setter.
-     *
-     * @class Accumulator
-     * @constructor
-     * @param value {Number|Array|Transitionable}   Initializing value
-     * @param [eventName='update'] {String}         Name of update event
-     */
-    function Accumulator(value, eventName) {
-        if (eventName === undefined) eventName = 'update';
-
-        this._state = (value && value.get && value.set)
-            ? value
-            : new Transitionable(value || 0);
-
-        this._eventInput = new EventHandler();
-        EventHandler.setInputHandler(this, this._eventInput);
-
-        this._eventInput.on(eventName, _handleUpdate.bind(this));
-    }
-
-    function _handleUpdate(data) {
-        var delta = data.delta;
-        var state = this.get();
-
-        if (delta.constructor === state.constructor){
-            var newState = (delta instanceof Array)
-                ? [state[0] + delta[0], state[1] + delta[1]]
-                : state + delta;
-            this.set(newState);
-        }
-    }
-
-    /**
-     * Basic getter
-     *
-     * @method get
-     * @return {Number|Array} current value
-     */
-    Accumulator.prototype.get = function get() {
-        return this._state.get();
-    };
-
-    /**
-     * Basic setter
-     *
-     * @method set
-     * @param value {Number|Array} new value
-     */
-    Accumulator.prototype.set = function set(value) {
-        this._state.set(value);
-    };
-
-    module.exports = Accumulator;
-});
-
-define('famous/inputs/DesktopEmulationMode',['require','exports','module'],function(require, exports, module) {
-    var hasTouch = 'ontouchstart' in window;
-
-    function kill(type) {
-        window.addEventListener(type, function(event) {
-            event.stopPropagation();
-            return false;
-        }, true);
-    }
-
-    if (hasTouch) {
-        kill('mousedown');
-        kill('mousemove');
-        kill('mouseup');
-        kill('mouseleave');
-    }
+    module.exports = famous.events.EventMapper = EventMapper;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -5270,7 +5420,7 @@ define('famous/inputs/DesktopEmulationMode',['require','exports','module'],funct
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/inputs/FastClick',['require','exports','module'],function(require, exports, module) {
+define('famous/inputs/FastClick.js',['require','exports','module'],function(require, exports, module) {
     /**
      * FastClick is an override shim which maps event pairs of
      *   'touchstart' and 'touchend' which differ by less than a certain
@@ -5451,7 +5601,7 @@ define('famous/inputs/GenericSync',['require','exports','module','famous/core/Ev
                 _addSingleSync.call(this, key, syncs[key]);
     };
 
-    module.exports = GenericSync;
+    module.exports = famous.inputs.GenericSync = GenericSync;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -5676,7 +5826,7 @@ define('famous/inputs/MouseSync',['require','exports','module','famous/core/Even
         if (options.propogate !== undefined) this.options.propogate = options.propogate;
     };
 
-    module.exports = MouseSync;
+    module.exports = famous.inputs.MouseSync = MouseSync;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -5688,7 +5838,7 @@ define('famous/inputs/MouseSync',['require','exports','module','famous/core/Even
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/inputs/TwoFingerSync',['require','exports','module','famous/core/EventHandler'],function(require, exports, module) {
+define('famous/inputs/TwoFingerSync.js',['require','exports','module','famous/core/EventHandler'],function(require, exports, module) {
     var EventHandler = require('famous/core/EventHandler');
 
     /**
@@ -5800,7 +5950,7 @@ define('famous/inputs/TwoFingerSync',['require','exports','module','famous/core/
         }
     };
 
-    module.exports = TwoFingerSync;
+    module.exports = famous.inputs.TwoFingerSync = TwoFingerSync;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -5812,7 +5962,7 @@ define('famous/inputs/TwoFingerSync',['require','exports','module','famous/core/
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/inputs/PinchSync',['require','exports','module','./TwoFingerSync'],function(require, exports, module) {
+define('famous/inputs/PinchSync.js',['require','exports','module','./TwoFingerSync'],function(require, exports, module) {
     var TwoFingerSync = require('./TwoFingerSync');
 
     /**
@@ -5898,7 +6048,7 @@ define('famous/inputs/PinchSync',['require','exports','module','./TwoFingerSync'
         if (options.scale !== undefined) this.options.scale = options.scale;
     };
 
-    module.exports = PinchSync;
+    module.exports = famous.inputs.PinchSync = PinchSync;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -5910,7 +6060,7 @@ define('famous/inputs/PinchSync',['require','exports','module','./TwoFingerSync'
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/inputs/RotateSync',['require','exports','module','./TwoFingerSync'],function(require, exports, module) {
+define('famous/inputs/RotateSync.js',['require','exports','module','./TwoFingerSync'],function(require, exports, module) {
     var TwoFingerSync = require('./TwoFingerSync');
 
     /**
@@ -5997,7 +6147,7 @@ define('famous/inputs/RotateSync',['require','exports','module','./TwoFingerSync
         if (options.scale !== undefined) this.options.scale = options.scale;
     };
 
-    module.exports = RotateSync;
+    module.exports = famous.inputs.RotateSync = RotateSync;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -6009,7 +6159,7 @@ define('famous/inputs/RotateSync',['require','exports','module','./TwoFingerSync
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/inputs/ScaleSync',['require','exports','module','./TwoFingerSync'],function(require, exports, module) {
+define('famous/inputs/ScaleSync.js',['require','exports','module','./TwoFingerSync'],function(require, exports, module) {
     var TwoFingerSync = require('./TwoFingerSync');
 
     /**
@@ -6103,7 +6253,7 @@ define('famous/inputs/ScaleSync',['require','exports','module','./TwoFingerSync'
         if (options.scale !== undefined) this.options.scale = options.scale;
     };
 
-    module.exports = ScaleSync;
+    module.exports = famous.inputs.ScaleSync = ScaleSync;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -6303,7 +6453,7 @@ define('famous/inputs/ScrollSync',['require','exports','module','famous/core/Eve
         if (options.stallTime !== undefined) this.options.stallTime = options.stallTime;
     };
 
-    module.exports = ScrollSync;
+    module.exports = famous.inputs.ScrollSync = ScrollSync;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -6315,7 +6465,7 @@ define('famous/inputs/ScrollSync',['require','exports','module','famous/core/Eve
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/inputs/TouchTracker',['require','exports','module','famous/core/EventHandler'],function(require, exports, module) {
+define('famous/inputs/TouchTracker.js',['require','exports','module','famous/core/EventHandler'],function(require, exports, module) {
     var EventHandler = require('famous/core/EventHandler');
 
     var _now = Date.now;
@@ -6414,7 +6564,7 @@ define('famous/inputs/TouchTracker',['require','exports','module','famous/core/E
         this.touchHistory[data.identifier] = [data];
     };
 
-    module.exports = TouchTracker;
+    module.exports = famous.inputs.TouchTracker = TouchTracker;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -6597,7 +6747,7 @@ define('famous/inputs/TouchSync',['require','exports','module','./TouchTracker',
         return this.options;
     };
 
-    module.exports = TouchSync;
+    module.exports = famous.inputs.TouchSync = TouchSync;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -6609,7 +6759,7 @@ define('famous/inputs/TouchSync',['require','exports','module','./TouchTracker',
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/math/Vector',['require','exports','module'],function(require, exports, module) {
+define('famous/math/Vector.js',['require','exports','module'],function(require, exports, module) {
 
     /**
      * Three-element floating point vector.
@@ -6622,7 +6772,7 @@ define('famous/math/Vector',['require','exports','module'],function(require, exp
      * @param {number} z z element value
      */
     function Vector(x,y,z) {
-        if (arguments.length === 1) this.set(x);
+        if (arguments.length === 1 && x !== undefined) this.set(x);
         else {
             this.x = x || 0;
             this.y = y || 0;
@@ -6888,9 +7038,9 @@ define('famous/math/Vector',['require','exports','module'],function(require, exp
      * @return {Vector} this
      */
     Vector.prototype.set = function set(v) {
-        if (v instanceof Array)    return _setFromArray.call(this, v);
-        if (v instanceof Vector)   return _setFromVector.call(this, v);
+        if (v instanceof Array) return _setFromArray.call(this, v);
         if (typeof v === 'number') return _setFromNumber.call(this, v);
+        return _setFromVector.call(this, v);
     };
 
     Vector.prototype.setXYZ = function(x,y,z) {
@@ -6977,7 +7127,7 @@ define('famous/math/Vector',['require','exports','module'],function(require, exp
         return this.x;
     };
 
-    module.exports = Vector;
+    module.exports = famous.math.Vector = Vector;
 
 });
 
@@ -7134,7 +7284,7 @@ define('famous/math/Matrix',['require','exports','module','./Vector'],function(r
         return new Matrix(M);
     };
 
-    module.exports = Matrix;
+    module.exports = famous.math.Matrix = Matrix;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -7364,10 +7514,10 @@ define('famous/math/Quaternion',['require','exports','module','./Matrix'],functi
      */
     Quaternion.prototype.set = function set(v) {
         if (v instanceof Array) {
-            this.w = v[0];
-            this.x = v[1];
-            this.y = v[2];
-            this.z = v[3];
+            this.w = 0;
+            this.x = v[0];
+            this.y = v[1];
+            this.z = v[2];
         }
         else {
             this.w = v.w;
@@ -7566,7 +7716,7 @@ define('famous/math/Quaternion',['require','exports','module','./Matrix'],functi
         return register.set(this.scalarMultiply(scaleFrom/scaleTo).add(q).multiply(scaleTo));
     };
 
-    module.exports = Quaternion;
+    module.exports = famous.math.Quaternion = Quaternion;
 
 });
 
@@ -7579,7 +7729,7 @@ define('famous/math/Quaternion',['require','exports','module','./Matrix'],functi
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/math/Random',['require','exports','module'],function(require, exports, module) {
+define('famous/math/Random.js',['require','exports','module'],function(require, exports, module) {
 
     var RAND = Math.random;
 
@@ -7669,7 +7819,7 @@ define('famous/math/Random',['require','exports','module'],function(require, exp
         return RAND() < prob;
     };
 
-    module.exports = Random;
+    module.exports = famous.math.Random = Random;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -7717,7 +7867,7 @@ define('famous/math/Utilities',['require','exports','module'],function(require, 
         return Math.sqrt(distanceSquared);
     };
 
-    module.exports = Utilities;
+    module.exports = famous.math.Utilities = Utilities;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -7729,7 +7879,7 @@ define('famous/math/Utilities',['require','exports','module'],function(require, 
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/modifiers/Draggable',['require','exports','module','famous/core/Transform','famous/transitions/Transitionable','famous/core/EventHandler','famous/math/Utilities','famous/inputs/GenericSync','famous/inputs/MouseSync','famous/inputs/TouchSync'],function(require, exports, module) {
+define('famous/modifiers/Draggable.js',['require','exports','module','famous/core/Transform','famous/transitions/Transitionable','famous/core/EventHandler','famous/math/Utilities','famous/inputs/GenericSync','famous/inputs/MouseSync','famous/inputs/TouchSync'],function(require, exports, module) {
     var Transform = require('famous/core/Transform');
     var Transitionable = require('famous/transitions/Transitionable');
     var EventHandler = require('famous/core/EventHandler');
@@ -7978,10 +8128,10 @@ define('famous/modifiers/Draggable',['require','exports','module','famous/core/T
         };
     };
 
-    module.exports = Draggable;
+    module.exports = famous.modifiers.Draggable = Draggable;
 });
 
-define('famous/modifiers/Fader',['require','exports','module','famous/transitions/Transitionable','famous/core/OptionsManager'],function(require, exports, module) {
+define('famous/modifiers/Fader.js',['require','exports','module','famous/transitions/Transitionable','famous/core/OptionsManager'],function(require, exports, module) {
     var Transitionable = require('famous/transitions/Transitionable');
     var OptionsManager = require('famous/core/OptionsManager');
 
@@ -8101,7 +8251,7 @@ define('famous/modifiers/Fader',['require','exports','module','famous/transition
         else return {opacity: currOpacity, target: target};
     };
 
-    module.exports = Fader;
+    module.exports = famous.modifiers.Fader = Fader;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -8113,7 +8263,7 @@ define('famous/modifiers/Fader',['require','exports','module','famous/transition
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/modifiers/ModifierChain',['require','exports','module'],function(require, exports, module) {
+define('famous/modifiers/ModifierChain.js',['require','exports','module'],function(require, exports, module) {
 
     /**
      * A class to add and remove a chain of modifiers
@@ -8172,7 +8322,7 @@ define('famous/modifiers/ModifierChain',['require','exports','module'],function(
         return result;
     };
 
-    module.exports = ModifierChain;
+    module.exports = famous.modifiers.ModifierChain = ModifierChain;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -8184,7 +8334,7 @@ define('famous/modifiers/ModifierChain',['require','exports','module'],function(
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/modifiers/StateModifier',['require','exports','module','famous/core/Modifier','famous/core/Transform','famous/transitions/Transitionable','famous/transitions/TransitionableTransform'],function(require, exports, module) {
+define('famous/modifiers/StateModifier.js',['require','exports','module','famous/core/Modifier','famous/core/Transform','famous/transitions/Transitionable','famous/transitions/TransitionableTransform'],function(require, exports, module) {
     var Modifier = require('famous/core/Modifier');
     var Transform = require('famous/core/Transform');
     var Transitionable = require('famous/transitions/Transitionable');
@@ -8438,7 +8588,3250 @@ define('famous/modifiers/StateModifier',['require','exports','module','famous/co
         return this._modifier.modify(target);
     };
 
-    module.exports = StateModifier;
+    module.exports = famous.modifiers.StateModifier = StateModifier;
+});
+
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Owner: david@famo.us
+ * @license MPL 2.0
+ * @copyright Famous Industries, Inc. 2014
+ */
+
+define('famous/physics/integrators/SymplecticEuler.js',['require','exports','module','famous/core/OptionsManager'],function(require, exports, module) {
+    var OptionsManager = require('famous/core/OptionsManager');
+
+    /**
+     * Ordinary Differential Equation (ODE) Integrator.
+     * Manages updating a physics body's state over time.
+     *
+     *  p = position, v = velocity, m = mass, f = force, dt = change in time
+     *
+     *      v <- v + dt * f / m
+     *      p <- p + dt * v
+     *
+     *  q = orientation, w = angular velocity, L = angular momentum
+     *
+     *      L <- L + dt * t
+     *      q <- q + dt/2 * q * w
+     *
+     * @class SymplecticEuler
+     * @constructor
+     * @param {Object} options Options to set
+     */
+    function SymplecticEuler(options) {
+        this.options = Object.create(SymplecticEuler.DEFAULT_OPTIONS);
+        this._optionsManager = new OptionsManager(this.options);
+
+        if (options) this.setOptions(options);
+    }
+
+    /**
+     * @property SymplecticEuler.DEFAULT_OPTIONS
+     * @type Object
+     * @protected
+     * @static
+     */
+    SymplecticEuler.DEFAULT_OPTIONS = {
+
+        /**
+         * The maximum velocity of a physics body
+         *      Range : [0, Infinity]
+         * @attribute velocityCap
+         * @type Number
+         */
+
+        velocityCap : undefined,
+
+        /**
+         * The maximum angular velocity of a physics body
+         *      Range : [0, Infinity]
+         * @attribute angularVelocityCap
+         * @type Number
+         */
+        angularVelocityCap : undefined
+    };
+
+    /*
+     * Setter for options
+     *
+     * @method setOptions
+     * @param {Object} options
+     */
+    SymplecticEuler.prototype.setOptions = function setOptions(options) {
+        this._optionsManager.patch(options);
+    };
+
+    /*
+     * Getter for options
+     *
+     * @method getOptions
+     * @return {Object} options
+     */
+    SymplecticEuler.prototype.getOptions = function getOptions() {
+        return this._optionsManager.value();
+    };
+
+    /*
+     * Updates the velocity of a physics body from its accumulated force.
+     *      v <- v + dt * f / m
+     *
+     * @method integrateVelocity
+     * @param {Body} physics body
+     * @param {Number} dt delta time
+     */
+    SymplecticEuler.prototype.integrateVelocity = function integrateVelocity(body, dt) {
+        var v = body.velocity;
+        var w = body.inverseMass;
+        var f = body.force;
+
+        if (f.isZero()) return;
+
+        v.add(f.mult(dt * w)).put(v);
+        f.clear();
+    };
+
+    /*
+     * Updates the position of a physics body from its velocity.
+     *      p <- p + dt * v
+     *
+     * @method integratePosition
+     * @param {Body} physics body
+     * @param {Number} dt delta time
+     */
+    SymplecticEuler.prototype.integratePosition = function integratePosition(body, dt) {
+        var p = body.position;
+        var v = body.velocity;
+
+        if (this.options.velocityCap) v.cap(this.options.velocityCap).put(v);
+        p.add(v.mult(dt)).put(p);
+    };
+
+    /*
+     * Updates the angular momentum of a physics body from its accumuled torque.
+     *      L <- L + dt * t
+     *
+     * @method integrateAngularMomentum
+     * @param {Body} physics body (except a particle)
+     * @param {Number} dt delta time
+     */
+    SymplecticEuler.prototype.integrateAngularMomentum = function integrateAngularMomentum(body, dt) {
+        var L = body.angularMomentum;
+        var t = body.torque;
+
+        if (t.isZero()) return;
+
+        if (this.options.angularVelocityCap) t.cap(this.options.angularVelocityCap).put(t);
+        L.add(t.mult(dt)).put(L);
+        t.clear();
+    };
+
+    /*
+     * Updates the orientation of a physics body from its angular velocity.
+     *      q <- q + dt/2 * q * w
+     *
+     * @method integrateOrientation
+     * @param {Body} physics body (except a particle)
+     * @param {Number} dt delta time
+     */
+    SymplecticEuler.prototype.integrateOrientation = function integrateOrientation(body, dt) {
+        var q = body.orientation;
+        var w = body.angularVelocity;
+
+        if (w.isZero()) return;
+        q.add(q.multiply(w).scalarMultiply(0.5 * dt)).put(q);
+//        q.normalize.put(q);
+    };
+
+    module.exports = famous.physics.integrators.SymplecticEuler = SymplecticEuler;
+});
+
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Owner: david@famo.us
+ * @license MPL 2.0
+ * @copyright Famous Industries, Inc. 2014
+ */
+
+define('famous/physics/bodies/Particle.js',['require','exports','module','famous/math/Vector','famous/core/Transform','famous/core/EventHandler','../integrators/SymplecticEuler'],function(require, exports, module) {
+    var Vector = require('famous/math/Vector');
+    var Transform = require('famous/core/Transform');
+    var EventHandler = require('famous/core/EventHandler');
+    var Integrator = require('../integrators/SymplecticEuler');
+
+    /**
+     * A point body that is controlled by the Physics Engine. A particle has
+     *   position and velocity states that are updated by the Physics Engine.
+     *   Ultimately, a particle is a _special type of modifier, and can be added to
+     *   the Famous render tree like any other modifier.
+     *
+     * @constructor
+     * @class Particle
+     * @uses EventHandler
+     * @uses Modifier
+     * @extensionfor Body
+     * @param {Options} [options] An object of configurable options.
+     * @param {Array} [options.position] The position of the particle.
+     * @param {Array} [options.velocity] The velocity of the particle.
+     * @param {Number} [options.mass] The mass of the particle.
+     * @param {Hexadecimal} [options.axis] The axis a particle can move along. Can be bitwise ORed e.g., Particle.AXES.X, Particle.AXES.X | Particle.AXES.Y
+     *
+     */
+     function Particle(options) {
+        options = options || {};
+
+        // registers
+        this.position = new Vector();
+        this.velocity = new Vector();
+        this.force    = new Vector();
+
+        var defaults  = Particle.DEFAULT_OPTIONS;
+
+        // set vectors
+        this.setPosition(options.position || defaults.position);
+        this.setVelocity(options.velocity || defaults.velocity);
+        this.force.set(options.force || [0,0,0]);
+
+        // set scalars
+        this.mass = (options.mass !== undefined)
+            ? options.mass
+            : defaults.mass;
+
+        this.axis = (options.axis !== undefined)
+            ? options.axis
+            : defaults.axis;
+
+        this.inverseMass = 1 / this.mass;
+
+        // state variables
+        this._isSleeping     = false;
+        this._engine         = null;
+        this._eventOutput    = null;
+        this._positionGetter = null;
+
+        this.transform = Transform.identity.slice();
+
+        // cached _spec
+        this._spec = {
+            transform : this.transform,
+            target    : null
+        };
+    }
+
+    Particle.DEFAULT_OPTIONS = {
+        position : [0,0,0],
+        velocity : [0,0,0],
+        mass : 1,
+        axis : undefined
+    };
+
+    /**
+     * Kinetic energy threshold needed to update the body
+     *
+     * @property SLEEP_TOLERANCE
+     * @type Number
+     * @static
+     * @default 1e-7
+     */
+    Particle.SLEEP_TOLERANCE = 1e-7;
+
+    /**
+     * Axes by which a body can translate
+     *
+     * @property AXES
+     * @type Hexadecimal
+     * @static
+     * @default 1e-7
+     */
+    Particle.AXES = {
+        X : 0x00, // hexadecimal for 0
+        Y : 0x01, // hexadecimal for 1
+        Z : 0x02  // hexadecimal for 2
+    };
+
+    // Integrator for updating the particle's state
+    // TODO: make this a singleton
+    Particle.INTEGRATOR = new Integrator();
+
+    //Catalogue of outputted events
+    var _events = {
+        start  : 'start',
+        update : 'update',
+        end    : 'end'
+    };
+
+    // Cached timing function
+    var now = (function() {
+        return Date.now;
+    })();
+
+    /**
+     * Stops the particle from updating
+     * @method sleep
+     */
+    Particle.prototype.sleep = function sleep() {
+        if (this._isSleeping) return;
+        this.emit(_events.end, this);
+        this._isSleeping = true;
+    };
+
+    /**
+     * Starts the particle update
+     * @method wake
+     */
+    Particle.prototype.wake = function wake() {
+        if (!this._isSleeping) return;
+        this.emit(_events.start, this);
+        this._isSleeping = false;
+        this._prevTime = now();
+    };
+
+    /**
+     * @attribute isBody
+     * @type Boolean
+     * @static
+     */
+    Particle.prototype.isBody = false;
+
+    /**
+     * Basic setter for position
+     * @method setPosition
+     * @param position {Array|Vector}
+     */
+    Particle.prototype.setPosition = function setPosition(position) {
+        this.position.set(position);
+    };
+
+    /**
+     * 1-dimensional setter for position
+     * @method setPosition1D
+     * @param x {Number}
+     */
+    Particle.prototype.setPosition1D = function setPosition1D(x) {
+        this.position.x = x;
+    };
+
+    /**
+     * Basic getter function for position
+     * @method getPosition
+     * @return position {Array}
+     */
+    Particle.prototype.getPosition = function getPosition() {
+        if (this._positionGetter instanceof Function)
+            this.setPosition(this._positionGetter());
+
+        this._engine.step();
+
+        return this.position.get();
+    };
+
+    /**
+     * 1-dimensional getter for position
+     * @method getPosition1D
+     * @return value {Number}
+     */
+    Particle.prototype.getPosition1D = function getPosition1D() {
+        this._engine.step();
+        return this.position.x;
+    };
+
+    /**
+     * Defines the position from outside the Physics Engine
+     * @method positionFrom
+     * @param positionGetter {Function}
+     */
+    Particle.prototype.positionFrom = function positionFrom(positionGetter) {
+        this._positionGetter = positionGetter;
+    };
+
+    /**
+     * Basic setter function for velocity Vector
+     * @method setVelocity
+     * @function
+     */
+    Particle.prototype.setVelocity = function setVelocity(velocity) {
+        this.velocity.set(velocity);
+        this.wake();
+    };
+
+    /**
+     * 1-dimensional setter for velocity
+     * @method setVelocity1D
+     * @param x {Number}
+     */
+    Particle.prototype.setVelocity1D = function setVelocity1D(x) {
+        this.velocity.x = x;
+        this.wake();
+    };
+
+    /**
+     * Basic getter function for velocity Vector
+     * @method getVelocity
+     * @return velocity {Array}
+     */
+    Particle.prototype.getVelocity = function getVelocity() {
+        return this.velocity.get();
+    };
+
+    /**
+     * 1-dimensional getter for velocity
+     * @method getVelocity1D
+     * @return velocity {Number}
+     */
+    Particle.prototype.getVelocity1D = function getVelocity1D() {
+        return this.velocity.x;
+    };
+
+    /**
+     * Basic setter function for mass quantity
+     * @method setMass
+     * @param mass {Number} mass
+     */
+    Particle.prototype.setMass = function setMass(mass) {
+        this.mass = mass;
+        this.inverseMass = 1 / mass;
+    };
+
+    /**
+     * Basic getter function for mass quantity
+     * @method getMass
+     * @return mass {Number}
+     */
+    Particle.prototype.getMass = function getMass() {
+        return this.mass;
+    };
+
+    /**
+     * Reset position and velocity
+     * @method reset
+     * @param position {Array|Vector}
+     * @param velocity {Array|Vector}
+     */
+    Particle.prototype.reset = function reset(position, velocity) {
+        this.setPosition(position || [0,0,0]);
+        this.setVelocity(velocity || [0,0,0]);
+    };
+
+    /**
+     * Add force vector to existing internal force Vector
+     * @method applyForce
+     * @param force {Vector}
+     */
+    Particle.prototype.applyForce = function applyForce(force) {
+        if (force.isZero()) return;
+        this.force.add(force).put(this.force);
+        this.wake();
+    };
+
+    /**
+     * Add impulse (change in velocity) Vector to this Vector's velocity.
+     * @method applyImpulse
+     * @param impulse {Vector}
+     */
+    Particle.prototype.applyImpulse = function applyImpulse(impulse) {
+        if (impulse.isZero()) return;
+        var velocity = this.velocity;
+        velocity.add(impulse.mult(this.inverseMass)).put(velocity);
+    };
+
+    /**
+     * Update a particle's velocity from its force accumulator
+     * @method integrateVelocity
+     * @param dt {Number} Time differential
+     */
+    Particle.prototype.integrateVelocity = function integrateVelocity(dt) {
+        Particle.INTEGRATOR.integrateVelocity(this, dt);
+    };
+
+    /**
+     * Update a particle's position from its velocity
+     * @method integratePosition
+     * @param dt {Number} Time differential
+     */
+    Particle.prototype.integratePosition = function integratePosition(dt) {
+        Particle.INTEGRATOR.integratePosition(this, dt);
+    };
+
+    /**
+     * Update the position and velocity of the particle
+     * @method _integrate
+     * @protected
+     * @param dt {Number} Time differential
+     */
+    Particle.prototype._integrate = function _integrate(dt) {
+        this.integrateVelocity(dt);
+        this.integratePosition(dt);
+    };
+
+    /**
+     * Get kinetic energy of the particle.
+     * @method getEnergy
+     * @function
+     */
+    Particle.prototype.getEnergy = function getEnergy() {
+        return 0.5 * this.mass * this.velocity.normSquared();
+    };
+
+    /**
+     * Generate transform from the current position state
+     * @method getTransform
+     * @return Transform {Transform}
+     */
+    Particle.prototype.getTransform = function getTransform() {
+        this._engine.step();
+
+        var position = this.position;
+        var axis = this.axis;
+        var transform = this.transform;
+
+        if (axis !== undefined) {
+            if (axis & ~Particle.AXES.X) {
+                position.x = 0;
+            }
+            if (axis & ~Particle.AXES.Y) {
+                position.y = 0;
+            }
+            if (axis & ~Particle.AXES.Z) {
+                position.z = 0;
+            }
+        }
+
+        transform[12] = position.x;
+        transform[13] = position.y;
+        transform[14] = position.z;
+
+        return transform;
+    };
+
+    /**
+     * The modify interface of a Modifier
+     * @method modify
+     * @param target {Spec}
+     * @return Spec {Spec}
+     */
+    Particle.prototype.modify = function modify(target) {
+        var _spec = this._spec;
+        _spec.transform = this.getTransform();
+        _spec.target = target;
+        return _spec;
+    };
+
+    // private
+    function _createEventOutput() {
+        this._eventOutput = new EventHandler();
+        this._eventOutput.bindThis(this);
+        //overrides on/removeListener/pipe/unpipe methods
+        EventHandler.setOutputHandler(this, this._eventOutput);
+    }
+
+    Particle.prototype.emit = function emit(type, data) {
+        if (!this._eventOutput) return;
+        this._eventOutput.emit(type, data);
+    };
+
+    Particle.prototype.on = function on() {
+        _createEventOutput.call(this);
+        return this.on.apply(this, arguments);
+    };
+    Particle.prototype.removeListener = function removeListener() {
+        _createEventOutput.call(this);
+        return this.removeListener.apply(this, arguments);
+    };
+    Particle.prototype.pipe = function pipe() {
+        _createEventOutput.call(this);
+        return this.pipe.apply(this, arguments);
+    };
+    Particle.prototype.unpipe = function unpipe() {
+        _createEventOutput.call(this);
+        return this.unpipe.apply(this, arguments);
+    };
+
+    module.exports = famous.physics.bodies.Particle = Particle;
+});
+
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Owner: david@famo.us
+ * @license MPL 2.0
+ * @copyright Famous Industries, Inc. 2014
+ */
+
+define('famous/physics/bodies/Body',['require','exports','module','./Particle','famous/core/Transform','famous/math/Vector','famous/math/Quaternion','famous/math/Matrix'],function(require, exports, module) {
+    var Particle = require('./Particle');
+    var Transform = require('famous/core/Transform');
+    var Vector = require('famous/math/Vector');
+    var Quaternion = require('famous/math/Quaternion');
+    var Matrix = require('famous/math/Matrix');
+
+    /**
+     * A unit controlled by the physics engine which extends the zero-dimensional
+     * Particle to include geometry. In addition to maintaining the state
+     * of a Particle its state includes orientation, angular velocity
+     * and angular momentum and responds to torque forces.
+     *
+     * @class Body
+     * @extends Particle
+     * @constructor
+     */
+    function Body(options) {
+        Particle.call(this, options);
+        options = options || {};
+
+        this.orientation     = new Quaternion();
+        this.angularVelocity = new Vector();
+        this.angularMomentum = new Vector();
+        this.torque          = new Vector();
+
+        if (options.orientation)     this.orientation.set(options.orientation);
+        if (options.angularVelocity) this.angularVelocity.set(options.angularVelocity);
+        if (options.angularMomentum) this.angularMomentum.set(options.angularMomentum);
+        if (options.torque)          this.torque.set(options.torque);
+
+        this.setMomentsOfInertia();
+
+        this.angularVelocity.w = 0;        //quaternify the angular velocity
+
+        //registers
+        this.pWorld = new Vector();        //placeholder for world space position
+    }
+
+    Body.DEFAULT_OPTIONS = Particle.DEFAULT_OPTIONS;
+    Body.DEFAULT_OPTIONS.orientation = [0,0,0,1];
+    Body.DEFAULT_OPTIONS.angularVelocity = [0,0,0];
+
+    Body.AXES = Particle.AXES;
+    Body.SLEEP_TOLERANCE = Particle.SLEEP_TOLERANCE;
+    Body.INTEGRATOR = Particle.INTEGRATOR;
+
+    Body.prototype = Object.create(Particle.prototype);
+    Body.prototype.constructor = Body;
+
+    Body.prototype.isBody = true;
+
+    Body.prototype.setMass = function setMass() {
+        Particle.prototype.setMass.apply(this, arguments);
+        this.setMomentsOfInertia();
+    };
+
+    /**
+     * Setter for moment of inertia, which is necessary to give proper
+     * angular inertia depending on the geometry of the body.
+     *
+     * @method setMomentsOfInertia
+     */
+    Body.prototype.setMomentsOfInertia = function setMomentsOfInertia() {
+        this.inertia = new Matrix();
+        this.inverseInertia = new Matrix();
+    };
+
+    /**
+     * Update the angular velocity from the angular momentum state.
+     *
+     * @method updateAngularVelocity
+     */
+    Body.prototype.updateAngularVelocity = function updateAngularVelocity() {
+        this.angularVelocity.set(this.inverseInertia.vectorMultiply(this.angularMomentum));
+    };
+
+    /**
+     * Determine world coordinates from the local coordinate system. Useful
+     * if the Body has rotated in space.
+     *
+     * @method toWorldCoordinates
+     * @param localPosition {Vector} local coordinate vector
+     * @return global coordinate vector {Vector}
+     */
+    Body.prototype.toWorldCoordinates = function toWorldCoordinates(localPosition) {
+        return this.pWorld.set(this.orientation.rotateVector(localPosition));
+    };
+
+    /**
+     * Calculates the kinetic and intertial energy of a body.
+     *
+     * @method getEnergy
+     * @return energy {Number}
+     */
+    Body.prototype.getEnergy = function getEnergy() {
+        return Particle.prototype.getEnergy.call(this)
+            + 0.5 * this.inertia.vectorMultiply(this.angularVelocity).dot(this.angularVelocity);
+    };
+
+    /**
+     * Extends Particle.reset to reset orientation, angular velocity
+     * and angular momentum.
+     *
+     * @method reset
+     * @param [p] {Array|Vector} position
+     * @param [v] {Array|Vector} velocity
+     * @param [q] {Array|Quaternion} orientation
+     * @param [L] {Array|Vector} angular momentum
+     */
+    Body.prototype.reset = function reset(p, v, q, L) {
+        Particle.prototype.reset.call(this, p, v);
+        this.angularVelocity.clear();
+        this.setOrientation(q || [1,0,0,0]);
+        this.setAngularMomentum(L || [0,0,0]);
+    };
+
+    /**
+     * Setter for orientation
+     *
+     * @method setOrientation
+     * @param q {Array|Quaternion} orientation
+     */
+    Body.prototype.setOrientation = function setOrientation(q) {
+        this.orientation.set(q);
+    };
+
+    /**
+     * Setter for angular velocity
+     *
+     * @method setAngularVelocity
+     * @param w {Array|Vector} angular velocity
+     */
+    Body.prototype.setAngularVelocity = function setAngularVelocity(w) {
+        this.wake();
+        this.angularVelocity.set(w);
+    };
+
+    /**
+     * Setter for angular momentum
+     *
+     * @method setAngularMomentum
+     * @param L {Array|Vector} angular momentum
+     */
+    Body.prototype.setAngularMomentum = function setAngularMomentum(L) {
+        this.wake();
+        this.angularMomentum.set(L);
+    };
+
+    /**
+     * Extends Particle.applyForce with an optional argument
+     * to apply the force at an off-centered location, resulting in a torque.
+     *
+     * @method applyForce
+     * @param force {Vector} force
+     * @param [location] {Vector} off-center location on the body
+     */
+    Body.prototype.applyForce = function applyForce(force, location) {
+        Particle.prototype.applyForce.call(this, force);
+        if (location !== undefined) this.applyTorque(location.cross(force));
+    };
+
+    /**
+     * Applied a torque force to a body, inducing a rotation.
+     *
+     * @method applyTorque
+     * @param torque {Vector} torque
+     */
+    Body.prototype.applyTorque = function applyTorque(torque) {
+        this.wake();
+        this.torque.set(this.torque.add(torque));
+    };
+
+    /**
+     * Extends Particle.getTransform to include a rotational component
+     * derived from the particle's orientation.
+     *
+     * @method getTransform
+     * @return transform {Transform}
+     */
+    Body.prototype.getTransform = function getTransform() {
+        return Transform.thenMove(
+            this.orientation.getTransform(),
+            Transform.getTranslate(Particle.prototype.getTransform.call(this))
+        );
+    };
+
+    /**
+     * Extends Particle._integrate to also update the rotational states
+     * of the body.
+     *
+     * @method getTransform
+     * @protected
+     * @param dt {Number} delta time
+     */
+    Body.prototype._integrate = function _integrate(dt) {
+        Particle.prototype._integrate.call(this, dt);
+        this.integrateAngularMomentum(dt);
+        this.updateAngularVelocity(dt);
+        this.integrateOrientation(dt);
+    };
+
+    /**
+     * Updates the angular momentum via the its integrator.
+     *
+     * @method integrateAngularMomentum
+     * @param dt {Number} delta time
+     */
+    Body.prototype.integrateAngularMomentum = function integrateAngularMomentum(dt) {
+        Body.INTEGRATOR.integrateAngularMomentum(this, dt);
+    };
+
+    /**
+     * Updates the orientation via the its integrator.
+     *
+     * @method integrateOrientation
+     * @param dt {Number} delta time
+     */
+    Body.prototype.integrateOrientation = function integrateOrientation(dt) {
+        Body.INTEGRATOR.integrateOrientation(this, dt);
+    };
+
+    module.exports = famous.physics.bodies.Body = Body;
+});
+
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Owner: david@famo.us
+ * @license MPL 2.0
+ * @copyright Famous Industries, Inc. 2014
+ */
+
+define('famous/physics/bodies/Circle.js',['require','exports','module','./Body','famous/math/Matrix'],function(require, exports, module) {
+    var Body = require('./Body');
+    var Matrix = require('famous/math/Matrix');
+
+    /**
+     * Implements a circle, or spherical, geometry for a Body with
+     * radius.
+     *
+     * @class Circle
+     * @extends Body
+     * @constructor
+     */
+    function Circle(options) {
+        options = options || {};
+        this.setRadius(options.radius || 0);
+        Body.call(this, options);
+    }
+
+    Circle.prototype = Object.create(Body.prototype);
+    Circle.prototype.constructor = Circle;
+
+    /**
+     * Basic setter for radius.
+     * @method setRadius
+     * @param r {Number} radius
+     */
+    Circle.prototype.setRadius = function setRadius(r) {
+        this.radius = r;
+        this.size = [2*this.radius, 2*this.radius];
+        this.setMomentsOfInertia();
+    };
+
+    Circle.prototype.setMomentsOfInertia = function setMomentsOfInertia() {
+        var m = this.mass;
+        var r = this.radius;
+
+        this.inertia = new Matrix([
+            [0.25 * m * r * r, 0, 0],
+            [0, 0.25 * m * r * r, 0],
+            [0, 0, 0.5 * m * r * r]
+        ]);
+
+        this.inverseInertia = new Matrix([
+            [4 / (m * r * r), 0, 0],
+            [0, 4 / (m * r * r), 0],
+            [0, 0, 2 / (m * r * r)]
+        ]);
+    };
+
+    module.exports = famous.physics.bodies.Circle = Circle;
+
+});
+
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Owner: david@famo.us
+ * @license MPL 2.0
+ * @copyright Famous Industries, Inc. 2014
+ */
+
+define('famous/physics/bodies/Rectangle.js',['require','exports','module','./Body','famous/math/Matrix'],function(require, exports, module) {
+    var Body = require('./Body');
+    var Matrix = require('famous/math/Matrix');
+
+    /**
+     * Implements a rectangular geometry for an Body with
+     * size = [width, height].
+     *
+     * @class Rectangle
+     * @extends Body
+     * @constructor
+     */
+    function Rectangle(options) {
+        options = options || {};
+        this.size = options.size || [0,0];
+        Body.call(this, options);
+    }
+
+    Rectangle.prototype = Object.create(Body.prototype);
+    Rectangle.prototype.constructor = Rectangle;
+
+    /**
+     * Basic setter for size.
+     * @method setSize
+     * @param size {Array} size = [width, height]
+     */
+    Rectangle.prototype.setSize = function setSize(size) {
+        this.size = size;
+        this.setMomentsOfInertia();
+    };
+
+    Rectangle.prototype.setMomentsOfInertia = function setMomentsOfInertia() {
+        var m = this.mass;
+        var w = this.size[0];
+        var h = this.size[1];
+
+        this.inertia = new Matrix([
+            [m * h * h / 12, 0, 0],
+            [0, m * w * w / 12, 0],
+            [0, 0, m * (w * w + h * h) / 12]
+        ]);
+
+        this.inverseInertia = new Matrix([
+            [12 / (m * h * h), 0, 0],
+            [0, 12 / (m * w * w), 0],
+            [0, 0, 12 / (m * (w * w + h * h))]
+        ]);
+    };
+
+    module.exports = famous.physics.bodies.Rectangle = Rectangle;
+
+});
+
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Owner: david@famo.us
+ * @license MPL 2.0
+ * @copyright Famous Industries, Inc. 2014
+ */
+
+define('famous/physics/constraints/Constraint.js',['require','exports','module','famous/core/EventHandler'],function(require, exports, module) {
+    var EventHandler = require('famous/core/EventHandler');
+
+    /**
+     *  Allows for two circular bodies to collide and bounce off each other.
+     *
+     *  @class Constraint
+     *  @constructor
+     *  @uses EventHandler
+     *  @param options {Object}
+     */
+    function Constraint() {
+        this.options = this.options || {};
+        this._energy = 0.0;
+        this._eventOutput = null;
+    }
+
+    /*
+     * Setter for options.
+     *
+     * @method setOptions
+     * @param options {Objects}
+     */
+    Constraint.prototype.setOptions = function setOptions(options) {
+        for (var key in options) this.options[key] = options[key];
+    };
+
+    /**
+     * Adds an impulse to a physics body's velocity due to the constraint
+     *
+     * @method applyConstraint
+     */
+    Constraint.prototype.applyConstraint = function applyConstraint() {};
+
+    /**
+     * Getter for energy
+     *
+     * @method getEnergy
+     * @return energy {Number}
+     */
+    Constraint.prototype.getEnergy = function getEnergy() {
+        return this._energy;
+    };
+
+    /**
+     * Setter for energy
+     *
+     * @method setEnergy
+     * @param energy {Number}
+     */
+    Constraint.prototype.setEnergy = function setEnergy(energy) {
+        this._energy = energy;
+    };
+
+    function _createEventOutput() {
+        this._eventOutput = new EventHandler();
+        this._eventOutput.bindThis(this);
+        EventHandler.setOutputHandler(this, this._eventOutput);
+    }
+
+    Constraint.prototype.on = function on() {
+        _createEventOutput.call(this);
+        return this.on.apply(this, arguments);
+    };
+    Constraint.prototype.addListener = function addListener() {
+        _createEventOutput.call(this);
+        return this.addListener.apply(this, arguments);
+    };
+    Constraint.prototype.pipe = function pipe() {
+        _createEventOutput.call(this);
+        return this.pipe.apply(this, arguments);
+    };
+    Constraint.prototype.removeListener = function removeListener() {
+        return this.removeListener.apply(this, arguments);
+    };
+    Constraint.prototype.unpipe = function unpipe() {
+        return this.unpipe.apply(this, arguments);
+    };
+
+    module.exports = famous.physics.constraints.Constraint = Constraint;
+});
+
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Owner: david@famo.us
+ * @license MPL 2.0
+ * @copyright Famous Industries, Inc. 2014
+ */
+
+define('famous/physics/constraints/Collision.js',['require','exports','module','./Constraint','famous/math/Vector'],function(require, exports, module) {
+    var Constraint = require('./Constraint');
+    var Vector = require('famous/math/Vector');
+
+    /**
+     *  Allows for two circular bodies to collide and bounce off each other.
+     *
+     *  @class Collision
+     *  @constructor
+     *  @extends Constraint
+     *  @param {Options} [options] An object of configurable options.
+     *  @param {Number} [options.restitution] The energy ratio lost in a collision (0 = stick, 1 = elastic) Range : [0, 1]
+     *  @param {Number} [options.drift] Baumgarte stabilization parameter. Makes constraints "loosely" (0) or "tightly" (1) enforced. Range : [0, 1]
+     *  @param {Number} [options.slop] Amount of penetration in pixels to ignore before collision event triggers
+     *
+     */
+    function Collision(options) {
+        this.options = Object.create(Collision.DEFAULT_OPTIONS);
+        if (options) this.setOptions(options);
+
+        //registers
+        this.normal   = new Vector();
+        this.pDiff    = new Vector();
+        this.vDiff    = new Vector();
+        this.impulse1 = new Vector();
+        this.impulse2 = new Vector();
+
+        Constraint.call(this);
+    }
+
+    Collision.prototype = Object.create(Constraint.prototype);
+    Collision.prototype.constructor = Collision;
+
+    Collision.DEFAULT_OPTIONS = {
+        restitution : 0.5,
+        drift : 0.5,
+        slop : 0
+    };
+
+    function _normalVelocity(particle1, particle2) {
+        return particle1.velocity.dot(particle2.velocity);
+    }
+
+    /*
+     * Setter for options.
+     *
+     * @method setOptions
+     * @param options {Objects}
+     */
+    Collision.prototype.setOptions = function setOptions(options) {
+        for (var key in options) this.options[key] = options[key];
+    };
+
+    /**
+     * Adds an impulse to a physics body's velocity due to the constraint
+     *
+     * @method applyConstraint
+     * @param targets {Array.Body}  Array of bodies to apply the constraint to
+     * @param source {Body}         The source of the constraint
+     * @param dt {Number}           Delta time
+     */
+    Collision.prototype.applyConstraint = function applyConstraint(targets, source, dt) {
+        if (source === undefined) return;
+
+        var v1 = source.velocity;
+        var p1 = source.position;
+        var w1 = source.inverseMass;
+        var r1 = source.radius;
+
+        var options = this.options;
+        var drift = options.drift;
+        var slop = -options.slop;
+        var restitution = options.restitution;
+
+        var n     = this.normal;
+        var pDiff = this.pDiff;
+        var vDiff = this.vDiff;
+        var impulse1 = this.impulse1;
+        var impulse2 = this.impulse2;
+
+        for (var i = 0; i < targets.length; i++) {
+            var target = targets[i];
+
+            if (target === source) continue;
+
+            var v2 = target.velocity;
+            var p2 = target.position;
+            var w2 = target.inverseMass;
+            var r2 = target.radius;
+
+            pDiff.set(p2.sub(p1));
+            vDiff.set(v2.sub(v1));
+
+            var dist    = pDiff.norm();
+            var overlap = dist - (r1 + r2);
+            var effMass = 1/(w1 + w2);
+            var gamma   = 0;
+
+            if (overlap < 0) {
+
+                n.set(pDiff.normalize());
+
+                if (this._eventOutput) {
+                    var collisionData = {
+                        target  : target,
+                        source  : source,
+                        overlap : overlap,
+                        normal  : n
+                    };
+
+                    this._eventOutput.emit('preCollision', collisionData);
+                    this._eventOutput.emit('collision', collisionData);
+                }
+
+                var lambda = (overlap <= slop)
+                    ? ((1 + restitution) * n.dot(vDiff) + drift/dt * (overlap - slop)) / (gamma + dt/effMass)
+                    : ((1 + restitution) * n.dot(vDiff)) / (gamma + dt/effMass);
+
+                n.mult(dt*lambda).put(impulse1);
+                impulse1.mult(-1).put(impulse2);
+
+                source.applyImpulse(impulse1);
+                target.applyImpulse(impulse2);
+
+                //source.setPosition(p1.add(n.mult(overlap/2)));
+                //target.setPosition(p2.sub(n.mult(overlap/2)));
+
+                if (this._eventOutput) this._eventOutput.emit('postCollision', collisionData);
+
+            }
+        }
+    };
+
+    module.exports = famous.physics.constraints.Collision = Collision;
+});
+
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Owner: david@famo.us
+ * @license MPL 2.0
+ * @copyright Famous Industries, Inc. 2014
+ */
+
+define('famous/physics/constraints/Curve.js',['require','exports','module','./Constraint','famous/math/Vector'],function(require, exports, module) {
+    var Constraint = require('./Constraint');
+    var Vector = require('famous/math/Vector');
+
+    /**
+     *  A constraint that keeps a physics body on a given implicit curve
+     *    regardless of other physical forces are applied to it.
+     *
+     *    A curve constraint is two surface constraints in disguise, as a curve is
+     *    the intersection of two surfaces, and is essentially constrained to both
+     *
+     *  @class Curve
+     *  @constructor
+     *  @extends Constraint
+     *  @param {Options} [options] An object of configurable options.
+     *  @param {Function} [options.equation] An implicitly defined surface f(x,y,z) = 0 that body is constrained to e.g. function(x,y,z) { x*x + y*y - r*r } corresponds to a circle of radius r pixels
+     *  @param {Function} [options.plane] An implicitly defined second surface that the body is constrained to
+     *  @param {Number} [options.period] The spring-like reaction when the constraint is violated
+     *  @param {Number} [options.number] The damping-like reaction when the constraint is violated
+     */
+    function Curve(options) {
+        this.options = Object.create(Curve.DEFAULT_OPTIONS);
+        if (options) this.setOptions(options);
+
+        //registers
+        this.J = new Vector();
+        this.impulse = new Vector();
+
+        Constraint.call(this);
+    }
+
+    Curve.prototype = Object.create(Constraint.prototype);
+    Curve.prototype.constructor = Curve;
+
+    /** @const */ var epsilon = 1e-7;
+    /** @const */ var pi = Math.PI;
+
+    Curve.DEFAULT_OPTIONS = {
+        equation  : function(x,y,z) {
+            return 0;
+        },
+        plane : function(x,y,z) {
+            return z;
+        },
+        period : 0,
+        dampingRatio : 0
+    };
+
+    /**
+     * Basic options setter
+     *
+     * @method setOptions
+     * @param options {Objects}
+     */
+    Curve.prototype.setOptions = function setOptions(options) {
+        for (var key in options) this.options[key] = options[key];
+    };
+
+    /**
+     * Adds a curve impulse to a physics body.
+     *
+     * @method applyConstraint
+     * @param targets {Array.Body} Array of bodies to apply force to.
+     * @param source {Body} Not applicable
+     * @param dt {Number} Delta time
+     */
+    Curve.prototype.applyConstraint = function applyConstraint(targets, source, dt) {
+        var options = this.options;
+        var impulse = this.impulse;
+        var J = this.J;
+
+        var f = options.equation;
+        var g = options.plane;
+        var dampingRatio = options.dampingRatio;
+        var period = options.period;
+
+        for (var i = 0; i < targets.length; i++) {
+            var body = targets[i];
+
+            var v = body.velocity;
+            var p = body.position;
+            var m = body.mass;
+
+            var gamma;
+            var beta;
+
+            if (period === 0) {
+                gamma = 0;
+                beta = 1;
+            }
+            else {
+                var c = 4 * m * pi * dampingRatio / period;
+                var k = 4 * m * pi * pi / (period * period);
+
+                gamma = 1 / (c + dt*k);
+                beta  = dt*k / (c + dt*k);
+            }
+
+            var x = p.x;
+            var y = p.y;
+            var z = p.z;
+
+            var f0  = f(x, y, z);
+            var dfx = (f(x + epsilon, p, p) - f0) / epsilon;
+            var dfy = (f(x, y + epsilon, p) - f0) / epsilon;
+            var dfz = (f(x, y, p + epsilon) - f0) / epsilon;
+
+            var g0  = g(x, y, z);
+            var dgx = (g(x + epsilon, y, z) - g0) / epsilon;
+            var dgy = (g(x, y + epsilon, z) - g0) / epsilon;
+            var dgz = (g(x, y, z + epsilon) - g0) / epsilon;
+
+            J.setXYZ(dfx + dgx, dfy + dgy, dfz + dgz);
+
+            var antiDrift = beta/dt * (f0 + g0);
+            var lambda = -(J.dot(v) + antiDrift) / (gamma + dt * J.normSquared() / m);
+
+            impulse.set(J.mult(dt*lambda));
+            body.applyImpulse(impulse);
+        }
+    };
+
+    module.exports = famous.physics.constraints.Curve = Curve;
+});
+
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Owner: david@famo.us
+ * @license MPL 2.0
+ * @copyright Famous Industries, Inc. 2014
+ */
+
+define('famous/physics/constraints/Distance.js',['require','exports','module','./Constraint','famous/math/Vector'],function(require, exports, module) {
+    var Constraint = require('./Constraint');
+    var Vector = require('famous/math/Vector');
+
+    /**
+     *  A constraint that keeps a physics body a given distance away from a given
+     *  anchor, or another attached body.
+     *
+     *
+     *  @class Distance
+     *  @constructor
+     *  @extends Constraint
+     *  @param {Options} [options] An object of configurable options.
+     *  @param {Array} [options.anchor] The location of the anchor
+     *  @param {Number} [options.length] The amount of distance from the anchor the constraint should enforce
+     *  @param {Number} [options.minLength] The minimum distance before the constraint is activated. Use this property for a "rope" effect.
+     *  @param {Number} [options.period] The spring-like reaction when the constraint is broken.
+     *  @param {Number} [options.dampingRatio] The damping-like reaction when the constraint is broken.
+     *
+     */
+    function Distance(options) {
+        this.options = Object.create(this.constructor.DEFAULT_OPTIONS);
+        if (options) this.setOptions(options);
+
+        //registers
+        this.impulse  = new Vector();
+        this.normal   = new Vector();
+        this.diffP    = new Vector();
+        this.diffV    = new Vector();
+
+        Constraint.call(this);
+    }
+
+    Distance.prototype = Object.create(Constraint.prototype);
+    Distance.prototype.constructor = Distance;
+
+    Distance.DEFAULT_OPTIONS = {
+        anchor : null,
+        length : 0,
+        minLength : 0,
+        period : 0,
+        dampingRatio : 0
+    };
+
+    /** @const */ var pi = Math.PI;
+
+    /**
+     * Basic options setter
+     *
+     * @method setOptions
+     * @param options {Objects}
+     */
+    Distance.prototype.setOptions = function setOptions(options) {
+        if (options.anchor) {
+            if (options.anchor.position instanceof Vector) this.options.anchor = options.anchor.position;
+            if (options.anchor   instanceof Vector)  this.options.anchor = options.anchor;
+            if (options.anchor   instanceof Array)  this.options.anchor = new Vector(options.anchor);
+        }
+        if (options.length !== undefined) this.options.length = options.length;
+        if (options.dampingRatio !== undefined) this.options.dampingRatio = options.dampingRatio;
+        if (options.period !== undefined) this.options.period = options.period;
+        if (options.minLength !== undefined) this.options.minLength = options.minLength;
+    };
+
+    function _calcError(impulse, body) {
+        return body.mass * impulse.norm();
+    }
+
+    /**
+     * Set the anchor position
+     *
+     * @method setOptions
+     * @param anchor {Array}
+     */
+    Distance.prototype.setAnchor = function setAnchor(anchor) {
+        if (!this.options.anchor) this.options.anchor = new Vector();
+        this.options.anchor.set(anchor);
+    };
+
+    /**
+     * Adds an impulse to a physics body's velocity due to the constraint
+     *
+     * @method applyConstraint
+     * @param targets {Array.Body}  Array of bodies to apply the constraint to
+     * @param source {Body}         The source of the constraint
+     * @param dt {Number}           Delta time
+     */
+    Distance.prototype.applyConstraint = function applyConstraint(targets, source, dt) {
+        var n        = this.normal;
+        var diffP    = this.diffP;
+        var diffV    = this.diffV;
+        var impulse  = this.impulse;
+        var options  = this.options;
+
+        var dampingRatio = options.dampingRatio;
+        var period       = options.period;
+        var minLength    = options.minLength;
+
+        var p2;
+        var w2;
+
+        if (source) {
+            var v2 = source.velocity;
+            p2 = source.position;
+            w2 = source.inverseMass;
+        }
+        else {
+            p2 = this.options.anchor;
+            w2 = 0;
+        }
+
+        var length = this.options.length;
+
+        for (var i = 0; i < targets.length; i++) {
+            var body = targets[i];
+
+            var v1 = body.velocity;
+            var p1 = body.position;
+            var w1 = body.inverseMass;
+
+            diffP.set(p1.sub(p2));
+            n.set(diffP.normalize());
+
+            var dist = diffP.norm() - length;
+
+            //rope effect
+            if (Math.abs(dist) < minLength) return;
+
+            if (source) diffV.set(v1.sub(v2));
+            else diffV.set(v1);
+
+            var effMass = 1 / (w1 + w2);
+            var gamma;
+            var beta;
+
+            if (period === 0) {
+                gamma = 0;
+                beta  = 1;
+            }
+            else {
+                var c = 4 * effMass * pi * dampingRatio / period;
+                var k = 4 * effMass * pi * pi / (period * period);
+
+                gamma = 1 / (c + dt*k);
+                beta  = dt*k / (c + dt*k);
+            }
+
+            var antiDrift = beta/dt * dist;
+            var lambda    = -(n.dot(diffV) + antiDrift) / (gamma + dt/effMass);
+
+            impulse.set(n.mult(dt*lambda));
+            body.applyImpulse(impulse);
+
+            if (source) source.applyImpulse(impulse.mult(-1));
+        }
+    };
+
+    module.exports = famous.physics.constraints.Distance = Distance;
+});
+
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Owner: david@famo.us
+ * @license MPL 2.0
+ * @copyright Famous Industries, Inc. 2014
+ */
+
+define('famous/physics/constraints/Snap',['require','exports','module','./Constraint','famous/math/Vector'],function(require, exports, module) {
+    var Constraint = require('./Constraint');
+    var Vector = require('famous/math/Vector');
+
+    /**
+     *  A spring constraint is like a spring force, except that it is always
+     *    numerically stable (even for low periods), at the expense of introducing
+     *    damping (even with dampingRatio set to 0).
+     *
+     *    Use this if you need fast spring-like behavior, e.g., snapping
+     *
+     *  @class Snap
+     *  @constructor
+     *  @extends Constraint
+     *  @param {Options} [options] An object of configurable options.
+     *  @param {Number} [options.period] The amount of time in milliseconds taken for one complete oscillation when there is no damping. Range : [150, Infinity]
+     *  @param {Number} [options.dampingRatio] Additional damping of the spring. Range : [0, 1]. At 0 this spring will still be damped, at 1 the spring will be critically damped (the spring will never oscillate)
+     *  @param {Number} [options.length] The rest length of the spring. Range: [0, Infinity].
+     *  @param {Array} [options.anchor] The location of the spring's anchor, if not another physics body.
+     *
+     */
+    function Snap(options) {
+        this.options = Object.create(this.constructor.DEFAULT_OPTIONS);
+        if (options) this.setOptions(options);
+
+        //registers
+        this.pDiff  = new Vector();
+        this.vDiff  = new Vector();
+        this.impulse1 = new Vector();
+        this.impulse2 = new Vector();
+
+        Constraint.call(this);
+    }
+
+    Snap.prototype = Object.create(Constraint.prototype);
+    Snap.prototype.constructor = Snap;
+
+    Snap.DEFAULT_OPTIONS = {
+        period        : 300,
+        dampingRatio : 0.1,
+        length : 0,
+        anchor : undefined
+    };
+
+    /** const */ var pi = Math.PI;
+
+    function _calcEnergy(impulse, disp, dt) {
+        return Math.abs(impulse.dot(disp)/dt);
+    }
+
+    /**
+     * Basic options setter
+     *
+     * @method setOptions
+     * @param options {Objects} options
+     */
+    Snap.prototype.setOptions = function setOptions(options) {
+        if (options.anchor !== undefined) {
+            if (options.anchor   instanceof Vector) this.options.anchor = options.anchor;
+            if (options.anchor.position instanceof Vector) this.options.anchor = options.anchor.position;
+            if (options.anchor   instanceof Array)  this.options.anchor = new Vector(options.anchor);
+        }
+        if (options.length !== undefined) this.options.length = options.length;
+        if (options.dampingRatio !== undefined) this.options.dampingRatio = options.dampingRatio;
+        if (options.period !== undefined) this.options.period = options.period;
+    };
+
+    /**
+     * Set the anchor position
+     *
+     * @method setOptions
+     * @param {Array} v TODO
+     */
+
+    Snap.prototype.setAnchor = function setAnchor(v) {
+        if (this.options.anchor !== undefined) this.options.anchor = new Vector();
+        this.options.anchor.set(v);
+    };
+
+    /**
+     * Calculates energy of spring
+     *
+     * @method getEnergy
+     * @param {Object} target TODO
+     * @param {Object} source TODO
+     * @return energy {Number}
+     */
+    Snap.prototype.getEnergy = function getEnergy(target, source) {
+        var options     = this.options;
+        var restLength  = options.length;
+        var anchor      = options.anchor || source.position;
+        var strength    = Math.pow(2 * pi / options.period, 2);
+
+        var dist = anchor.sub(target.position).norm() - restLength;
+
+        return 0.5 * strength * dist * dist;
+    };
+
+    /**
+     * Adds a spring impulse to a physics body's velocity due to the constraint
+     *
+     * @method applyConstraint
+     * @param targets {Array.Body}  Array of bodies to apply the constraint to
+     * @param source {Body}         The source of the constraint
+     * @param dt {Number}           Delta time
+     */
+    Snap.prototype.applyConstraint = function applyConstraint(targets, source, dt) {
+        var options         = this.options;
+        var pDiff        = this.pDiff;
+        var vDiff        = this.vDiff;
+        var impulse1     = this.impulse1;
+        var impulse2     = this.impulse2;
+        var length       = options.length;
+        var anchor       = options.anchor || source.position;
+        var period       = options.period;
+        var dampingRatio = options.dampingRatio;
+
+        for (var i = 0; i < targets.length ; i++) {
+            var target = targets[i];
+
+            var p1 = target.position;
+            var v1 = target.velocity;
+            var m1 = target.mass;
+            var w1 = target.inverseMass;
+
+            pDiff.set(p1.sub(anchor));
+            var dist = pDiff.norm() - length;
+            var effMass;
+
+            if (source) {
+                var w2 = source.inverseMass;
+                var v2 = source.velocity;
+                vDiff.set(v1.sub(v2));
+                effMass = 1/(w1 + w2);
+            }
+            else {
+                vDiff.set(v1);
+                effMass = m1;
+            }
+
+            var gamma;
+            var beta;
+
+            if (this.options.period === 0) {
+                gamma = 0;
+                beta = 1;
+            }
+            else {
+                var k = 4 * effMass * pi * pi / (period * period);
+                var c = 4 * effMass * pi * dampingRatio / period;
+
+                beta  = dt * k / (c + dt * k);
+                gamma = 1 / (c + dt*k);
+            }
+
+            var antiDrift = beta/dt * dist;
+            pDiff.normalize(-antiDrift)
+                .sub(vDiff)
+                .mult(dt / (gamma + dt/effMass))
+                .put(impulse1);
+
+            // var n = new Vector();
+            // n.set(pDiff.normalize());
+            // var lambda = -(n.dot(vDiff) + antiDrift) / (gamma + dt/effMass);
+            // impulse2.set(n.mult(dt*lambda));
+
+            target.applyImpulse(impulse1);
+
+            if (source) {
+                impulse1.mult(-1).put(impulse2);
+                source.applyImpulse(impulse2);
+            }
+
+            this.setEnergy(_calcEnergy(impulse1, pDiff, dt));
+        }
+    };
+
+    module.exports = famous.physics.constraints.Snap = Snap;
+});
+
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Owner: david@famo.us
+ * @license MPL 2.0
+ * @copyright Famous Industries, Inc. 2014
+ */
+
+define('famous/physics/constraints/Surface.js',['require','exports','module','./Constraint','famous/math/Vector'],function(require, exports, module) {
+    var Constraint = require('./Constraint');
+    var Vector = require('famous/math/Vector');
+
+    /**
+     *  A constraint that keeps a physics body on a given implicit surface
+     *    regardless of other physical forces are applied to it.
+     *
+     *  @class Surface
+     *  @constructor
+     *  @extends Constraint
+     *  @param {Options} [options] An object of configurable options.
+     *  @param {Function} [options.equation] An implicitly defined surface f(x,y,z) = 0 that body is constrained to e.g. function(x,y,z) { x*x + y*y + z*z - r*r } corresponds to a sphere of radius r pixels.
+     *  @param {Number} [options.period] The spring-like reaction when the constraint is violated.
+     *  @param {Number} [options.dampingRatio] The damping-like reaction when the constraint is violated.
+     */
+    function Surface(options) {
+        this.options = Object.create(Surface.DEFAULT_OPTIONS);
+        if (options) this.setOptions(options);
+
+        this.J = new Vector();
+        this.impulse  = new Vector();
+
+        Constraint.call(this);
+    }
+
+    Surface.prototype = Object.create(Constraint.prototype);
+    Surface.prototype.constructor = Surface;
+
+    Surface.DEFAULT_OPTIONS = {
+        equation : undefined,
+        period : 0,
+        dampingRatio : 0
+    };
+
+    /** @const */ var epsilon = 1e-7;
+    /** @const */ var pi = Math.PI;
+
+    /**
+     * Basic options setter
+     *
+     * @method setOptions
+     * @param options {Objects}
+     */
+    Surface.prototype.setOptions = function setOptions(options) {
+        for (var key in options) this.options[key] = options[key];
+    };
+
+    /**
+     * Adds a surface impulse to a physics body.
+     *
+     * @method applyConstraint
+     * @param targets {Array.Body} Array of bodies to apply force to.
+     * @param source {Body} Not applicable
+     * @param dt {Number} Delta time
+     */
+    Surface.prototype.applyConstraint = function applyConstraint(targets, source, dt) {
+        var impulse = this.impulse;
+        var J       = this.J;
+        var options = this.options;
+
+        var f = options.equation;
+        var dampingRatio = options.dampingRatio;
+        var period = options.period;
+
+        for (var i = 0; i < targets.length; i++) {
+            var particle = targets[i];
+
+            var v = particle.velocity;
+            var p = particle.position;
+            var m = particle.mass;
+
+            var gamma;
+            var beta;
+
+            if (period === 0) {
+                gamma = 0;
+                beta = 1;
+            }
+            else {
+                var c = 4 * m * pi * dampingRatio / period;
+                var k = 4 * m * pi * pi / (period * period);
+
+                gamma = 1 / (c + dt*k);
+                beta  = dt*k / (c + dt*k);
+            }
+
+            var x = p.x;
+            var y = p.y;
+            var z = p.z;
+
+            var f0  = f(x, y, z);
+            var dfx = (f(x + epsilon, p, p) - f0) / epsilon;
+            var dfy = (f(x, y + epsilon, p) - f0) / epsilon;
+            var dfz = (f(x, y, p + epsilon) - f0) / epsilon;
+            J.setXYZ(dfx, dfy, dfz);
+
+            var antiDrift = beta/dt * f0;
+            var lambda = -(J.dot(v) + antiDrift) / (gamma + dt * J.normSquared() / m);
+
+            impulse.set(J.mult(dt*lambda));
+            particle.applyImpulse(impulse);
+        }
+    };
+
+    module.exports = famous.physics.constraints.Surface = Surface;
+});
+
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Owner: david@famo.us
+ * @license MPL 2.0
+ * @copyright Famous Industries, Inc. 2014
+ */
+
+define('famous/physics/constraints/Wall',['require','exports','module','./Constraint','famous/math/Vector'],function(require, exports, module) {
+    var Constraint = require('./Constraint');
+    var Vector = require('famous/math/Vector');
+
+    /**
+     *  A wall describes an infinite two-dimensional plane that physics bodies
+     *    can collide with. To define a wall, you must give it a distance (from
+     *    the center of the physics engine's origin, and a normal defining the plane
+     *    of the wall.
+     *
+     *    (wall)
+     *      |
+     *      | (normal)     (origin)
+     *      | --->            *
+     *      |
+     *      |    (distance)
+     *      ...................
+     *            (100px)
+     *
+     *      e.g., Wall({normal : [1,0,0], distance : 100})
+     *      would be a wall 100 pixels to the left, whose normal points right
+     *
+     *  @class Wall
+     *  @constructor
+     *  @extends Constraint
+     *  @param {Options} [options] An object of configurable options.
+     *  @param {Number} [options.restitution] The energy ratio lost in a collision (0 = stick, 1 = elastic). Range : [0, 1]
+     *  @param {Number} [options.drift] Baumgarte stabilization parameter. Makes constraints "loosely" (0) or "tightly" (1) enforced. Range : [0, 1]
+     *  @param {Number} [options.slop] Amount of penetration in pixels to ignore before collision event triggers.
+     *  @param {Array} [options.normal] The normal direction to the wall.
+     *  @param {Number} [options.distance] The distance from the origin that the wall is placed.
+     *  @param {onContact} [options.onContact] How to handle collision against the wall.
+     *
+     */
+    function Wall(options) {
+        this.options = Object.create(Wall.DEFAULT_OPTIONS);
+        if (options) this.setOptions(options);
+
+        //registers
+        this.diff = new Vector();
+        this.impulse = new Vector();
+
+        Constraint.call(this);
+    }
+
+    Wall.prototype = Object.create(Constraint.prototype);
+    Wall.prototype.constructor = Wall;
+
+    /**
+     * @property Wall.ON_CONTACT
+     * @type Object
+     * @protected
+     * @static
+     */
+    Wall.ON_CONTACT = {
+
+        /**
+         * Physical bodies bounce off the wall
+         * @attribute REFLECT
+         */
+        REFLECT : 0,
+
+        /**
+         * Physical bodies are unaffected. Usecase is to fire events on contact.
+         * @attribute SILENT
+         */
+        SILENT : 1
+    };
+
+    Wall.DEFAULT_OPTIONS = {
+        restitution : 0.5,
+        drift : 0.5,
+        slop : 0,
+        normal : [1, 0, 0],
+        distance : 0,
+        onContact : Wall.ON_CONTACT.REFLECT
+    };
+
+    /*
+     * Setter for options.
+     *
+     * @method setOptions
+     * @param options {Objects}
+     */
+    Wall.prototype.setOptions = function setOptions(options) {
+        if (options.normal !== undefined) {
+            if (options.normal instanceof Vector) this.options.normal = options.normal.clone();
+            if (options.normal instanceof Array)  this.options.normal = new Vector(options.normal);
+        }
+        if (options.restitution !== undefined) this.options.restitution = options.restitution;
+        if (options.drift !== undefined) this.options.drift = options.drift;
+        if (options.slop !== undefined) this.options.slop = options.slop;
+        if (options.distance !== undefined) this.options.distance = options.distance;
+        if (options.onContact !== undefined) this.options.onContact = options.onContact;
+    };
+
+    function _getNormalVelocity(n, v) {
+        return v.dot(n);
+    }
+
+    function _getDistanceFromOrigin(p) {
+        var n = this.options.normal;
+        var d = this.options.distance;
+        return p.dot(n) + d;
+    }
+
+    function _onEnter(particle, overlap, dt) {
+        var p = particle.position;
+        var v = particle.velocity;
+        var m = particle.mass;
+        var n = this.options.normal;
+        var action = this.options.onContact;
+        var restitution = this.options.restitution;
+        var impulse = this.impulse;
+
+        var drift = this.options.drift;
+        var slop = -this.options.slop;
+        var gamma = 0;
+
+        if (this._eventOutput) {
+            var data = {particle : particle, wall : this, overlap : overlap, normal : n};
+            this._eventOutput.emit('preCollision', data);
+            this._eventOutput.emit('collision', data);
+        }
+
+        switch (action) {
+            case Wall.ON_CONTACT.REFLECT:
+                var lambda = (overlap < slop)
+                    ? -((1 + restitution) * n.dot(v) + drift / dt * (overlap - slop)) / (m * dt + gamma)
+                    : -((1 + restitution) * n.dot(v)) / (m * dt + gamma);
+
+                impulse.set(n.mult(dt * lambda));
+                particle.applyImpulse(impulse);
+                particle.setPosition(p.add(n.mult(-overlap)));
+                break;
+        }
+
+        if (this._eventOutput) this._eventOutput.emit('postCollision', data);
+    }
+
+    function _onExit(particle, overlap, dt) {
+        var action = this.options.onContact;
+        var p = particle.position;
+        var n = this.options.normal;
+
+        if (action === Wall.ON_CONTACT.REFLECT) {
+            particle.setPosition(p.add(n.mult(-overlap)));
+        }
+    }
+
+    /**
+     * Adds an impulse to a physics body's velocity due to the wall constraint
+     *
+     * @method applyConstraint
+     * @param targets {Array.Body}  Array of bodies to apply the constraint to
+     * @param source {Body}         The source of the constraint
+     * @param dt {Number}           Delta time
+     */
+    Wall.prototype.applyConstraint = function applyConstraint(targets, source, dt) {
+        var n = this.options.normal;
+
+        for (var i = 0; i < targets.length; i++) {
+            var particle = targets[i];
+            var p = particle.position;
+            var v = particle.velocity;
+            var r = particle.radius || 0;
+
+            var overlap = _getDistanceFromOrigin.call(this, p.add(n.mult(-r)));
+            var nv = _getNormalVelocity.call(this, n, v);
+
+            if (overlap <= 0) {
+                if (nv < 0) _onEnter.call(this, particle, overlap, dt);
+                else _onExit.call(this, particle, overlap, dt);
+            }
+        }
+    };
+
+    module.exports = famous.physics.constraints.Wall = Wall;
+});
+
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Owner: david@famo.us
+ * @license MPL 2.0
+ * @copyright Famous Industries, Inc. 2014
+ */
+
+define('famous/physics/constraints/Walls.js',['require','exports','module','./Constraint','./Wall','famous/math/Vector'],function(require, exports, module) {
+    var Constraint = require('./Constraint');
+    var Wall = require('./Wall');
+    var Vector = require('famous/math/Vector');
+
+    /**
+     *  Walls combines one or more Wall primitives and exposes a simple API to
+     *  interact with several walls at once. A common use case would be to set up
+     *  a bounding box for a physics body, that would collide with each side.
+     *
+     *  @class Walls
+     *  @constructor
+     *  @extends Constraint
+     *  @uses Wall
+     *  @param {Options} [options] An object of configurable options.
+     *  @param {Array} [options.sides] An array of sides e.g., [Walls.LEFT, Walls.TOP]
+     *  @param {Array} [options.size] The size of the bounding box of the walls.
+     *  @param {Array} [options.origin] The center of the wall relative to the size.
+     *  @param {Array} [options.drift] Baumgarte stabilization parameter. Makes constraints "loosely" (0) or "tightly" (1) enforced. Range : [0, 1]
+     *  @param {Array} [options.slop] Amount of penetration in pixels to ignore before collision event triggers.
+     *  @param {Array} [options.restitution] The energy ratio lost in a collision (0 = stick, 1 = elastic) The energy ratio lost in a collision (0 = stick, 1 = elastic)
+     *  @param {Array} [options.onContact] How to handle collision against the wall.
+     */
+    function Walls(options) {
+        this.options = Object.create(Walls.DEFAULT_OPTIONS);
+        if (options) this.setOptions(options);
+        _createComponents.call(this, options.sides || this.options.sides);
+
+        Constraint.call(this);
+    }
+
+    Walls.prototype = Object.create(Constraint.prototype);
+    Walls.prototype.constructor = Walls;
+    /**
+     * @property Walls.ON_CONTACT
+     * @type Object
+     * @extends Wall.ON_CONTACT
+     * @static
+     */
+    Walls.ON_CONTACT = Wall.ON_CONTACT;
+
+    /**
+     * An enumeration of common types of walls
+     *    LEFT, RIGHT, TOP, BOTTOM, FRONT, BACK
+     *    TWO_DIMENSIONAL, THREE_DIMENSIONAL
+     *
+     * @property Walls.SIDES
+     * @type Object
+     * @final
+     * @static
+     */
+    Walls.SIDES = {
+        LEFT   : 0,
+        RIGHT  : 1,
+        TOP    : 2,
+        BOTTOM : 3,
+        FRONT  : 4,
+        BACK   : 5,
+        TWO_DIMENSIONAL : [0, 1, 2, 3],
+        THREE_DIMENSIONAL : [0, 1, 2, 3, 4, 5]
+    };
+
+    Walls.DEFAULT_OPTIONS = {
+        sides : Walls.SIDES.TWO_DIMENSIONAL,
+        size : [window.innerWidth, window.innerHeight, 0],
+        origin : [.5, .5, .5],
+        drift : 0.5,
+        slop : 0,
+        restitution : 0.5,
+        onContact : Walls.ON_CONTACT.REFLECT
+    };
+
+    var _SIDE_NORMALS = {
+        0 : new Vector(1, 0, 0),
+        1 : new Vector(-1, 0, 0),
+        2 : new Vector(0, 1, 0),
+        3 : new Vector(0,-1, 0),
+        4 : new Vector(0, 0, 1),
+        5 : new Vector(0, 0,-1)
+    };
+
+    function _getDistance(side, size, origin) {
+        var distance;
+        var SIDES = Walls.SIDES;
+        switch (parseInt(side)) {
+            case SIDES.LEFT:
+                distance = size[0] * origin[0];
+                break;
+            case SIDES.TOP:
+                distance = size[1] * origin[1];
+                break;
+            case SIDES.FRONT:
+                distance = size[2] * origin[2];
+                break;
+            case SIDES.RIGHT:
+                distance = size[0] * (1 - origin[0]);
+                break;
+            case SIDES.BOTTOM:
+                distance = size[1] * (1 - origin[1]);
+                break;
+            case SIDES.BACK:
+                distance = size[2] * (1 - origin[2]);
+                break;
+        }
+        return distance;
+    }
+
+    /*
+     * Setter for options.
+     *
+     * @method setOptions
+     * @param options {Objects}
+     */
+    Walls.prototype.setOptions = function setOptions(options) {
+        var resizeFlag = false;
+        if (options.restitution !== undefined) _setOptionsForEach.call(this, {restitution : options.restitution});
+        if (options.drift !== undefined) _setOptionsForEach.call(this, {drift : options.drift});
+        if (options.slop !== undefined) _setOptionsForEach.call(this, {slop : options.slop});
+        if (options.onContact !== undefined) _setOptionsForEach.call(this, {onContact : options.onContact});
+        if (options.size !== undefined) resizeFlag = true;
+        if (options.sides !== undefined) this.options.sides = options.sides;
+        if (options.origin !== undefined) resizeFlag = true;
+        if (resizeFlag) this.setSize(options.size, options.origin);
+    };
+
+    function _createComponents(sides) {
+        this.components = {};
+        var components = this.components;
+
+        for (var i = 0; i < sides.length; i++) {
+            var side = sides[i];
+            components[i] = new Wall({
+                normal   : _SIDE_NORMALS[side].clone(),
+                distance : _getDistance(side, this.options.size, this.options.origin)
+            });
+        }
+    }
+
+    /*
+     * Setter for size.
+     *
+     * @method setOptions
+     * @param options {Objects}
+     */
+    Walls.prototype.setSize = function setSize(size, origin) {
+        origin = origin || this.options.origin;
+        if (origin.length < 3) origin[2] = 0.5;
+
+        this.forEach(function(wall, side) {
+            var d = _getDistance(side, size, origin);
+            wall.setOptions({distance : d});
+        });
+
+        this.options.size   = size;
+        this.options.origin = origin;
+    };
+
+    function _setOptionsForEach(options) {
+        this.forEach(function(wall) {
+            wall.setOptions(options);
+        });
+        for (var key in options) this.options[key] = options[key];
+    }
+
+    /**
+     * Adds an impulse to a physics body's velocity due to the walls constraint
+     *
+     * @method applyConstraint
+     * @param targets {Array.Body}  Array of bodies to apply the constraint to
+     * @param source {Body}         The source of the constraint
+     * @param dt {Number}           Delta time
+     */
+    Walls.prototype.applyConstraint = function applyConstraint(targets, source, dt) {
+        this.forEach(function(wall) {
+            wall.applyConstraint(targets, source, dt);
+        });
+    };
+
+    /**
+     * Apply a method to each wall making up the walls
+     *
+     * @method applyConstraint
+     * @param fn {Function}  Function that takes in a wall as its first parameter
+     */
+    Walls.prototype.forEach = function forEach(fn) {
+        var sides = this.options.sides;
+        for (var key in this.sides) fn(sides[key], key);
+    };
+
+    /**
+     * Rotates the walls by an angle in the XY-plane
+     *
+     * @method applyConstraint
+     * @param angle {Function}
+     */
+    Walls.prototype.rotateZ = function rotateZ(angle) {
+        this.forEach(function(wall) {
+            var n = wall.options.normal;
+            n.rotateZ(angle).put(n);
+        });
+    };
+
+    /**
+     * Rotates the walls by an angle in the YZ-plane
+     *
+     * @method applyConstraint
+     * @param angle {Function}
+     */
+    Walls.prototype.rotateX = function rotateX(angle) {
+        this.forEach(function(wall) {
+            var n = wall.options.normal;
+            n.rotateX(angle).put(n);
+        });
+    };
+
+    /**
+     * Rotates the walls by an angle in the XZ-plane
+     *
+     * @method applyConstraint
+     * @param angle {Function}
+     */
+    Walls.prototype.rotateY = function rotateY(angle) {
+        this.forEach(function(wall) {
+            var n = wall.options.normal;
+            n.rotateY(angle).put(n);
+        });
+    };
+
+    module.exports = famous.physics.constraints.Walls = Walls;
+});
+
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Owner: david@famo.us
+ * @license MPL 2.0
+ * @copyright Famous Industries, Inc. 2014
+ */
+
+define('famous/physics/forces/Force.js',['require','exports','module','famous/math/Vector','famous/core/EventHandler'],function(require, exports, module) {
+    var Vector = require('famous/math/Vector');
+    var EventHandler = require('famous/core/EventHandler');
+
+    /**
+     * Force base class.
+     *
+     * @class Force
+     * @uses EventHandler
+     * @constructor
+     */
+    function Force(force) {
+        this.force = new Vector(force);
+        this._energy = 0.0;
+        this._eventOutput = null;
+    }
+
+    /**
+     * Basic setter for options
+     *
+     * @method setOptions
+     * @param options {Objects}
+     */
+    Force.prototype.setOptions = function setOptions(options) {
+        for (var key in options) this.options[key] = options[key];
+    };
+
+    /**
+     * Adds a force to a physics body's force accumulator.
+     *
+     * @method applyForce
+     * @param body {Body}
+     */
+    Force.prototype.applyForce = function applyForce(body) {
+        body.applyForce(this.force);
+    };
+
+    /**
+     * Getter for a force's potential energy.
+     *
+     * @method getEnergy
+     * @return energy {Number}
+     */
+    Force.prototype.getEnergy = function getEnergy() {
+        return this._energy;
+    };
+
+    /*
+     * Setter for a force's potential energy.
+     *
+     * @method setEnergy
+     * @param energy {Number}
+     */
+    Force.prototype.setEnergy = function setEnergy(energy) {
+        this._energy = energy;
+    };
+
+    function _createEventOutput() {
+        this._eventOutput = new EventHandler();
+        this._eventOutput.bindThis(this);
+        EventHandler.setOutputHandler(this, this._eventOutput);
+    }
+
+    Force.prototype.on = function on() {
+        _createEventOutput.call(this);
+        return this.on.apply(this, arguments);
+    };
+    Force.prototype.addListener = function addListener() {
+        _createEventOutput.call(this);
+        return this.addListener.apply(this, arguments);
+    };
+    Force.prototype.pipe = function pipe() {
+        _createEventOutput.call(this);
+        return this.pipe.apply(this, arguments);
+    };
+    Force.prototype.removeListener = function removeListener() {
+        return this.removeListener.apply(this, arguments);
+    };
+    Force.prototype.unpipe = function unpipe() {
+        return this.unpipe.apply(this, arguments);
+    };
+
+    module.exports = famous.physics.forces.Force = Force;
+});
+
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Owner: david@famo.us
+ * @license MPL 2.0
+ * @copyright Famous Industries, Inc. 2014
+ */
+
+define('famous/physics/forces/Drag',['require','exports','module','./Force'],function(require, exports, module) {
+    var Force = require('./Force');
+
+    /**
+     * Drag is a force that opposes velocity. Attach it to the physics engine
+     * to slow down a physics body in motion.
+     *
+     * @class Drag
+     * @constructor
+     * @extends Force
+     * @param {Object} options options to set on drag
+     */
+    function Drag(options) {
+        this.options = Object.create(this.constructor.DEFAULT_OPTIONS);
+        if (options) this.setOptions(options);
+
+        Force.call(this);
+    }
+
+    Drag.prototype = Object.create(Force.prototype);
+    Drag.prototype.constructor = Drag;
+
+    /**
+     * @property Drag.FORCE_FUNCTIONS
+     * @type Object
+     * @protected
+     * @static
+     */
+    Drag.FORCE_FUNCTIONS = {
+
+        /**
+         * A drag force proportional to the velocity
+         * @attribute LINEAR
+         * @type Function
+         * @param {Vector} velocity
+         * @return {Vector} drag force
+         */
+        LINEAR : function(velocity) {
+            return velocity;
+        },
+
+        /**
+         * A drag force proportional to the square of the velocity
+         * @attribute QUADRATIC
+         * @type Function
+         * @param {Vector} velocity
+         * @return {Vector} drag force
+         */
+        QUADRATIC : function(velocity) {
+            return velocity.mult(velocity.norm());
+        }
+    };
+
+    /**
+     * @property Drag.DEFAULT_OPTIONS
+     * @type Object
+     * @protected
+     * @static
+     */
+    Drag.DEFAULT_OPTIONS = {
+
+        /**
+         * The strength of the force
+         *    Range : [0, 0.1]
+         * @attribute strength
+         * @type Number
+         * @default 0.01
+         */
+        strength : 0.01,
+
+        /**
+         * The type of opposing force
+         * @attribute forceFunction
+         * @type Function
+         */
+        forceFunction : Drag.FORCE_FUNCTIONS.LINEAR
+    };
+
+    /**
+     * Adds a drag force to a physics body's force accumulator.
+     *
+     * @method applyForce
+     * @param targets {Array.Body} Array of bodies to apply drag force to.
+     */
+    Drag.prototype.applyForce = function applyForce(targets) {
+        var strength        = this.options.strength;
+        var forceFunction   = this.options.forceFunction;
+        var force           = this.force;
+        for (var index = 0; index < targets.length; index++) {
+            var particle = targets[index];
+            forceFunction(particle.velocity).mult(-strength).put(force);
+            particle.applyForce(force);
+        }
+    };
+
+    /**
+     * Basic options setter
+     *
+     * @method setOptions
+     * @param {Objects} options
+     */
+    Drag.prototype.setOptions = function setOptions(options) {
+        for (var key in options) this.options[key] = options[key];
+    };
+
+    module.exports = famous.physics.forces.Drag = Drag;
+});
+
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Owner: david@famo.us
+ * @license MPL 2.0
+ * @copyright Famous Industries, Inc. 2014
+ */
+
+//TODO: test options manager
+define('famous/physics/forces/Repulsion.js',['require','exports','module','./Force','famous/math/Vector'],function(require, exports, module) {
+    var Force = require('./Force');
+    var Vector = require('famous/math/Vector');
+
+    /**
+     *  Repulsion is a force that repels (attracts) bodies away (towards)
+     *    each other. A repulsion of negative strength is attractive.
+     *
+     *  @class Repulsion
+     *  @constructor
+     *  @extends Force
+     *  @param {Object} options overwrites default options
+     */
+    function Repulsion(options) {
+        this.options = Object.create(Repulsion.DEFAULT_OPTIONS);
+        if (options) this.setOptions(options);
+
+        //registers
+        this.disp  = new Vector();
+
+        Force.call(this);
+    }
+
+    Repulsion.prototype = Object.create(Force.prototype);
+    Repulsion.prototype.constructor = Repulsion;
+    /**
+     * @property Repulsion.DECAY_FUNCTIONS
+     * @type Object
+     * @protected
+     * @static
+     */
+    Repulsion.DECAY_FUNCTIONS = {
+
+        /**
+         * A linear decay function
+         * @attribute LINEAR
+         * @type Function
+         * @param {Number} r distance from the source body
+         * @param {Number} cutoff the effective radius of influence
+         */
+        LINEAR : function(r, cutoff) {
+            return Math.max(1 - (1 / cutoff) * r, 0);
+        },
+
+        /**
+         * A Morse potential decay function (http://en.wikipedia.org/wiki/Morse_potential)
+         * @attribute MORSE
+         * @type Function
+         * @param {Number} r distance from the source body
+         * @param {Number} cutoff the minimum radius of influence
+         */
+        MORSE : function(r, cutoff) {
+            var r0 = (cutoff === 0) ? 100 : cutoff;
+            var rShifted = r + r0 * (1 - Math.log(2)); //shift by x-intercept
+            return Math.max(1 - Math.pow(1 - Math.exp(rShifted/r0 - 1), 2), 0);
+        },
+
+        /**
+         * An inverse distance decay function
+         * @attribute INVERSE
+         * @type Function
+         * @param {Number} r distance from the source body
+         * @param {Number} cutoff a distance shift to avoid singularities
+         */
+        INVERSE : function(r, cutoff) {
+            return 1 / (1 - cutoff + r);
+        },
+
+        /**
+         * An inverse squared distance decay function
+         * @attribute GRAVITY
+         * @type Function
+         * @param {Number} r distance from the source body
+         * @param {Number} cutoff a distance shift to avoid singularities
+         */
+        GRAVITY : function(r, cutoff) {
+            return 1 / (1 - cutoff + r*r);
+        }
+    };
+
+    /**
+     * @property Repulsion.DEFAULT_OPTIONS
+     * @type Object
+     * @protected
+     * @static
+     */
+    Repulsion.DEFAULT_OPTIONS = {
+
+        /**
+         * The strength of the force
+         *    Range : [0, 100]
+         * @attribute strength
+         * @type Number
+         * @default 1
+         */
+        strength : 1,
+
+        /**
+         * The location of the force, if not another physics body
+         *
+         * @attribute anchor
+         * @type Number
+         * @default 0.01
+         * @optional
+         */
+        anchor : undefined,
+
+        /**
+         * The range of the repulsive force
+         * @attribute radii
+         * @type Array
+         * @default [0, Infinity]
+         */
+        range : [0, Infinity],
+
+        /**
+         * A normalization for the force to avoid singularities at the origin
+         * @attribute cutoff
+         * @type Number
+         * @default 0
+         */
+        cutoff : 0,
+
+        /**
+         * The maximum magnitude of the force
+         *    Range : [0, Infinity]
+         * @attribute cap
+         * @type Number
+         * @default Infinity
+         */
+        cap : Infinity,
+
+        /**
+         * The type of decay the repulsive force should have
+         * @attribute decayFunction
+         * @type Function
+         */
+        decayFunction : Repulsion.DECAY_FUNCTIONS.GRAVITY
+    };
+
+    /*
+     * Setter for options.
+     *
+     * @method setOptions
+     * @param {Objects} options
+     */
+    Repulsion.prototype.setOptions = function setOptions(options) {
+        if (options.anchor !== undefined) {
+            if (options.anchor.position instanceof Vector) this.options.anchor = options.anchor.position;
+            if (options.anchor   instanceof Array)  this.options.anchor = new Vector(options.anchor);
+            delete options.anchor;
+        }
+        for (var key in options) this.options[key] = options[key];
+    };
+
+    /**
+     * Adds a drag force to a physics body's force accumulator.
+     *
+     * @method applyForce
+     * @param targets {Array.Body}  Array of bodies to apply force to
+     * @param source {Body}         The source of the force
+     */
+    Repulsion.prototype.applyForce = function applyForce(targets, source) {
+        var options     = this.options;
+        var force       = this.force;
+        var disp        = this.disp;
+
+        var strength    = options.strength;
+        var anchor      = options.anchor || source.position;
+        var cap         = options.cap;
+        var cutoff      = options.cutoff;
+        var rMin        = options.range[0];
+        var rMax        = options.range[1];
+        var decayFn     = options.decayFunction;
+
+        if (strength === 0) return;
+
+        for (var index in targets) {
+            var particle = targets[index];
+
+            if (particle === source) continue;
+
+            var m1 = particle.mass;
+            var p1 = particle.position;
+
+            disp.set(p1.sub(anchor));
+            var r = disp.norm();
+
+            if (r < rMax && r > rMin) {
+                force.set(disp.normalize(strength * m1 * decayFn(r, cutoff)).cap(cap));
+                particle.applyForce(force);
+            }
+        }
+
+    };
+
+    module.exports = famous.physics.forces.Repulsion = Repulsion;
+});
+
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Owner: david@famo.us
+ * @license MPL 2.0
+ * @copyright Famous Industries, Inc. 2014
+ */
+
+define('famous/physics/forces/RotationalDrag.js',['require','exports','module','./Drag'],function(require, exports, module) {
+    var Drag = require('./Drag');
+
+    /**
+     * Rotational drag is a force that opposes angular velocity.
+     *   Attach it to a physics body to slow down its rotation.
+     *
+     * @class RotationalDrag
+     * @constructor
+     * @extends Force
+     * @param {Object} options options to set on drag
+     */
+    function RotationalDrag(options) {
+        Drag.call(this, options);
+    }
+
+    RotationalDrag.prototype = Object.create(Drag.prototype);
+    RotationalDrag.prototype.constructor = RotationalDrag;
+
+    RotationalDrag.DEFAULT_OPTIONS = Drag.DEFAULT_OPTIONS;
+    RotationalDrag.FORCE_FUNCTIONS = Drag.FORCE_FUNCTIONS;
+
+    /**
+     * @property Repulsion.FORCE_FUNCTIONS
+     * @type Object
+     * @protected
+     * @static
+     */
+    RotationalDrag.FORCE_FUNCTIONS = {
+
+        /**
+         * A drag force proprtional to the angular velocity
+         * @attribute LINEAR
+         * @type Function
+         * @param {Vector} angularVelocity
+         * @return {Vector} drag force
+         */
+        LINEAR : function(angularVelocity) {
+            return angularVelocity;
+        },
+
+        /**
+         * A drag force proprtional to the square of the angular velocity
+         * @attribute QUADRATIC
+         * @type Function
+         * @param {Vector} angularVelocity
+         * @return {Vector} drag force
+         */
+        QUADRATIC : function(angularVelocity) {
+            return angularVelocity.mult(angularVelocity.norm());
+        }
+    };
+
+    /**
+     * Adds a rotational drag force to a physics body's torque accumulator.
+     *
+     * @method applyForce
+     * @param targets {Array.Body} Array of bodies to apply drag force to.
+     */
+    RotationalDrag.prototype.applyForce = function applyForce(targets) {
+        var strength       = this.options.strength;
+        var forceFunction  = this.options.forceFunction;
+        var force          = this.force;
+
+        //TODO: rotational drag as function of inertia
+        for (var index = 0; index < targets.length; index++) {
+            var particle = targets[index];
+            forceFunction(particle.angularVelocity).mult(-100*strength).put(force);
+            particle.applyTorque(force);
+        }
+    };
+
+    /*
+     * Setter for options.
+     *
+     * @method setOptions
+     * @param {Objects} options
+     */
+    RotationalDrag.prototype.setOptions = function setOptions(options) {
+        for (var key in options) this.options[key] = options[key];
+    };
+
+    module.exports = famous.physics.forces.RotationalDrag = RotationalDrag;
+});
+
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Owner: david@famo.us
+ * @license MPL 2.0
+ * @copyright Famous Industries, Inc. 2014
+ */
+
+define('famous/physics/forces/Spring.js',['require','exports','module','./Force','famous/math/Vector'],function(require, exports, module) {
+    var Force = require('./Force');
+    var Vector = require('famous/math/Vector');
+
+    /**
+     *  A force that moves a physics body to a location with a spring motion.
+     *    The body can be moved to another physics body, or an anchor point.
+     *
+     *  @class Spring
+     *  @constructor
+     *  @extends Force
+     *  @param {Object} options options to set on drag
+     */
+    function Spring(options) {
+        this.options = Object.create(this.constructor.DEFAULT_OPTIONS);
+        if (options) this.setOptions(options);
+
+        //registers
+        this.disp = new Vector(0,0,0);
+
+        _init.call(this);
+        Force.call(this);
+    }
+
+    Spring.prototype = Object.create(Force.prototype);
+    Spring.prototype.constructor = Spring;
+
+    /** @const */ var pi = Math.PI;
+
+    /**
+     * @property Spring.FORCE_FUNCTIONS
+     * @type Object
+     * @protected
+     * @static
+     */
+    Spring.FORCE_FUNCTIONS = {
+
+        /**
+         * A FENE (Finitely Extensible Nonlinear Elastic) spring force
+         *      see: http://en.wikipedia.org/wiki/FENE
+         * @attribute FENE
+         * @type Function
+         * @param {Number} dist current distance target is from source body
+         * @param {Number} rMax maximum range of influence
+         * @return {Number} unscaled force
+         */
+        FENE : function(dist, rMax) {
+            var rMaxSmall = rMax * .99;
+            var r = Math.max(Math.min(dist, rMaxSmall), -rMaxSmall);
+            return r / (1 - r * r/(rMax * rMax));
+        },
+
+        /**
+         * A Hookean spring force, linear in the displacement
+         *      see: http://en.wikipedia.org/wiki/FENE
+         * @attribute FENE
+         * @type Function
+         * @param {Number} dist current distance target is from source body
+         * @return {Number} unscaled force
+         */
+        HOOK : function(dist) {
+            return dist;
+        }
+    };
+
+    /**
+     * @property Spring.DEFAULT_OPTIONS
+     * @type Object
+     * @protected
+     * @static
+     */
+    Spring.DEFAULT_OPTIONS = {
+
+        /**
+         * The amount of time in milliseconds taken for one complete oscillation
+         * when there is no damping
+         *    Range : [150, Infinity]
+         * @attribute period
+         * @type Number
+         * @default 300
+         */
+        period        : 300,
+
+        /**
+         * The damping of the spring.
+         *    Range : [0, 1]
+         *    0 = no damping, and the spring will oscillate forever
+         *    1 = critically damped (the spring will never oscillate)
+         * @attribute dampingRatio
+         * @type Number
+         * @default 0.1
+         */
+        dampingRatio : 0.1,
+
+        /**
+         * The rest length of the spring
+         *    Range : [0, Infinity]
+         * @attribute length
+         * @type Number
+         * @default 0
+         */
+        length : 0,
+
+        /**
+         * The maximum length of the spring (for a FENE spring)
+         *    Range : [0, Infinity]
+         * @attribute length
+         * @type Number
+         * @default Infinity
+         */
+        maxLength : Infinity,
+
+        /**
+         * The location of the spring's anchor, if not another physics body
+         *
+         * @attribute anchor
+         * @type Array
+         * @optional
+         */
+        anchor : undefined,
+
+        /**
+         * The type of spring force
+         * @attribute forceFunction
+         * @type Function
+         */
+        forceFunction : Spring.FORCE_FUNCTIONS.HOOK
+    };
+
+    function _setForceFunction(fn) {
+        this.forceFunction = fn;
+    }
+
+    function _calcStiffness() {
+        var options = this.options;
+        options.stiffness = Math.pow(2 * pi / options.period, 2);
+    }
+
+    function _calcDamping() {
+        var options = this.options;
+        options.damping = 4 * pi * options.dampingRatio / options.period;
+    }
+
+    function _calcEnergy(strength, dist) {
+        return 0.5 * strength * dist * dist;
+    }
+
+    function _init() {
+        _setForceFunction.call(this, this.options.forceFunction);
+        _calcStiffness.call(this);
+        _calcDamping.call(this);
+    }
+
+    /**
+     * Basic options setter
+     *
+     * @method setOptions
+     * @param options {Objects}
+     */
+    Spring.prototype.setOptions = function setOptions(options) {
+        if (options.anchor !== undefined) {
+            if (options.anchor.position instanceof Vector) this.options.anchor = options.anchor.position;
+            if (options.anchor   instanceof Vector)  this.options.anchor = options.anchor;
+            if (options.anchor   instanceof Array)  this.options.anchor = new Vector(options.anchor);
+        }
+        if (options.period !== undefined) this.options.period = options.period;
+        if (options.dampingRatio !== undefined) this.options.dampingRatio = options.dampingRatio;
+        if (options.length !== undefined) this.options.length = options.length;
+        if (options.forceFunction !== undefined) this.options.forceFunction = options.forceFunction;
+        if (options.maxLength !== undefined) this.options.maxLength = options.maxLength;
+
+        _init.call(this);
+    };
+
+    /**
+     * Adds a spring force to a physics body's force accumulator.
+     *
+     * @method applyForce
+     * @param targets {Array.Body} Array of bodies to apply force to.
+     */
+    Spring.prototype.applyForce = function applyForce(targets, source) {
+        var force        = this.force;
+        var disp         = this.disp;
+        var options      = this.options;
+
+        var stiffness    = options.stiffness;
+        var damping      = options.damping;
+        var restLength   = options.length;
+        var lMax         = options.maxLength;
+        var anchor       = options.anchor || source.position;
+
+        for (var i = 0; i < targets.length; i++) {
+            var target = targets[i];
+            var p2 = target.position;
+            var v2 = target.velocity;
+
+            anchor.sub(p2).put(disp);
+            var dist = disp.norm() - restLength;
+
+            if (dist === 0) return;
+
+            //if dampingRatio specified, then override strength and damping
+            var m      = target.mass;
+            stiffness *= m;
+            damping   *= m;
+
+            disp.normalize(stiffness * this.forceFunction(dist, lMax))
+                .put(force);
+
+            if (damping)
+                if (source) force.add(v2.sub(source.velocity).mult(-damping)).put(force);
+                else force.add(v2.mult(-damping)).put(force);
+
+            target.applyForce(force);
+            if (source) source.applyForce(force.mult(-1));
+
+            this.setEnergy(_calcEnergy(stiffness, dist));
+        }
+    };
+
+    /**
+     * Calculates the potential energy of the spring.
+     *
+     * @method getEnergy
+     * @param target {Body}     The physics body attached to the spring
+     * @return energy {Number}
+     */
+    Spring.prototype.getEnergy = function getEnergy(target) {
+        var options        = this.options;
+        var restLength  = options.length;
+        var anchor      = options.anchor;
+        var strength    = options.stiffness;
+
+        var dist = anchor.sub(target.position).norm() - restLength;
+        return 0.5 * strength * dist * dist;
+    };
+
+    /**
+     * Sets the anchor to a new position
+     *
+     * @method setAnchor
+     * @param anchor {Array}    New anchor of the spring
+     */
+    Spring.prototype.setAnchor = function setAnchor(anchor) {
+        if (!this.options.anchor) this.options.anchor = new Vector();
+        this.options.anchor.set(anchor);
+    };
+
+    module.exports = famous.physics.forces.Spring = Spring;
+});
+
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Owner: david@famo.us
+ * @license MPL 2.0
+ * @copyright Famous Industries, Inc. 2014
+ */
+
+//TODO: test inheritance
+define('famous/physics/forces/RotationalSpring.js',['require','exports','module','./Spring'],function(require, exports, module) {
+    var Spring = require('./Spring');
+
+    /**
+     *  A force that rotates a physics body back to target Euler angles.
+     *  Just as a spring translates a body to a particular X, Y, Z, location,
+     *  a rotational spring rotates a body to a particular X, Y, Z Euler angle.
+     *      Note: there is no physical agent that does this in the "real world"
+     *
+     *  @class RotationalSpring
+     *  @constructor
+     *  @extends Spring
+     *  @param {Object} options options to set on drag
+     */
+    function RotationalSpring(options) {
+        Spring.call(this, options);
+    }
+
+    RotationalSpring.prototype = Object.create(Spring.prototype);
+    RotationalSpring.prototype.constructor = RotationalSpring;
+
+    RotationalSpring.DEFAULT_OPTIONS = Spring.DEFAULT_OPTIONS;
+    RotationalSpring.FORCE_FUNCTIONS = Spring.FORCE_FUNCTIONS;
+
+    /**
+     * Adds a torque force to a physics body's torque accumulator.
+     *
+     * @method applyForce
+     * @param targets {Array.Body} Array of bodies to apply torque to.
+     */
+    RotationalSpring.prototype.applyForce = function applyForce(targets) {
+        var force        = this.force;
+        var options      = this.options;
+        var disp         = this.disp;
+
+        var stiffness    = options.stiffness;
+        var damping      = options.damping;
+        var restLength   = options.length;
+        var anchor       = options.anchor;
+
+        for (var i = 0; i < targets.length; i++) {
+            var target = targets[i];
+
+            disp.set(anchor.sub(target.orientation));
+            var dist = disp.norm() - restLength;
+
+            if (dist === 0) return;
+
+            //if dampingRatio specified, then override strength and damping
+            var m      = target.mass;
+            stiffness *= m;
+            damping   *= m;
+
+            force.set(disp.normalize(stiffness * this.forceFunction(dist, this.options.lMax)));
+
+            if (damping) force.set(force.add(target.angularVelocity.mult(-damping)));
+
+            target.applyTorque(force);
+        }
+    };
+
+    /**
+     * Calculates the potential energy of the rotational spring.
+     *
+     * @method getEnergy
+     * @param {Body} target The physics body attached to the spring
+     */
+    RotationalSpring.prototype.getEnergy = function getEnergy(target) {
+        var options     = this.options;
+        var restLength  = options.length;
+        var anchor      = options.anchor;
+        var strength    = options.stiffness;
+
+        var dist = anchor.sub(target.orientation).norm() - restLength;
+        return 0.5 * strength * dist * dist;
+    };
+
+    module.exports = famous.physics.forces.RotationalSpring = RotationalSpring;
+});
+
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Owner: david@famo.us
+ * @license MPL 2.0
+ * @copyright Famous Industries, Inc. 2014
+ */
+
+define('famous/physics/forces/VectorField.js',['require','exports','module','./Force','famous/math/Vector'],function(require, exports, module) {
+    var Force = require('./Force');
+    var Vector = require('famous/math/Vector');
+
+    /**
+     *  A force that moves a physics body to a location with a spring motion.
+     *    The body can be moved to another physics body, or an anchor point.
+     *
+     *  @class VectorField
+     *  @constructor
+     *  @extends Force
+     *  @param {Object} options options to set on drag
+     */
+    function VectorField(options) {
+        this.options = Object.create(VectorField.DEFAULT_OPTIONS);
+        if (options) this.setOptions(options);
+
+        _setFieldOptions.call(this, this.options.field);
+        Force.call(this);
+
+        //registers
+        this.evaluation = new Vector(0,0,0);
+    }
+
+    VectorField.prototype = Object.create(Force.prototype);
+    VectorField.prototype.constructor = VectorField;
+
+    /**
+     * @property Spring.FORCE_FUNCTIONS
+     * @type Object
+     * @protected
+     * @static
+     */
+    VectorField.FIELDS = {
+        /**
+         * Constant force, e.g., gravity
+         * @attribute CONSTANT
+         * @type Function
+         * @param v {Vector}        Current position of physics body
+         * @param options {Object}  The direction of the force
+         *      Pass a {direction : Vector} into the VectorField options
+         * @return {Number} unscaled force
+         */
+        CONSTANT : function(v, options) {
+            return v.set(options.direction);
+        },
+
+        /**
+         * Linear force
+         * @attribute LINEAR
+         * @type Function
+         * @param v {Vector} Current position of physics body
+         * @return {Number} unscaled force
+         */
+        LINEAR : function(v) {
+            return v;
+        },
+
+        /**
+         * Radial force, e.g., Hookean spring
+         * @attribute RADIAL
+         * @type Function
+         * @param v {Vector} Current position of physics body
+         * @return {Number} unscaled force
+         */
+        RADIAL : function(v) {
+            return v.set(v.mult(-1, v));
+        },
+
+        /**
+         * Spherical force
+         * @attribute SPHERE_ATTRACTOR
+         * @type Function
+         * @param v {Vector}        Current position of physics body
+         * @param options {Object}  An object with the radius of the sphere
+         *      Pass a {radius : Number} into the VectorField options
+         * @return {Number} unscaled force
+         */
+        SPHERE_ATTRACTOR : function(v, options) {
+            return v.set(v.mult((options.radius - v.norm()) / v.norm()));
+        },
+
+        /**
+         * Point attractor force, e.g., Hookean spring with an anchor
+         * @attribute POINT_ATTRACTOR
+         * @type Function
+         * @param v {Vector}        Current position of physics body
+         * @param options {Object}  And object with the position of the attractor
+         *      Pass a {position : Vector} into the VectorField options
+         * @return {Number} unscaled force
+         */
+        POINT_ATTRACTOR : function(v, options) {
+            return v.set(options.position.sub(v));
+        }
+    };
+
+    /**
+     * @property VectorField.DEFAULT_OPTIONS
+     * @type Object
+     * @protected
+     * @static
+     */
+    VectorField.DEFAULT_OPTIONS = {
+
+        /**
+         * The strength of the force
+         *    Range : [0, 10]
+         * @attribute strength
+         * @type Number
+         * @default 1
+         */
+        strength : 1,
+
+        /**
+         * Type of vectorfield
+         *    Range : [0, 100]
+         * @attribute field
+         * @type Function
+         */
+        field : VectorField.FIELDS.CONSTANT
+    };
+
+    /**
+     * Basic options setter
+     *
+     * @method setOptions
+     * @param {Objects} options
+     */
+    VectorField.prototype.setOptions = function setOptions(options) {
+        for (var key in options) this.options[key] = options[key];
+    };
+
+    function _setFieldOptions(field) {
+        var FIELDS = VectorField.FIELDS;
+
+        switch (field) {
+            case FIELDS.CONSTANT:
+                if (!this.options.direction) this.options.direction = new Vector(0,1,0);
+                break;
+            case FIELDS.POINT_ATTRACTOR:
+                if (!this.options.position) this.options.position = new Vector(0,0,0);
+                break;
+            case FIELDS.SPHERE_ATTRACTOR:
+                if (!this.options.radius) this.options.radius = 1;
+                break;
+        }
+    }
+
+    function _evaluate(v) {
+        var evaluation = this.evaluation;
+        var field = this.options.field;
+        evaluation.set(v);
+        return field(evaluation, this.options);
+    }
+
+    /**
+     * Adds the vectorfield's force to a physics body's force accumulator.
+     *
+     * @method applyForce
+     * @param targets {Array.body} Array of bodies to apply force to.
+     */
+    VectorField.prototype.applyForce = function applyForce(targets) {
+        var force = this.force;
+        for (var i = 0; i < targets.length; i++) {
+            var particle = targets[i];
+            force.set(
+                _evaluate.call(this, particle.position)
+                .mult(particle.mass * this.options.strength)
+            );
+            particle.applyForce(force);
+        }
+    };
+
+    module.exports = famous.physics.forces.VectorField = VectorField;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -8512,8 +11905,9 @@ define('famous/physics/PhysicsEngine',['require','exports','module','famous/core
 
     /**
      * Options setter
+     *
      * @method setOptions
-     * @param options {Object}
+     * @param opts {Object}
      */
     PhysicsEngine.prototype.setOptions = function setOptions(opts) {
         for (var key in opts) if (this.options[key]) this.options[key] = opts[key];
@@ -8578,7 +11972,7 @@ define('famous/physics/PhysicsEngine',['require','exports','module','famous/core
      * attached agent which can be used to detach the agent.
      *
      * @method attach
-     * @param agent {Agent|Array.Agent} A force, constraint, or array of them.
+     * @param agents {Agent|Array.Agent} A force, constraint, or array of them.
      * @param [targets=All] {Body|Array.Body} The Body or Bodies affected by the agent
      * @param [source] {Body} The source of the agent
      * @return AgentId {Number}
@@ -8609,7 +12003,7 @@ define('famous/physics/PhysicsEngine',['require','exports','module','famous/core
      * effect on its affected Bodies.
      *
      * @method detach
-     * @param agentID {AgentId} The agentId of a previously defined agent
+     * @param id {AgentId} The agentId of a previously defined agent
      */
     PhysicsEngine.prototype.detach = function detach(id) {
         // detach from forces/constraints array
@@ -8626,7 +12020,7 @@ define('famous/physics/PhysicsEngine',['require','exports','module','famous/core
      * Remove a single Body from a previously defined agent.
      *
      * @method detach
-     * @param agentID {AgentId} The agentId of a previously defined agent
+     * @param id {AgentId} The agentId of a previously defined agent
      * @param target {Body} The body to remove from the agent
      */
     PhysicsEngine.prototype.detachFrom = function detachFrom(id, target) {
@@ -8900,3250 +12294,7 @@ define('famous/physics/PhysicsEngine',['require','exports','module','famous/core
         this._eventHandler.on(event, fn);
     };
 
-    module.exports = PhysicsEngine;
-});
-
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- * Owner: david@famo.us
- * @license MPL 2.0
- * @copyright Famous Industries, Inc. 2014
- */
-
-define('famous/physics/integrators/SymplecticEuler',['require','exports','module','famous/core/OptionsManager'],function(require, exports, module) {
-    var OptionsManager = require('famous/core/OptionsManager');
-
-    /**
-     * Ordinary Differential Equation (ODE) Integrator.
-     * Manages updating a physics body's state over time.
-     *
-     *  p = position, v = velocity, m = mass, f = force, dt = change in time
-     *
-     *      v <- v + dt * f / m
-     *      p <- p + dt * v
-     *
-     *  q = orientation, w = angular velocity, L = angular momentum
-     *
-     *      L <- L + dt * t
-     *      q <- q + dt/2 * q * w
-     *
-     * @class SymplecticEuler
-     * @constructor
-     * @param {Object} options Options to set
-     */
-    function SymplecticEuler(options) {
-        this.options = Object.create(SymplecticEuler.DEFAULT_OPTIONS);
-        this._optionsManager = new OptionsManager(this.options);
-
-        if (options) this.setOptions(options);
-    }
-
-    /**
-     * @property SymplecticEuler.DEFAULT_OPTIONS
-     * @type Object
-     * @protected
-     * @static
-     */
-    SymplecticEuler.DEFAULT_OPTIONS = {
-
-        /**
-         * The maximum velocity of a physics body
-         *      Range : [0, Infinity]
-         * @attribute velocityCap
-         * @type Number
-         */
-
-        velocityCap : undefined,
-
-        /**
-         * The maximum angular velocity of a physics body
-         *      Range : [0, Infinity]
-         * @attribute angularVelocityCap
-         * @type Number
-         */
-        angularVelocityCap : undefined
-    };
-
-    /*
-     * Setter for options
-     *
-     * @method setOptions
-     * @param {Object} options
-     */
-    SymplecticEuler.prototype.setOptions = function setOptions(options) {
-        this._optionsManager.patch(options);
-    };
-
-    /*
-     * Getter for options
-     *
-     * @method getOptions
-     * @return {Object} options
-     */
-    SymplecticEuler.prototype.getOptions = function getOptions() {
-        return this._optionsManager.value();
-    };
-
-    /*
-     * Updates the velocity of a physics body from its accumulated force.
-     *      v <- v + dt * f / m
-     *
-     * @method integrateVelocity
-     * @param {Body} physics body
-     * @param {Number} dt delta time
-     */
-    SymplecticEuler.prototype.integrateVelocity = function integrateVelocity(body, dt) {
-        var v = body.velocity;
-        var w = body.inverseMass;
-        var f = body.force;
-
-        if (f.isZero()) return;
-
-        v.add(f.mult(dt * w)).put(v);
-        f.clear();
-    };
-
-    /*
-     * Updates the position of a physics body from its velocity.
-     *      p <- p + dt * v
-     *
-     * @method integratePosition
-     * @param {Body} physics body
-     * @param {Number} dt delta time
-     */
-    SymplecticEuler.prototype.integratePosition = function integratePosition(body, dt) {
-        var p = body.position;
-        var v = body.velocity;
-
-        if (this.options.velocityCap) v.cap(this.options.velocityCap).put(v);
-        p.add(v.mult(dt)).put(p);
-    };
-
-    /*
-     * Updates the angular momentum of a physics body from its accumuled torque.
-     *      L <- L + dt * t
-     *
-     * @method integrateAngularMomentum
-     * @param {Body} physics body (except a particle)
-     * @param {Number} dt delta time
-     */
-    SymplecticEuler.prototype.integrateAngularMomentum = function integrateAngularMomentum(body, dt) {
-        var L = body.angularMomentum;
-        var t = body.torque;
-
-        if (t.isZero()) return;
-
-        if (this.options.angularVelocityCap) t.cap(this.options.angularVelocityCap).put(t);
-        L.add(t.mult(dt)).put(L);
-        t.clear();
-    };
-
-    /*
-     * Updates the orientation of a physics body from its angular velocity.
-     *      q <- q + dt/2 * q * w
-     *
-     * @method integrateOrientation
-     * @param {Body} physics body (except a particle)
-     * @param {Number} dt delta time
-     */
-    SymplecticEuler.prototype.integrateOrientation = function integrateOrientation(body, dt) {
-        var q = body.orientation;
-        var w = body.angularVelocity;
-
-        if (w.isZero()) return;
-        q.add(q.multiply(w).scalarMultiply(0.5 * dt)).put(q);
-//        q.normalize.put(q);
-    };
-
-    module.exports = SymplecticEuler;
-});
-
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- * Owner: david@famo.us
- * @license MPL 2.0
- * @copyright Famous Industries, Inc. 2014
- */
-
-define('famous/physics/bodies/Particle',['require','exports','module','famous/math/Vector','famous/core/Transform','famous/core/EventHandler','../integrators/SymplecticEuler'],function(require, exports, module) {
-    var Vector = require('famous/math/Vector');
-    var Transform = require('famous/core/Transform');
-    var EventHandler = require('famous/core/EventHandler');
-    var Integrator = require('../integrators/SymplecticEuler');
-
-    /**
-     * A point body that is controlled by the Physics Engine. A particle has
-     *   position and velocity states that are updated by the Physics Engine.
-     *   Ultimately, a particle is a _special type of modifier, and can be added to
-     *   the Famous render tree like any other modifier.
-     *
-     * @constructor
-     * @class Particle
-     * @uses EventHandler
-     * @uses Modifier
-     * @extensionfor Body
-     * @param {Options} [options] An object of configurable options.
-     * @param {Array} [options.position] The position of the particle.
-     * @param {Array} [options.velocity] The velocity of the particle.
-     * @param {Number} [options.mass] The mass of the particle.
-     * @param {Hexadecimal} [options.axis] The axis a particle can move along. Can be bitwise ORed e.g., Particle.AXES.X, Particle.AXES.X | Particle.AXES.Y
-     *
-     */
-     function Particle(options) {
-        options = options || {};
-
-        // registers
-        this.position = new Vector();
-        this.velocity = new Vector();
-        this.force    = new Vector();
-
-        var defaults  = Particle.DEFAULT_OPTIONS;
-
-        // set vectors
-        this.setPosition(options.position || defaults.position);
-        this.setVelocity(options.velocity || defaults.velocity);
-        this.force.set(options.force || [0,0,0]);
-
-        // set scalars
-        this.mass = (options.mass !== undefined)
-            ? options.mass
-            : defaults.mass;
-
-        this.axis = (options.axis !== undefined)
-            ? options.axis
-            : defaults.axis;
-
-        this.inverseMass = 1 / this.mass;
-
-        // state variables
-        this._isSleeping     = false;
-        this._engine         = null;
-        this._eventOutput    = null;
-        this._positionGetter = null;
-
-        this.transform = Transform.identity.slice();
-
-        // cached _spec
-        this._spec = {
-            transform : this.transform,
-            target    : null
-        };
-    }
-
-    Particle.DEFAULT_OPTIONS = {
-        position : [0,0,0],
-        velocity : [0,0,0],
-        mass : 1,
-        axis : undefined
-    };
-
-    /**
-     * Kinetic energy threshold needed to update the body
-     *
-     * @property SLEEP_TOLERANCE
-     * @type Number
-     * @static
-     * @default 1e-7
-     */
-    Particle.SLEEP_TOLERANCE = 1e-7;
-
-    /**
-     * Axes by which a body can translate
-     *
-     * @property AXES
-     * @type Hexadecimal
-     * @static
-     * @default 1e-7
-     */
-    Particle.AXES = {
-        X : 0x00, // hexadecimal for 0
-        Y : 0x01, // hexadecimal for 1
-        Z : 0x02  // hexadecimal for 2
-    };
-
-    // Integrator for updating the particle's state
-    // TODO: make this a singleton
-    Particle.INTEGRATOR = new Integrator();
-
-    //Catalogue of outputted events
-    var _events = {
-        start  : 'start',
-        update : 'update',
-        end    : 'end'
-    };
-
-    // Cached timing function
-    var now = (function() {
-        return Date.now;
-    })();
-
-    /**
-     * Stops the particle from updating
-     * @method sleep
-     */
-    Particle.prototype.sleep = function sleep() {
-        if (this._isSleeping) return;
-        this.emit(_events.end, this);
-        this._isSleeping = true;
-    };
-
-    /**
-     * Starts the particle update
-     * @method wake
-     */
-    Particle.prototype.wake = function wake() {
-        if (!this._isSleeping) return;
-        this.emit(_events.start, this);
-        this._isSleeping = false;
-        this._prevTime = now();
-    };
-
-    /**
-     * @attribute isBody
-     * @type Boolean
-     * @static
-     */
-    Particle.prototype.isBody = false;
-
-    /**
-     * Basic setter for position
-     * @method getPosition
-     * @param position {Array|Vector}
-     */
-    Particle.prototype.setPosition = function setPosition(position) {
-        this.position.set(position);
-    };
-
-    /**
-     * 1-dimensional setter for position
-     * @method setPosition1D
-     * @param value {Number}
-     */
-    Particle.prototype.setPosition1D = function setPosition1D(x) {
-        this.position.x = x;
-    };
-
-    /**
-     * Basic getter function for position
-     * @method getPosition
-     * @return position {Array}
-     */
-    Particle.prototype.getPosition = function getPosition() {
-        if (this._positionGetter instanceof Function)
-            this.setPosition(this._positionGetter());
-
-        this._engine.step();
-
-        return this.position.get();
-    };
-
-    /**
-     * 1-dimensional getter for position
-     * @method getPosition1D
-     * @return value {Number}
-     */
-    Particle.prototype.getPosition1D = function getPosition1D() {
-        this._engine.step();
-        return this.position.x;
-    };
-
-    /**
-     * Defines the position from outside the Physics Engine
-     * @method positionFrom
-     * @param positionGetter {Function}
-     */
-    Particle.prototype.positionFrom = function positionFrom(positionGetter) {
-        this._positionGetter = positionGetter;
-    };
-
-    /**
-     * Basic setter function for velocity Vector
-     * @method setVelocity
-     * @function
-     */
-    Particle.prototype.setVelocity = function setVelocity(velocity) {
-        this.velocity.set(velocity);
-        this.wake();
-    };
-
-    /**
-     * 1-dimensional setter for velocity
-     * @method setVelocity1D
-     * @param velocity {Number}
-     */
-    Particle.prototype.setVelocity1D = function setVelocity1D(x) {
-        this.velocity.x = x;
-        this.wake();
-    };
-
-    /**
-     * Basic getter function for velocity Vector
-     * @method getVelocity
-     * @return velocity {Array}
-     */
-    Particle.prototype.getVelocity = function getVelocity() {
-        return this.velocity.get();
-    };
-
-    /**
-     * 1-dimensional getter for velocity
-     * @method getVelocity1D
-     * @return velocity {Number}
-     */
-    Particle.prototype.getVelocity1D = function getVelocity1D() {
-        return this.velocity.x;
-    };
-
-    /**
-     * Basic setter function for mass quantity
-     * @method setMass
-     * @param mass {Number} mass
-     */
-    Particle.prototype.setMass = function setMass(mass) {
-        this.mass = mass;
-        this.inverseMass = 1 / mass;
-    };
-
-    /**
-     * Basic getter function for mass quantity
-     * @method getMass
-     * @return mass {Number}
-     */
-    Particle.prototype.getMass = function getMass() {
-        return this.mass;
-    };
-
-    /**
-     * Reset position and velocity
-     * @method reset
-     * @param position {Array|Vector}
-     * @param velocity {Array|Vector}
-     */
-    Particle.prototype.reset = function reset(position, velocity) {
-        this.setPosition(position || [0,0,0]);
-        this.setVelocity(velocity || [0,0,0]);
-    };
-
-    /**
-     * Add force vector to existing internal force Vector
-     * @method applyForce
-     * @param force {Vector}
-     */
-    Particle.prototype.applyForce = function applyForce(force) {
-        if (force.isZero()) return;
-        this.force.add(force).put(this.force);
-        this.wake();
-    };
-
-    /**
-     * Add impulse (change in velocity) Vector to this Vector's velocity.
-     * @method applyImpulse
-     * @param impulse {Vector}
-     */
-    Particle.prototype.applyImpulse = function applyImpulse(impulse) {
-        if (impulse.isZero()) return;
-        var velocity = this.velocity;
-        velocity.add(impulse.mult(this.inverseMass)).put(velocity);
-    };
-
-    /**
-     * Update a particle's velocity from its force accumulator
-     * @method integrateVelocity
-     * @param dt {Number} Time differential
-     */
-    Particle.prototype.integrateVelocity = function integrateVelocity(dt) {
-        Particle.INTEGRATOR.integrateVelocity(this, dt);
-    };
-
-    /**
-     * Update a particle's position from its velocity
-     * @method integratePosition
-     * @param dt {Number} Time differential
-     */
-    Particle.prototype.integratePosition = function integratePosition(dt) {
-        Particle.INTEGRATOR.integratePosition(this, dt);
-    };
-
-    /**
-     * Update the position and velocity of the particle
-     * @method _integrate
-     * @protected
-     * @param dt {Number} Time differential
-     */
-    Particle.prototype._integrate = function _integrate(dt) {
-        this.integrateVelocity(dt);
-        this.integratePosition(dt);
-    };
-
-    /**
-     * Get kinetic energy of the particle.
-     * @method getEnergy
-     * @function
-     */
-    Particle.prototype.getEnergy = function getEnergy() {
-        return 0.5 * this.mass * this.velocity.normSquared();
-    };
-
-    /**
-     * Generate transform from the current position state
-     * @method getTransform
-     * @return Transform {Transform}
-     */
-    Particle.prototype.getTransform = function getTransform() {
-        this._engine.step();
-
-        var position = this.position;
-        var axis = this.axis;
-        var transform = this.transform;
-
-        if (axis !== undefined) {
-            if (axis & ~Particle.AXES.X) {
-                position.x = 0;
-            }
-            if (axis & ~Particle.AXES.Y) {
-                position.y = 0;
-            }
-            if (axis & ~Particle.AXES.Z) {
-                position.z = 0;
-            }
-        }
-
-        transform[12] = position.x;
-        transform[13] = position.y;
-        transform[14] = position.z;
-
-        return transform;
-    };
-
-    /**
-     * The modify interface of a Modifier
-     * @method modify
-     * @param target {Spec}
-     * @return Spec {Spec}
-     */
-    Particle.prototype.modify = function modify(target) {
-        var _spec = this._spec;
-        _spec.transform = this.getTransform();
-        _spec.target = target;
-        return _spec;
-    };
-
-    // private
-    function _createEventOutput() {
-        this._eventOutput = new EventHandler();
-        this._eventOutput.bindThis(this);
-        //overrides on/removeListener/pipe/unpipe methods
-        EventHandler.setOutputHandler(this, this._eventOutput);
-    }
-
-    Particle.prototype.emit = function emit(type, data) {
-        if (!this._eventOutput) return;
-        this._eventOutput.emit(type, data);
-    };
-
-    Particle.prototype.on = function on() {
-        _createEventOutput.call(this);
-        return this.on.apply(this, arguments);
-    };
-    Particle.prototype.removeListener = function removeListener() {
-        _createEventOutput.call(this);
-        return this.removeListener.apply(this, arguments);
-    };
-    Particle.prototype.pipe = function pipe() {
-        _createEventOutput.call(this);
-        return this.pipe.apply(this, arguments);
-    };
-    Particle.prototype.unpipe = function unpipe() {
-        _createEventOutput.call(this);
-        return this.unpipe.apply(this, arguments);
-    };
-
-    module.exports = Particle;
-});
-
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- * Owner: david@famo.us
- * @license MPL 2.0
- * @copyright Famous Industries, Inc. 2014
- */
-
-define('famous/physics/bodies/Body',['require','exports','module','./Particle','famous/core/Transform','famous/math/Vector','famous/math/Quaternion','famous/math/Matrix'],function(require, exports, module) {
-    var Particle = require('./Particle');
-    var Transform = require('famous/core/Transform');
-    var Vector = require('famous/math/Vector');
-    var Quaternion = require('famous/math/Quaternion');
-    var Matrix = require('famous/math/Matrix');
-
-    /**
-     * A unit controlled by the physics engine which extends the zero-dimensional
-     * Particle to include geometry. In addition to maintaining the state
-     * of a Particle its state includes orientation, angular velocity
-     * and angular momentum and responds to torque forces.
-     *
-     * @class Body
-     * @extends Particle
-     * @constructor
-     */
-    function Body(options) {
-        Particle.call(this, options);
-        options = options || {};
-
-        this.orientation     = new Quaternion();
-        this.angularVelocity = new Vector();
-        this.angularMomentum = new Vector();
-        this.torque          = new Vector();
-
-        if (options.orientation)     this.orientation.set(options.orientation);
-        if (options.angularVelocity) this.angularVelocity.set(options.angularVelocity);
-        if (options.angularMomentum) this.angularMomentum.set(options.angularMomentum);
-        if (options.torque)          this.torque.set(options.torque);
-
-        this.setMomentsOfInertia();
-
-        this.angularVelocity.w = 0;        //quaternify the angular velocity
-
-        //registers
-        this.pWorld = new Vector();        //placeholder for world space position
-    }
-
-    Body.DEFAULT_OPTIONS = Particle.DEFAULT_OPTIONS;
-    Body.DEFAULT_OPTIONS.orientation = [0,0,0,1];
-    Body.DEFAULT_OPTIONS.angularVelocity = [0,0,0];
-
-    Body.AXES = Particle.AXES;
-    Body.SLEEP_TOLERANCE = Particle.SLEEP_TOLERANCE;
-    Body.INTEGRATOR = Particle.INTEGRATOR;
-
-    Body.prototype = Object.create(Particle.prototype);
-    Body.prototype.constructor = Body;
-
-    Body.prototype.isBody = true;
-
-    Body.prototype.setMass = function setMass() {
-        Particle.prototype.setMass.apply(this, arguments);
-        this.setMomentsOfInertia();
-    };
-
-    /**
-     * Setter for moment of inertia, which is necessary to give proper
-     * angular inertia depending on the geometry of the body.
-     *
-     * @method setMomentsOfInertia
-     */
-    Body.prototype.setMomentsOfInertia = function setMomentsOfInertia() {
-        this.inertia = new Matrix();
-        this.inverseInertia = new Matrix();
-    };
-
-    /**
-     * Update the angular velocity from the angular momentum state.
-     *
-     * @method updateAngularVelocity
-     */
-    Body.prototype.updateAngularVelocity = function updateAngularVelocity() {
-        this.angularVelocity.set(this.inverseInertia.vectorMultiply(this.angularMomentum));
-    };
-
-    /**
-     * Determine world coordinates from the local coordinate system. Useful
-     * if the Body has rotated in space.
-     *
-     * @method toWorldCoordinates
-     * @param localPosition {Vector} local coordinate vector
-     * @return global coordinate vector {Vector}
-     */
-    Body.prototype.toWorldCoordinates = function toWorldCoordinates(localPosition) {
-        return this.pWorld.set(this.orientation.rotateVector(localPosition));
-    };
-
-    /**
-     * Calculates the kinetic and intertial energy of a body.
-     *
-     * @method getEnergy
-     * @return energy {Number}
-     */
-    Body.prototype.getEnergy = function getEnergy() {
-        return Particle.prototype.getEnergy.call(this)
-            + 0.5 * this.inertia.vectorMultiply(this.angularVelocity).dot(this.angularVelocity);
-    };
-
-    /**
-     * Extends Particle.reset to reset orientation, angular velocity
-     * and angular momentum.
-     *
-     * @method reset
-     * @param [p] {Array|Vector} position
-     * @param [v] {Array|Vector} velocity
-     * @param [q] {Array|Quaternion} orientation
-     * @param [L] {Array|Vector} angular momentum
-     */
-    Body.prototype.reset = function reset(p, v, q, L) {
-        Particle.prototype.reset.call(this, p, v);
-        this.angularVelocity.clear();
-        this.setOrientation(q || [1,0,0,0]);
-        this.setAngularMomentum(L || [0,0,0]);
-    };
-
-    /**
-     * Setter for orientation
-     *
-     * @method setOrientation
-     * @param q {Array|Quaternion} orientation
-     */
-    Body.prototype.setOrientation = function setOrientation(q) {
-        this.orientation.set(q);
-    };
-
-    /**
-     * Setter for angular velocity
-     *
-     * @method setAngularVelocity
-     * @param w {Array|Vector} angular velocity
-     */
-    Body.prototype.setAngularVelocity = function setAngularVelocity(w) {
-        this.wake();
-        this.angularVelocity.set(w);
-    };
-
-    /**
-     * Setter for angular momentum
-     *
-     * @method setAngularMomentum
-     * @param L {Array|Vector} angular momentum
-     */
-    Body.prototype.setAngularMomentum = function setAngularMomentum(L) {
-        this.wake();
-        this.angularMomentum.set(L);
-    };
-
-    /**
-     * Extends Particle.applyForce with an optional argument
-     * to apply the force at an off-centered location, resulting in a torque.
-     *
-     * @method applyForce
-     * @param force {Vector} force
-     * @param [location] {Vector} off-center location on the body
-     */
-    Body.prototype.applyForce = function applyForce(force, location) {
-        Particle.prototype.applyForce.call(this, force);
-        if (location !== undefined) this.applyTorque(location.cross(force));
-    };
-
-    /**
-     * Applied a torque force to a body, inducing a rotation.
-     *
-     * @method applyTorque
-     * @param torque {Vector} torque
-     */
-    Body.prototype.applyTorque = function applyTorque(torque) {
-        this.wake();
-        this.torque.set(this.torque.add(torque));
-    };
-
-    /**
-     * Extends Particle.getTransform to include a rotational component
-     * derived from the particle's orientation.
-     *
-     * @method getTransform
-     * @return transform {Transform}
-     */
-    Body.prototype.getTransform = function getTransform() {
-        return Transform.thenMove(
-            this.orientation.getTransform(),
-            Transform.getTranslate(Particle.prototype.getTransform.call(this))
-        );
-    };
-
-    /**
-     * Extends Particle._integrate to also update the rotational states
-     * of the body.
-     *
-     * @method getTransform
-     * @protected
-     * @param dt {Number} delta time
-     */
-    Body.prototype._integrate = function _integrate(dt) {
-        Particle.prototype._integrate.call(this, dt);
-        this.integrateAngularMomentum(dt);
-        this.updateAngularVelocity(dt);
-        this.integrateOrientation(dt);
-    };
-
-    /**
-     * Updates the angular momentum via the its integrator.
-     *
-     * @method integrateAngularMomentum
-     * @param dt {Number} delta time
-     */
-    Body.prototype.integrateAngularMomentum = function integrateAngularMomentum(dt) {
-        Body.INTEGRATOR.integrateAngularMomentum(this, dt);
-    };
-
-    /**
-     * Updates the orientation via the its integrator.
-     *
-     * @method integrateOrientation
-     * @param dt {Number} delta time
-     */
-    Body.prototype.integrateOrientation = function integrateOrientation(dt) {
-        Body.INTEGRATOR.integrateOrientation(this, dt);
-    };
-
-    module.exports = Body;
-});
-
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- * Owner: david@famo.us
- * @license MPL 2.0
- * @copyright Famous Industries, Inc. 2014
- */
-
-define('famous/physics/bodies/Circle',['require','exports','module','./Body','famous/math/Matrix'],function(require, exports, module) {
-    var Body = require('./Body');
-    var Matrix = require('famous/math/Matrix');
-
-    /**
-     * Implements a circle, or spherical, geometry for an Body with
-     * radius.
-     *
-     * @class Circle
-     * @extends Body
-     * @constructor
-     */
-    function Circle(options) {
-        options = options || {};
-        this.setRadius(options.radius || 0);
-        Body.call(this, options);
-    }
-
-    Circle.prototype = Object.create(Body.prototype);
-    Circle.prototype.constructor = Circle;
-
-    /**
-     * Basic setter for radius.
-     * @method setRadius
-     * @param r {Number} radius
-     */
-    Circle.prototype.setRadius = function setRadius(r) {
-        this.radius = r;
-        this.size = [2*this.radius, 2*this.radius];
-        this.setMomentsOfInertia();
-    };
-
-    Circle.prototype.setMomentsOfInertia = function setMomentsOfInertia() {
-        var m = this.mass;
-        var r = this.radius;
-
-        this.inertia = new Matrix([
-            [0.25 * m * r * r, 0, 0],
-            [0, 0.25 * m * r * r, 0],
-            [0, 0, 0.5 * m * r * r]
-        ]);
-
-        this.inverseInertia = new Matrix([
-            [4 / (m * r * r), 0, 0],
-            [0, 4 / (m * r * r), 0],
-            [0, 0, 2 / (m * r * r)]
-        ]);
-    };
-
-    module.exports = Circle;
-
-});
-
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- * Owner: david@famo.us
- * @license MPL 2.0
- * @copyright Famous Industries, Inc. 2014
- */
-
-define('famous/physics/bodies/Rectangle',['require','exports','module','./Body','famous/math/Matrix'],function(require, exports, module) {
-    var Body = require('./Body');
-    var Matrix = require('famous/math/Matrix');
-
-    /**
-     * Implements a rectangular geometry for an Body with
-     * size = [width, height].
-     *
-     * @class Rectangle
-     * @extends Body
-     * @constructor
-     */
-    function Rectangle(options) {
-        options = options || {};
-        this.size = options.size || [0,0];
-        Body.call(this, options);
-    }
-
-    Rectangle.prototype = Object.create(Body.prototype);
-    Rectangle.prototype.constructor = Rectangle;
-
-    /**
-     * Basic setter for size.
-     * @method setSize
-     * @param size {Array} size = [width, height]
-     */
-    Rectangle.prototype.setSize = function setSize(size) {
-        this.size = size;
-        this.setMomentsOfInertia();
-    };
-
-    Rectangle.prototype.setMomentsOfInertia = function setMomentsOfInertia() {
-        var m = this.mass;
-        var w = this.size[0];
-        var h = this.size[1];
-
-        this.inertia = new Matrix([
-            [m * h * h / 12, 0, 0],
-            [0, m * w * w / 12, 0],
-            [0, 0, m * (w * w + h * h) / 12]
-        ]);
-
-        this.inverseInertia = new Matrix([
-            [12 / (m * h * h), 0, 0],
-            [0, 12 / (m * w * w), 0],
-            [0, 0, 12 / (m * (w * w + h * h))]
-        ]);
-    };
-
-    module.exports = Rectangle;
-
-});
-
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- * Owner: david@famo.us
- * @license MPL 2.0
- * @copyright Famous Industries, Inc. 2014
- */
-
-define('famous/physics/constraints/Constraint',['require','exports','module','famous/core/EventHandler'],function(require, exports, module) {
-    var EventHandler = require('famous/core/EventHandler');
-
-    /**
-     *  Allows for two circular bodies to collide and bounce off each other.
-     *
-     *  @class Constraint
-     *  @constructor
-     *  @uses EventHandler
-     *  @param options {Object}
-     */
-    function Constraint() {
-        this.options = this.options || {};
-        this._energy = 0.0;
-        this._eventOutput = null;
-    }
-
-    /*
-     * Setter for options.
-     *
-     * @method setOptions
-     * @param options {Objects}
-     */
-    Constraint.prototype.setOptions = function setOptions(options) {
-        for (var key in options) this.options[key] = options[key];
-    };
-
-    /**
-     * Adds an impulse to a physics body's velocity due to the constraint
-     *
-     * @method applyConstraint
-     */
-    Constraint.prototype.applyConstraint = function applyConstraint() {};
-
-    /**
-     * Getter for energy
-     *
-     * @method getEnergy
-     * @return energy {Number}
-     */
-    Constraint.prototype.getEnergy = function getEnergy() {
-        return this._energy;
-    };
-
-    /**
-     * Setter for energy
-     *
-     * @method setEnergy
-     * @param energy {Number}
-     */
-    Constraint.prototype.setEnergy = function setEnergy(energy) {
-        this._energy = energy;
-    };
-
-    function _createEventOutput() {
-        this._eventOutput = new EventHandler();
-        this._eventOutput.bindThis(this);
-        EventHandler.setOutputHandler(this, this._eventOutput);
-    }
-
-    Constraint.prototype.on = function on() {
-        _createEventOutput.call(this);
-        return this.on.apply(this, arguments);
-    };
-    Constraint.prototype.addListener = function addListener() {
-        _createEventOutput.call(this);
-        return this.addListener.apply(this, arguments);
-    };
-    Constraint.prototype.pipe = function pipe() {
-        _createEventOutput.call(this);
-        return this.pipe.apply(this, arguments);
-    };
-    Constraint.prototype.removeListener = function removeListener() {
-        return this.removeListener.apply(this, arguments);
-    };
-    Constraint.prototype.unpipe = function unpipe() {
-        return this.unpipe.apply(this, arguments);
-    };
-
-    module.exports = Constraint;
-});
-
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- * Owner: david@famo.us
- * @license MPL 2.0
- * @copyright Famous Industries, Inc. 2014
- */
-
-define('famous/physics/constraints/Collision',['require','exports','module','./Constraint','famous/math/Vector'],function(require, exports, module) {
-    var Constraint = require('./Constraint');
-    var Vector = require('famous/math/Vector');
-
-    /**
-     *  Allows for two circular bodies to collide and bounce off each other.
-     *
-     *  @class Collision
-     *  @constructor
-     *  @extends Constraint
-     *  @param {Options} [options] An object of configurable options.
-     *  @param {Number} [options.restitution] The energy ratio lost in a collision (0 = stick, 1 = elastic) Range : [0, 1]
-     *  @param {Number} [options.drift] Baumgarte stabilization parameter. Makes constraints "loosely" (0) or "tightly" (1) enforced. Range : [0, 1]
-     *  @param {Number} [options.slop] Amount of penetration in pixels to ignore before collision event triggers
-     *
-     */
-    function Collision(options) {
-        this.options = Object.create(Collision.DEFAULT_OPTIONS);
-        if (options) this.setOptions(options);
-
-        //registers
-        this.normal   = new Vector();
-        this.pDiff    = new Vector();
-        this.vDiff    = new Vector();
-        this.impulse1 = new Vector();
-        this.impulse2 = new Vector();
-
-        Constraint.call(this);
-    }
-
-    Collision.prototype = Object.create(Constraint.prototype);
-    Collision.prototype.constructor = Collision;
-
-    Collision.DEFAULT_OPTIONS = {
-        restitution : 0.5,
-        drift : 0.5,
-        slop : 0
-    };
-
-    function _normalVelocity(particle1, particle2) {
-        return particle1.velocity.dot(particle2.velocity);
-    }
-
-    /*
-     * Setter for options.
-     *
-     * @method setOptions
-     * @param options {Objects}
-     */
-    Collision.prototype.setOptions = function setOptions(options) {
-        for (var key in options) this.options[key] = options[key];
-    };
-
-    /**
-     * Adds an impulse to a physics body's velocity due to the constraint
-     *
-     * @method applyConstraint
-     * @param targets {Array.Body}  Array of bodies to apply the constraint to
-     * @param source {Body}         The source of the constraint
-     * @param dt {Number}           Delta time
-     */
-    Collision.prototype.applyConstraint = function applyConstraint(targets, source, dt) {
-        if (source === undefined) return;
-
-        var v1 = source.velocity;
-        var p1 = source.position;
-        var w1 = source.inverseMass;
-        var r1 = source.radius;
-
-        var options = this.options;
-        var drift = options.drift;
-        var slop = -options.slop;
-        var restitution = options.restitution;
-
-        var n     = this.normal;
-        var pDiff = this.pDiff;
-        var vDiff = this.vDiff;
-        var impulse1 = this.impulse1;
-        var impulse2 = this.impulse2;
-
-        for (var i = 0; i < targets.length; i++) {
-            var target = targets[i];
-
-            if (target === source) continue;
-
-            var v2 = target.velocity;
-            var p2 = target.position;
-            var w2 = target.inverseMass;
-            var r2 = target.radius;
-
-            pDiff.set(p2.sub(p1));
-            vDiff.set(v2.sub(v1));
-
-            var dist    = pDiff.norm();
-            var overlap = dist - (r1 + r2);
-            var effMass = 1/(w1 + w2);
-            var gamma   = 0;
-
-            if (overlap < 0) {
-
-                n.set(pDiff.normalize());
-
-                if (this._eventOutput) {
-                    var collisionData = {
-                        target  : target,
-                        source  : source,
-                        overlap : overlap,
-                        normal  : n
-                    };
-
-                    this._eventOutput.emit('preCollision', collisionData);
-                    this._eventOutput.emit('collision', collisionData);
-                }
-
-                var lambda = (overlap <= slop)
-                    ? ((1 + restitution) * n.dot(vDiff) + drift/dt * (overlap - slop)) / (gamma + dt/effMass)
-                    : ((1 + restitution) * n.dot(vDiff)) / (gamma + dt/effMass);
-
-                n.mult(dt*lambda).put(impulse1);
-                impulse1.mult(-1).put(impulse2);
-
-                source.applyImpulse(impulse1);
-                target.applyImpulse(impulse2);
-
-                //source.setPosition(p1.add(n.mult(overlap/2)));
-                //target.setPosition(p2.sub(n.mult(overlap/2)));
-
-                if (this._eventOutput) this._eventOutput.emit('postCollision', collisionData);
-
-            }
-        }
-    };
-
-    module.exports = Collision;
-});
-
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- * Owner: david@famo.us
- * @license MPL 2.0
- * @copyright Famous Industries, Inc. 2014
- */
-
-define('famous/physics/constraints/Curve',['require','exports','module','./Constraint','famous/math/Vector'],function(require, exports, module) {
-    var Constraint = require('./Constraint');
-    var Vector = require('famous/math/Vector');
-
-    /**
-     *  A constraint that keeps a physics body on a given implicit curve
-     *    regardless of other physical forces are applied to it.
-     *
-     *    A curve constraint is two surface constraints in disguise, as a curve is
-     *    the intersection of two surfaces, and is essentially constrained to both
-     *
-     *  @class Curve
-     *  @constructor
-     *  @extends Constraint
-     *  @param {Options} [options] An object of configurable options.
-     *  @param {Function} [options.equation] An implicitly defined surface f(x,y,z) = 0 that body is constrained to e.g. function(x,y,z) { x*x + y*y - r*r } corresponds to a circle of radius r pixels
-     *  @param {Function} [options.plane] An implicitly defined second surface that the body is constrained to
-     *  @param {Number} [options.period] The spring-like reaction when the constraint is violated
-     *  @param {Number} [options.number] The damping-like reaction when the constraint is violated
-     */
-    function Curve(options) {
-        this.options = Object.create(Curve.DEFAULT_OPTIONS);
-        if (options) this.setOptions(options);
-
-        //registers
-        this.J = new Vector();
-        this.impulse = new Vector();
-
-        Constraint.call(this);
-    }
-
-    Curve.prototype = Object.create(Constraint.prototype);
-    Curve.prototype.constructor = Curve;
-
-    /** @const */ var epsilon = 1e-7;
-    /** @const */ var pi = Math.PI;
-
-    Curve.DEFAULT_OPTIONS = {
-        equation  : function(x,y,z) {
-            return 0;
-        },
-        plane : function(x,y,z) {
-            return z;
-        },
-        period : 0,
-        dampingRatio : 0
-    };
-
-    /**
-     * Basic options setter
-     *
-     * @method setOptions
-     * @param options {Objects}
-     */
-    Curve.prototype.setOptions = function setOptions(options) {
-        for (var key in options) this.options[key] = options[key];
-    };
-
-    /**
-     * Adds a curve impulse to a physics body.
-     *
-     * @method applyConstraint
-     * @param targets {Array.Body} Array of bodies to apply force to.
-     * @param source {Body} Not applicable
-     * @param dt {Number} Delta time
-     */
-    Curve.prototype.applyConstraint = function applyConstraint(targets, source, dt) {
-        var options = this.options;
-        var impulse = this.impulse;
-        var J = this.J;
-
-        var f = options.equation;
-        var g = options.plane;
-        var dampingRatio = options.dampingRatio;
-        var period = options.period;
-
-        for (var i = 0; i < targets.length; i++) {
-            var body = targets[i];
-
-            var v = body.velocity;
-            var p = body.position;
-            var m = body.mass;
-
-            var gamma;
-            var beta;
-
-            if (period === 0) {
-                gamma = 0;
-                beta = 1;
-            }
-            else {
-                var c = 4 * m * pi * dampingRatio / period;
-                var k = 4 * m * pi * pi / (period * period);
-
-                gamma = 1 / (c + dt*k);
-                beta  = dt*k / (c + dt*k);
-            }
-
-            var x = p.x;
-            var y = p.y;
-            var z = p.z;
-
-            var f0  = f(x, y, z);
-            var dfx = (f(x + epsilon, p, p) - f0) / epsilon;
-            var dfy = (f(x, y + epsilon, p) - f0) / epsilon;
-            var dfz = (f(x, y, p + epsilon) - f0) / epsilon;
-
-            var g0  = g(x, y, z);
-            var dgx = (g(x + epsilon, y, z) - g0) / epsilon;
-            var dgy = (g(x, y + epsilon, z) - g0) / epsilon;
-            var dgz = (g(x, y, z + epsilon) - g0) / epsilon;
-
-            J.setXYZ(dfx + dgx, dfy + dgy, dfz + dgz);
-
-            var antiDrift = beta/dt * (f0 + g0);
-            var lambda = -(J.dot(v) + antiDrift) / (gamma + dt * J.normSquared() / m);
-
-            impulse.set(J.mult(dt*lambda));
-            body.applyImpulse(impulse);
-        }
-    };
-
-    module.exports = Curve;
-});
-
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- * Owner: david@famo.us
- * @license MPL 2.0
- * @copyright Famous Industries, Inc. 2014
- */
-
-define('famous/physics/constraints/Distance',['require','exports','module','./Constraint','famous/math/Vector'],function(require, exports, module) {
-    var Constraint = require('./Constraint');
-    var Vector = require('famous/math/Vector');
-
-    /**
-     *  A constraint that keeps a physics body a given distance away from a given
-     *  anchor, or another attached body.
-     *
-     *
-     *  @class Distance
-     *  @constructor
-     *  @extends Constraint
-     *  @param {Options} [options] An object of configurable options.
-     *  @param {Array} [options.anchor] The location of the anchor
-     *  @param {Number} [options.length] The amount of distance from the anchor the constraint should enforce
-     *  @param {Number} [options.minLength] The minimum distance before the constraint is activated. Use this property for a "rope" effect.
-     *  @param {Number} [options.period] The spring-like reaction when the constraint is broken.
-     *  @param {Number} [options.dampingRatio] The damping-like reaction when the constraint is broken.
-     *
-     */
-    function Distance(options) {
-        this.options = Object.create(this.constructor.DEFAULT_OPTIONS);
-        if (options) this.setOptions(options);
-
-        //registers
-        this.impulse  = new Vector();
-        this.normal   = new Vector();
-        this.diffP    = new Vector();
-        this.diffV    = new Vector();
-
-        Constraint.call(this);
-    }
-
-    Distance.prototype = Object.create(Constraint.prototype);
-    Distance.prototype.constructor = Distance;
-
-    Distance.DEFAULT_OPTIONS = {
-        anchor : null,
-        length : 0,
-        minLength : 0,
-        period : 0,
-        dampingRatio : 0
-    };
-
-    /** @const */ var pi = Math.PI;
-
-    /**
-     * Basic options setter
-     *
-     * @method setOptions
-     * @param options {Objects}
-     */
-    Distance.prototype.setOptions = function setOptions(options) {
-        if (options.anchor) {
-            if (options.anchor.position instanceof Vector) this.options.anchor = options.anchor.position;
-            if (options.anchor   instanceof Vector)  this.options.anchor = options.anchor;
-            if (options.anchor   instanceof Array)  this.options.anchor = new Vector(options.anchor);
-        }
-        if (options.length !== undefined) this.options.length = options.length;
-        if (options.dampingRatio !== undefined) this.options.dampingRatio = options.dampingRatio;
-        if (options.period !== undefined) this.options.period = options.period;
-        if (options.minLength !== undefined) this.options.minLength = options.minLength;
-    };
-
-    function _calcError(impulse, body) {
-        return body.mass * impulse.norm();
-    }
-
-    /**
-     * Set the anchor position
-     *
-     * @method setOptions
-     * @param anchor {Array}
-     */
-    Distance.prototype.setAnchor = function setAnchor(anchor) {
-        if (!this.options.anchor) this.options.anchor = new Vector();
-        this.options.anchor.set(anchor);
-    };
-
-    /**
-     * Adds an impulse to a physics body's velocity due to the constraint
-     *
-     * @method applyConstraint
-     * @param targets {Array.Body}  Array of bodies to apply the constraint to
-     * @param source {Body}         The source of the constraint
-     * @param dt {Number}           Delta time
-     */
-    Distance.prototype.applyConstraint = function applyConstraint(targets, source, dt) {
-        var n        = this.normal;
-        var diffP    = this.diffP;
-        var diffV    = this.diffV;
-        var impulse  = this.impulse;
-        var options  = this.options;
-
-        var dampingRatio = options.dampingRatio;
-        var period       = options.period;
-        var minLength    = options.minLength;
-
-        var p2;
-        var w2;
-
-        if (source) {
-            var v2 = source.velocity;
-            p2 = source.position;
-            w2 = source.inverseMass;
-        }
-        else {
-            p2 = this.options.anchor;
-            w2 = 0;
-        }
-
-        var length = this.options.length;
-
-        for (var i = 0; i < targets.length; i++) {
-            var body = targets[i];
-
-            var v1 = body.velocity;
-            var p1 = body.position;
-            var w1 = body.inverseMass;
-
-            diffP.set(p1.sub(p2));
-            n.set(diffP.normalize());
-
-            var dist = diffP.norm() - length;
-
-            //rope effect
-            if (Math.abs(dist) < minLength) return;
-
-            if (source) diffV.set(v1.sub(v2));
-            else diffV.set(v1);
-
-            var effMass = 1 / (w1 + w2);
-            var gamma;
-            var beta;
-
-            if (period === 0) {
-                gamma = 0;
-                beta  = 1;
-            }
-            else {
-                var c = 4 * effMass * pi * dampingRatio / period;
-                var k = 4 * effMass * pi * pi / (period * period);
-
-                gamma = 1 / (c + dt*k);
-                beta  = dt*k / (c + dt*k);
-            }
-
-            var antiDrift = beta/dt * dist;
-            var lambda    = -(n.dot(diffV) + antiDrift) / (gamma + dt/effMass);
-
-            impulse.set(n.mult(dt*lambda));
-            body.applyImpulse(impulse);
-
-            if (source) source.applyImpulse(impulse.mult(-1));
-        }
-    };
-
-    module.exports = Distance;
-});
-
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- * Owner: david@famo.us
- * @license MPL 2.0
- * @copyright Famous Industries, Inc. 2014
- */
-
-define('famous/physics/constraints/Snap',['require','exports','module','./Constraint','famous/math/Vector'],function(require, exports, module) {
-    var Constraint = require('./Constraint');
-    var Vector = require('famous/math/Vector');
-
-    /**
-     *  A spring constraint is like a spring force, except that it is always
-     *    numerically stable (even for low periods), at the expense of introducing
-     *    damping (even with dampingRatio set to 0).
-     *
-     *    Use this if you need fast spring-like behavior, e.g., snapping
-     *
-     *  @class Snap
-     *  @constructor
-     *  @extends Constraint
-     *  @param {Options} [options] An object of configurable options.
-     *  @param {Number} [options.period] The amount of time in milliseconds taken for one complete oscillation when there is no damping. Range : [150, Infinity]
-     *  @param {Number} [options.dampingRatio] Additional damping of the spring. Range : [0, 1]. At 0 this spring will still be damped, at 1 the spring will be critically damped (the spring will never oscillate)
-     *  @param {Number} [options.length] The rest length of the spring. Range: [0, Infinity].
-     *  @param {Array} [options.anchor] The location of the spring's anchor, if not another physics body.
-     *
-     */
-    function Snap(options) {
-        this.options = Object.create(this.constructor.DEFAULT_OPTIONS);
-        if (options) this.setOptions(options);
-
-        //registers
-        this.pDiff  = new Vector();
-        this.vDiff  = new Vector();
-        this.impulse1 = new Vector();
-        this.impulse2 = new Vector();
-
-        Constraint.call(this);
-    }
-
-    Snap.prototype = Object.create(Constraint.prototype);
-    Snap.prototype.constructor = Snap;
-
-    Snap.DEFAULT_OPTIONS = {
-        period        : 300,
-        dampingRatio : 0.1,
-        length : 0,
-        anchor : undefined
-    };
-
-    /** const */ var pi = Math.PI;
-
-    function _calcEnergy(impulse, disp, dt) {
-        return Math.abs(impulse.dot(disp)/dt);
-    }
-
-    /**
-     * Basic options setter
-     *
-     * @method setOptions
-     * @param options {Objects} options
-     */
-    Snap.prototype.setOptions = function setOptions(options) {
-        if (options.anchor !== undefined) {
-            if (options.anchor   instanceof Vector) this.options.anchor = options.anchor;
-            if (options.anchor.position instanceof Vector) this.options.anchor = options.anchor.position;
-            if (options.anchor   instanceof Array)  this.options.anchor = new Vector(options.anchor);
-        }
-        if (options.length !== undefined) this.options.length = options.length;
-        if (options.dampingRatio !== undefined) this.options.dampingRatio = options.dampingRatio;
-        if (options.period !== undefined) this.options.period = options.period;
-    };
-
-    /**
-     * Set the anchor position
-     *
-     * @method setOptions
-     * @param {Array} v TODO
-     */
-
-    Snap.prototype.setAnchor = function setAnchor(v) {
-        if (this.options.anchor !== undefined) this.options.anchor = new Vector();
-        this.options.anchor.set(v);
-    };
-
-    /**
-     * Calculates energy of spring
-     *
-     * @method getEnergy
-     * @param {Object} target TODO
-     * @param {Object} source TODO
-     * @return energy {Number}
-     */
-    Snap.prototype.getEnergy = function getEnergy(target, source) {
-        var options     = this.options;
-        var restLength  = options.length;
-        var anchor      = options.anchor || source.position;
-        var strength    = Math.pow(2 * pi / options.period, 2);
-
-        var dist = anchor.sub(target.position).norm() - restLength;
-
-        return 0.5 * strength * dist * dist;
-    };
-
-    /**
-     * Adds a spring impulse to a physics body's velocity due to the constraint
-     *
-     * @method applyConstraint
-     * @param targets {Array.Body}  Array of bodies to apply the constraint to
-     * @param source {Body}         The source of the constraint
-     * @param dt {Number}           Delta time
-     */
-    Snap.prototype.applyConstraint = function applyConstraint(targets, source, dt) {
-        var options         = this.options;
-        var pDiff        = this.pDiff;
-        var vDiff        = this.vDiff;
-        var impulse1     = this.impulse1;
-        var impulse2     = this.impulse2;
-        var length       = options.length;
-        var anchor       = options.anchor || source.position;
-        var period       = options.period;
-        var dampingRatio = options.dampingRatio;
-
-        for (var i = 0; i < targets.length ; i++) {
-            var target = targets[i];
-
-            var p1 = target.position;
-            var v1 = target.velocity;
-            var m1 = target.mass;
-            var w1 = target.inverseMass;
-
-            pDiff.set(p1.sub(anchor));
-            var dist = pDiff.norm() - length;
-            var effMass;
-
-            if (source) {
-                var w2 = source.inverseMass;
-                var v2 = source.velocity;
-                vDiff.set(v1.sub(v2));
-                effMass = 1/(w1 + w2);
-            }
-            else {
-                vDiff.set(v1);
-                effMass = m1;
-            }
-
-            var gamma;
-            var beta;
-
-            if (this.options.period === 0) {
-                gamma = 0;
-                beta = 1;
-            }
-            else {
-                var k = 4 * effMass * pi * pi / (period * period);
-                var c = 4 * effMass * pi * dampingRatio / period;
-
-                beta  = dt * k / (c + dt * k);
-                gamma = 1 / (c + dt*k);
-            }
-
-            var antiDrift = beta/dt * dist;
-            pDiff.normalize(-antiDrift)
-                .sub(vDiff)
-                .mult(dt / (gamma + dt/effMass))
-                .put(impulse1);
-
-            // var n = new Vector();
-            // n.set(pDiff.normalize());
-            // var lambda = -(n.dot(vDiff) + antiDrift) / (gamma + dt/effMass);
-            // impulse2.set(n.mult(dt*lambda));
-
-            target.applyImpulse(impulse1);
-
-            if (source) {
-                impulse1.mult(-1).put(impulse2);
-                source.applyImpulse(impulse2);
-            }
-
-            this.setEnergy(_calcEnergy(impulse1, pDiff, dt));
-        }
-    };
-
-    module.exports = Snap;
-});
-
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- * Owner: david@famo.us
- * @license MPL 2.0
- * @copyright Famous Industries, Inc. 2014
- */
-
-define('famous/physics/constraints/Surface',['require','exports','module','./Constraint','famous/math/Vector'],function(require, exports, module) {
-    var Constraint = require('./Constraint');
-    var Vector = require('famous/math/Vector');
-
-    /**
-     *  A constraint that keeps a physics body on a given implicit surface
-     *    regardless of other physical forces are applied to it.
-     *
-     *  @class Surface
-     *  @constructor
-     *  @extends Constraint
-     *  @param {Options} [options] An object of configurable options.
-     *  @param {Function} [options.equation] An implicitly defined surface f(x,y,z) = 0 that body is constrained to e.g. function(x,y,z) { x*x + y*y + z*z - r*r } corresponds to a sphere of radius r pixels.
-     *  @param {Number} [options.period] The spring-like reaction when the constraint is violated.
-     *  @param {Number} [options.dampingRatio] The damping-like reaction when the constraint is violated.
-     */
-    function Surface(options) {
-        this.options = Object.create(Surface.DEFAULT_OPTIONS);
-        if (options) this.setOptions(options);
-
-        this.J = new Vector();
-        this.impulse  = new Vector();
-
-        Constraint.call(this);
-    }
-
-    Surface.prototype = Object.create(Constraint.prototype);
-    Surface.prototype.constructor = Surface;
-
-    Surface.DEFAULT_OPTIONS = {
-        equation : undefined,
-        period : 0,
-        dampingRatio : 0
-    };
-
-    /** @const */ var epsilon = 1e-7;
-    /** @const */ var pi = Math.PI;
-
-    /**
-     * Basic options setter
-     *
-     * @method setOptions
-     * @param options {Objects}
-     */
-    Surface.prototype.setOptions = function setOptions(options) {
-        for (var key in options) this.options[key] = options[key];
-    };
-
-    /**
-     * Adds a surface impulse to a physics body.
-     *
-     * @method applyConstraint
-     * @param targets {Array.Body} Array of bodies to apply force to.
-     * @param source {Body} Not applicable
-     * @param dt {Number} Delta time
-     */
-    Surface.prototype.applyConstraint = function applyConstraint(targets, source, dt) {
-        var impulse = this.impulse;
-        var J       = this.J;
-        var options = this.options;
-
-        var f = options.equation;
-        var dampingRatio = options.dampingRatio;
-        var period = options.period;
-
-        for (var i = 0; i < targets.length; i++) {
-            var particle = targets[i];
-
-            var v = particle.velocity;
-            var p = particle.position;
-            var m = particle.mass;
-
-            var gamma;
-            var beta;
-
-            if (period === 0) {
-                gamma = 0;
-                beta = 1;
-            }
-            else {
-                var c = 4 * m * pi * dampingRatio / period;
-                var k = 4 * m * pi * pi / (period * period);
-
-                gamma = 1 / (c + dt*k);
-                beta  = dt*k / (c + dt*k);
-            }
-
-            var x = p.x;
-            var y = p.y;
-            var z = p.z;
-
-            var f0  = f(x, y, z);
-            var dfx = (f(x + epsilon, p, p) - f0) / epsilon;
-            var dfy = (f(x, y + epsilon, p) - f0) / epsilon;
-            var dfz = (f(x, y, p + epsilon) - f0) / epsilon;
-            J.setXYZ(dfx, dfy, dfz);
-
-            var antiDrift = beta/dt * f0;
-            var lambda = -(J.dot(v) + antiDrift) / (gamma + dt * J.normSquared() / m);
-
-            impulse.set(J.mult(dt*lambda));
-            particle.applyImpulse(impulse);
-        }
-    };
-
-    module.exports = Surface;
-});
-
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- * Owner: david@famo.us
- * @license MPL 2.0
- * @copyright Famous Industries, Inc. 2014
- */
-
-define('famous/physics/constraints/Wall',['require','exports','module','./Constraint','famous/math/Vector'],function(require, exports, module) {
-    var Constraint = require('./Constraint');
-    var Vector = require('famous/math/Vector');
-
-    /**
-     *  A wall describes an infinite two-dimensional plane that physics bodies
-     *    can collide with. To define a wall, you must give it a distance (from
-     *    the center of the physics engine's origin, and a normal defining the plane
-     *    of the wall.
-     *
-     *    (wall)
-     *      |
-     *      | (normal)     (origin)
-     *      | --->            *
-     *      |
-     *      |    (distance)
-     *      ...................
-     *            (100px)
-     *
-     *      e.g., Wall({normal : [1,0,0], distance : 100})
-     *      would be a wall 100 pixels to the left, whose normal points right
-     *
-     *  @class Wall
-     *  @constructor
-     *  @extends Constraint
-     *  @param {Options} [options] An object of configurable options.
-     *  @param {Number} [options.restitution] The energy ratio lost in a collision (0 = stick, 1 = elastic). Range : [0, 1]
-     *  @param {Number} [options.drift] Baumgarte stabilization parameter. Makes constraints "loosely" (0) or "tightly" (1) enforced. Range : [0, 1]
-     *  @param {Number} [options.slop] Amount of penetration in pixels to ignore before collision event triggers.
-     *  @param {Array} [options.normal] The normal direction to the wall.
-     *  @param {Number} [options.distance] The distance from the origin that the wall is placed.
-     *  @param {onContact} [options.onContact] How to handle collision against the wall.
-     *
-     */
-    function Wall(options) {
-        this.options = Object.create(Wall.DEFAULT_OPTIONS);
-        if (options) this.setOptions(options);
-
-        //registers
-        this.diff = new Vector();
-        this.impulse = new Vector();
-
-        Constraint.call(this);
-    }
-
-    Wall.prototype = Object.create(Constraint.prototype);
-    Wall.prototype.constructor = Wall;
-
-    /**
-     * @property Wall.ON_CONTACT
-     * @type Object
-     * @protected
-     * @static
-     */
-    Wall.ON_CONTACT = {
-
-        /**
-         * Physical bodies bounce off the wall
-         * @attribute REFLECT
-         */
-        REFLECT : 0,
-
-        /**
-         * Physical bodies are unaffected. Usecase is to fire events on contact.
-         * @attribute SILENT
-         */
-        SILENT : 1
-    };
-
-    Wall.DEFAULT_OPTIONS = {
-        restitution : 0.5,
-        drift : 0.5,
-        slop : 0,
-        normal : [1, 0, 0],
-        distance : 0,
-        onContact : Wall.ON_CONTACT.REFLECT
-    };
-
-    /*
-     * Setter for options.
-     *
-     * @method setOptions
-     * @param options {Objects}
-     */
-    Wall.prototype.setOptions = function setOptions(options) {
-        if (options.normal !== undefined) {
-            if (options.normal instanceof Vector) this.options.normal = options.normal.clone();
-            if (options.normal instanceof Array)  this.options.normal = new Vector(options.normal);
-        }
-        if (options.restitution !== undefined) this.options.restitution = options.restitution;
-        if (options.drift !== undefined) this.options.drift = options.drift;
-        if (options.slop !== undefined) this.options.slop = options.slop;
-        if (options.distance !== undefined) this.options.distance = options.distance;
-        if (options.onContact !== undefined) this.options.onContact = options.onContact;
-    };
-
-    function _getNormalVelocity(n, v) {
-        return v.dot(n);
-    }
-
-    function _getDistanceFromOrigin(p) {
-        var n = this.options.normal;
-        var d = this.options.distance;
-        return p.dot(n) + d;
-    }
-
-    function _onEnter(particle, overlap, dt) {
-        var p = particle.position;
-        var v = particle.velocity;
-        var m = particle.mass;
-        var n = this.options.normal;
-        var action = this.options.onContact;
-        var restitution = this.options.restitution;
-        var impulse = this.impulse;
-
-        var drift = this.options.drift;
-        var slop = -this.options.slop;
-        var gamma = 0;
-
-        if (this._eventOutput) {
-            var data = {particle : particle, wall : this, overlap : overlap, normal : n};
-            this._eventOutput.emit('preCollision', data);
-            this._eventOutput.emit('collision', data);
-        }
-
-        switch (action) {
-            case Wall.ON_CONTACT.REFLECT:
-                var lambda = (overlap < slop)
-                    ? -((1 + restitution) * n.dot(v) + drift / dt * (overlap - slop)) / (m * dt + gamma)
-                    : -((1 + restitution) * n.dot(v)) / (m * dt + gamma);
-
-                impulse.set(n.mult(dt * lambda));
-                particle.applyImpulse(impulse);
-                particle.setPosition(p.add(n.mult(-overlap)));
-                break;
-        }
-
-        if (this._eventOutput) this._eventOutput.emit('postCollision', data);
-    }
-
-    function _onExit(particle, overlap, dt) {
-        var action = this.options.onContact;
-        var p = particle.position;
-        var n = this.options.normal;
-
-        if (action === Wall.ON_CONTACT.REFLECT) {
-            particle.setPosition(p.add(n.mult(-overlap)));
-        }
-    }
-
-    /**
-     * Adds an impulse to a physics body's velocity due to the wall constraint
-     *
-     * @method applyConstraint
-     * @param targets {Array.Body}  Array of bodies to apply the constraint to
-     * @param source {Body}         The source of the constraint
-     * @param dt {Number}           Delta time
-     */
-    Wall.prototype.applyConstraint = function applyConstraint(targets, source, dt) {
-        var n = this.options.normal;
-
-        for (var i = 0; i < targets.length; i++) {
-            var particle = targets[i];
-            var p = particle.position;
-            var v = particle.velocity;
-            var r = particle.radius || 0;
-
-            var overlap = _getDistanceFromOrigin.call(this, p.add(n.mult(-r)));
-            var nv = _getNormalVelocity.call(this, n, v);
-
-            if (overlap <= 0) {
-                if (nv < 0) _onEnter.call(this, particle, overlap, dt);
-                else _onExit.call(this, particle, overlap, dt);
-            }
-        }
-    };
-
-    module.exports = Wall;
-});
-
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- * Owner: david@famo.us
- * @license MPL 2.0
- * @copyright Famous Industries, Inc. 2014
- */
-
-define('famous/physics/constraints/Walls',['require','exports','module','./Constraint','./Wall','famous/math/Vector'],function(require, exports, module) {
-    var Constraint = require('./Constraint');
-    var Wall = require('./Wall');
-    var Vector = require('famous/math/Vector');
-
-    /**
-     *  Walls combines one or more Wall primitives and exposes a simple API to
-     *  interact with several walls at once. A common use case would be to set up
-     *  a bounding box for a physics body, that would collide with each side.
-     *
-     *  @class Walls
-     *  @constructor
-     *  @extends Constraint
-     *  @uses Wall
-     *  @param {Options} [options] An object of configurable options.
-     *  @param {Array} [options.sides] An array of sides e.g., [Walls.LEFT, Walls.TOP]
-     *  @param {Array} [options.size] The size of the bounding box of the walls.
-     *  @param {Array} [options.origin] The center of the wall relative to the size.
-     *  @param {Array} [options.drift] Baumgarte stabilization parameter. Makes constraints "loosely" (0) or "tightly" (1) enforced. Range : [0, 1]
-     *  @param {Array} [options.slop] Amount of penetration in pixels to ignore before collision event triggers.
-     *  @param {Array} [options.restitution] The energy ratio lost in a collision (0 = stick, 1 = elastic) The energy ratio lost in a collision (0 = stick, 1 = elastic)
-     *  @param {Array} [options.onContact] How to handle collision against the wall.
-     */
-    function Walls(options) {
-        this.options = Object.create(Walls.DEFAULT_OPTIONS);
-        if (options) this.setOptions(options);
-        _createComponents.call(this, options.sides || this.options.sides);
-
-        Constraint.call(this);
-    }
-
-    Walls.prototype = Object.create(Constraint.prototype);
-    Walls.prototype.constructor = Walls;
-    /**
-     * @property Walls.ON_CONTACT
-     * @type Object
-     * @extends Wall.ON_CONTACT
-     * @static
-     */
-    Walls.ON_CONTACT = Wall.ON_CONTACT;
-
-    /**
-     * An enumeration of common types of walls
-     *    LEFT, RIGHT, TOP, BOTTOM, FRONT, BACK
-     *    TWO_DIMENSIONAL, THREE_DIMENSIONAL
-     *
-     * @property Walls.SIDES
-     * @type Object
-     * @final
-     * @static
-     */
-    Walls.SIDES = {
-        LEFT   : 0,
-        RIGHT  : 1,
-        TOP    : 2,
-        BOTTOM : 3,
-        FRONT  : 4,
-        BACK   : 5,
-        TWO_DIMENSIONAL : [0, 1, 2, 3],
-        THREE_DIMENSIONAL : [0, 1, 2, 3, 4, 5]
-    };
-
-    Walls.DEFAULT_OPTIONS = {
-        sides : Walls.SIDES.TWO_DIMENSIONAL,
-        size : [window.innerWidth, window.innerHeight, 0],
-        origin : [.5, .5, .5],
-        drift : 0.5,
-        slop : 0,
-        restitution : 0.5,
-        onContact : Walls.ON_CONTACT.REFLECT
-    };
-
-    var _SIDE_NORMALS = {
-        0 : new Vector(1, 0, 0),
-        1 : new Vector(-1, 0, 0),
-        2 : new Vector(0, 1, 0),
-        3 : new Vector(0,-1, 0),
-        4 : new Vector(0, 0, 1),
-        5 : new Vector(0, 0,-1)
-    };
-
-    function _getDistance(side, size, origin) {
-        var distance;
-        var SIDES = Walls.SIDES;
-        switch (parseInt(side)) {
-            case SIDES.LEFT:
-                distance = size[0] * origin[0];
-                break;
-            case SIDES.TOP:
-                distance = size[1] * origin[1];
-                break;
-            case SIDES.FRONT:
-                distance = size[2] * origin[2];
-                break;
-            case SIDES.RIGHT:
-                distance = size[0] * (1 - origin[0]);
-                break;
-            case SIDES.BOTTOM:
-                distance = size[1] * (1 - origin[1]);
-                break;
-            case SIDES.BACK:
-                distance = size[2] * (1 - origin[2]);
-                break;
-        }
-        return distance;
-    }
-
-    /*
-     * Setter for options.
-     *
-     * @method setOptions
-     * @param options {Objects}
-     */
-    Walls.prototype.setOptions = function setOptions(options) {
-        var resizeFlag = false;
-        if (options.restitution !== undefined) _setOptionsForEach.call(this, {restitution : options.restitution});
-        if (options.drift !== undefined) _setOptionsForEach.call(this, {drift : options.drift});
-        if (options.slop !== undefined) _setOptionsForEach.call(this, {slop : options.slop});
-        if (options.onContact !== undefined) _setOptionsForEach.call(this, {onContact : options.onContact});
-        if (options.size !== undefined) resizeFlag = true;
-        if (options.sides !== undefined) this.options.sides = options.sides;
-        if (options.origin !== undefined) resizeFlag = true;
-        if (resizeFlag) this.setSize(options.size, options.origin);
-    };
-
-    function _createComponents(sides) {
-        this.components = {};
-        var components = this.components;
-
-        for (var i = 0; i < sides.length; i++) {
-            var side = sides[i];
-            components[i] = new Wall({
-                normal   : _SIDE_NORMALS[side].clone(),
-                distance : _getDistance(side, this.options.size, this.options.origin)
-            });
-        }
-    }
-
-    /*
-     * Setter for size.
-     *
-     * @method setOptions
-     * @param options {Objects}
-     */
-    Walls.prototype.setSize = function setSize(size, origin) {
-        origin = origin || this.options.origin;
-        if (origin.length < 3) origin[2] = 0.5;
-
-        this.forEach(function(wall, side) {
-            var d = _getDistance(side, size, origin);
-            wall.setOptions({distance : d});
-        });
-
-        this.options.size   = size;
-        this.options.origin = origin;
-    };
-
-    function _setOptionsForEach(options) {
-        this.forEach(function(wall) {
-            wall.setOptions(options);
-        });
-        for (var key in options) this.options[key] = options[key];
-    }
-
-    /**
-     * Adds an impulse to a physics body's velocity due to the walls constraint
-     *
-     * @method applyConstraint
-     * @param targets {Array.Body}  Array of bodies to apply the constraint to
-     * @param source {Body}         The source of the constraint
-     * @param dt {Number}           Delta time
-     */
-    Walls.prototype.applyConstraint = function applyConstraint(targets, source, dt) {
-        this.forEach(function(wall) {
-            wall.applyConstraint(targets, source, dt);
-        });
-    };
-
-    /**
-     * Apply a method to each wall making up the walls
-     *
-     * @method applyConstraint
-     * @param fn {Function}  Function that takes in a wall as its first parameter
-     */
-    Walls.prototype.forEach = function forEach(fn) {
-        var sides = this.options.sides;
-        for (var key in this.sides) fn(sides[key], key);
-    };
-
-    /**
-     * Rotates the walls by an angle in the XY-plane
-     *
-     * @method applyConstraint
-     * @param angle {Function}
-     */
-    Walls.prototype.rotateZ = function rotateZ(angle) {
-        this.forEach(function(wall) {
-            var n = wall.options.normal;
-            n.rotateZ(angle).put(n);
-        });
-    };
-
-    /**
-     * Rotates the walls by an angle in the YZ-plane
-     *
-     * @method applyConstraint
-     * @param angle {Function}
-     */
-    Walls.prototype.rotateX = function rotateX(angle) {
-        this.forEach(function(wall) {
-            var n = wall.options.normal;
-            n.rotateX(angle).put(n);
-        });
-    };
-
-    /**
-     * Rotates the walls by an angle in the XZ-plane
-     *
-     * @method applyConstraint
-     * @param angle {Function}
-     */
-    Walls.prototype.rotateY = function rotateY(angle) {
-        this.forEach(function(wall) {
-            var n = wall.options.normal;
-            n.rotateY(angle).put(n);
-        });
-    };
-
-    module.exports = Walls;
-});
-
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- * Owner: david@famo.us
- * @license MPL 2.0
- * @copyright Famous Industries, Inc. 2014
- */
-
-define('famous/physics/forces/Force',['require','exports','module','famous/math/Vector','famous/core/EventHandler'],function(require, exports, module) {
-    var Vector = require('famous/math/Vector');
-    var EventHandler = require('famous/core/EventHandler');
-
-    /**
-     * Force base class.
-     *
-     * @class Force
-     * @uses EventHandler
-     * @constructor
-     */
-    function Force(force) {
-        this.force = new Vector(force);
-        this._energy = 0.0;
-        this._eventOutput = null;
-    }
-
-    /**
-     * Basic setter for options
-     *
-     * @method setOptions
-     * @param options {Objects}
-     */
-    Force.prototype.setOptions = function setOptions(options) {
-        for (var key in options) this.options[key] = options[key];
-    };
-
-    /**
-     * Adds a force to a physics body's force accumulator.
-     *
-     * @method applyForce
-     * @param body {Body}
-     */
-    Force.prototype.applyForce = function applyForce(body) {
-        body.applyForce(this.force);
-    };
-
-    /**
-     * Getter for a force's potential energy.
-     *
-     * @method getEnergy
-     * @return energy {Number}
-     */
-    Force.prototype.getEnergy = function getEnergy() {
-        return this._energy;
-    };
-
-    /*
-     * Setter for a force's potential energy.
-     *
-     * @method setEnergy
-     * @param energy {Number}
-     */
-    Force.prototype.setEnergy = function setEnergy(energy) {
-        this._energy = energy;
-    };
-
-    function _createEventOutput() {
-        this._eventOutput = new EventHandler();
-        this._eventOutput.bindThis(this);
-        EventHandler.setOutputHandler(this, this._eventOutput);
-    }
-
-    Force.prototype.on = function on() {
-        _createEventOutput.call(this);
-        return this.on.apply(this, arguments);
-    };
-    Force.prototype.addListener = function addListener() {
-        _createEventOutput.call(this);
-        return this.addListener.apply(this, arguments);
-    };
-    Force.prototype.pipe = function pipe() {
-        _createEventOutput.call(this);
-        return this.pipe.apply(this, arguments);
-    };
-    Force.prototype.removeListener = function removeListener() {
-        return this.removeListener.apply(this, arguments);
-    };
-    Force.prototype.unpipe = function unpipe() {
-        return this.unpipe.apply(this, arguments);
-    };
-
-    module.exports = Force;
-});
-
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- * Owner: david@famo.us
- * @license MPL 2.0
- * @copyright Famous Industries, Inc. 2014
- */
-
-define('famous/physics/forces/Drag',['require','exports','module','./Force'],function(require, exports, module) {
-    var Force = require('./Force');
-
-    /**
-     * Drag is a force that opposes velocity. Attach it to the physics engine
-     * to slow down a physics body in motion.
-     *
-     * @class Drag
-     * @constructor
-     * @extends Force
-     * @param {Object} options options to set on drag
-     */
-    function Drag(options) {
-        this.options = Object.create(this.constructor.DEFAULT_OPTIONS);
-        if (options) this.setOptions(options);
-
-        Force.call(this);
-    }
-
-    Drag.prototype = Object.create(Force.prototype);
-    Drag.prototype.constructor = Drag;
-
-    /**
-     * @property Drag.FORCE_FUNCTIONS
-     * @type Object
-     * @protected
-     * @static
-     */
-    Drag.FORCE_FUNCTIONS = {
-
-        /**
-         * A drag force proportional to the velocity
-         * @attribute LINEAR
-         * @type Function
-         * @param {Vector} velocity
-         * @return {Vector} drag force
-         */
-        LINEAR : function(velocity) {
-            return velocity;
-        },
-
-        /**
-         * A drag force proportional to the square of the velocity
-         * @attribute QUADRATIC
-         * @type Function
-         * @param {Vector} velocity
-         * @return {Vector} drag force
-         */
-        QUADRATIC : function(velocity) {
-            return velocity.mult(velocity.norm());
-        }
-    };
-
-    /**
-     * @property Drag.DEFAULT_OPTIONS
-     * @type Object
-     * @protected
-     * @static
-     */
-    Drag.DEFAULT_OPTIONS = {
-
-        /**
-         * The strength of the force
-         *    Range : [0, 0.1]
-         * @attribute strength
-         * @type Number
-         * @default 0.01
-         */
-        strength : 0.01,
-
-        /**
-         * The type of opposing force
-         * @attribute forceFunction
-         * @type Function
-         */
-        forceFunction : Drag.FORCE_FUNCTIONS.LINEAR
-    };
-
-    /**
-     * Adds a drag force to a physics body's force accumulator.
-     *
-     * @method applyForce
-     * @param targets {Array.Body} Array of bodies to apply drag force to.
-     */
-    Drag.prototype.applyForce = function applyForce(targets) {
-        var strength        = this.options.strength;
-        var forceFunction   = this.options.forceFunction;
-        var force           = this.force;
-        for (var index = 0; index < targets.length; index++) {
-            var particle = targets[index];
-            forceFunction(particle.velocity).mult(-strength).put(force);
-            particle.applyForce(force);
-        }
-    };
-
-    /**
-     * Basic options setter
-     *
-     * @method setOptions
-     * @param {Objects} options
-     */
-    Drag.prototype.setOptions = function setOptions(options) {
-        for (var key in options) this.options[key] = options[key];
-    };
-
-    module.exports = Drag;
-});
-
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- * Owner: david@famo.us
- * @license MPL 2.0
- * @copyright Famous Industries, Inc. 2014
- */
-
-//TODO: test options manager
-define('famous/physics/forces/Repulsion',['require','exports','module','./Force','famous/math/Vector'],function(require, exports, module) {
-    var Force = require('./Force');
-    var Vector = require('famous/math/Vector');
-
-    /**
-     *  Repulsion is a force that repels (attracts) bodies away (towards)
-     *    each other. A repulsion of negative strength is attractive.
-     *
-     *  @class Repulsion
-     *  @constructor
-     *  @extends Force
-     *  @param {Object} options overwrites default options
-     */
-    function Repulsion(options) {
-        this.options = Object.create(Repulsion.DEFAULT_OPTIONS);
-        if (options) this.setOptions(options);
-
-        //registers
-        this.disp  = new Vector();
-
-        Force.call(this);
-    }
-
-    Repulsion.prototype = Object.create(Force.prototype);
-    Repulsion.prototype.constructor = Repulsion;
-    /**
-     * @property Repulsion.DECAY_FUNCTIONS
-     * @type Object
-     * @protected
-     * @static
-     */
-    Repulsion.DECAY_FUNCTIONS = {
-
-        /**
-         * A linear decay function
-         * @attribute LINEAR
-         * @type Function
-         * @param {Number} r distance from the source body
-         * @param {Number} cutoff the effective radius of influence
-         */
-        LINEAR : function(r, cutoff) {
-            return Math.max(1 - (1 / cutoff) * r, 0);
-        },
-
-        /**
-         * A Morse potential decay function (http://en.wikipedia.org/wiki/Morse_potential)
-         * @attribute MORSE
-         * @type Function
-         * @param {Number} r distance from the source body
-         * @param {Number} cutoff the minimum radius of influence
-         */
-        MORSE : function(r, cutoff) {
-            var r0 = (cutoff === 0) ? 100 : cutoff;
-            var rShifted = r + r0 * (1 - Math.log(2)); //shift by x-intercept
-            return Math.max(1 - Math.pow(1 - Math.exp(rShifted/r0 - 1), 2), 0);
-        },
-
-        /**
-         * An inverse distance decay function
-         * @attribute INVERSE
-         * @type Function
-         * @param {Number} r distance from the source body
-         * @param {Number} cutoff a distance shift to avoid singularities
-         */
-        INVERSE : function(r, cutoff) {
-            return 1 / (1 - cutoff + r);
-        },
-
-        /**
-         * An inverse squared distance decay function
-         * @attribute INVERSE
-         * @type Function
-         * @param {Number} r distance from the source body
-         * @param {Number} cutoff a distance shift to avoid singularities
-         */
-        GRAVITY : function(r, cutoff) {
-            return 1 / (1 - cutoff + r*r);
-        }
-    };
-
-    /**
-     * @property Repulsion.DEFAULT_OPTIONS
-     * @type Object
-     * @protected
-     * @static
-     */
-    Repulsion.DEFAULT_OPTIONS = {
-
-        /**
-         * The strength of the force
-         *    Range : [0, 100]
-         * @attribute strength
-         * @type Number
-         * @default 1
-         */
-        strength : 1,
-
-        /**
-         * The location of the force, if not another physics body
-         *
-         * @attribute anchor
-         * @type Number
-         * @default 0.01
-         * @optional
-         */
-        anchor : undefined,
-
-        /**
-         * The range of the repulsive force
-         * @attribute radii
-         * @type Array
-         * @default [0, Infinity]
-         */
-        range : [0, Infinity],
-
-        /**
-         * A normalization for the force to avoid singularities at the origin
-         * @attribute cutoff
-         * @type Number
-         * @default 0
-         */
-        cutoff : 0,
-
-        /**
-         * The maximum magnitude of the force
-         *    Range : [0, Infinity]
-         * @attribute cap
-         * @type Number
-         * @default Infinity
-         */
-        cap : Infinity,
-
-        /**
-         * The type of decay the repulsive force should have
-         * @attribute decayFunction
-         * @type Function
-         */
-        decayFunction : Repulsion.DECAY_FUNCTIONS.GRAVITY
-    };
-
-    /*
-     * Setter for options.
-     *
-     * @method setOptions
-     * @param {Objects} options
-     */
-    Repulsion.prototype.setOptions = function setOptions(options) {
-        if (options.anchor !== undefined) {
-            if (options.anchor.position instanceof Vector) this.options.anchor = options.anchor.position;
-            if (options.anchor   instanceof Array)  this.options.anchor = new Vector(options.anchor);
-            delete options.anchor;
-        }
-        for (var key in options) this.options[key] = options[key];
-    };
-
-    /**
-     * Adds a drag force to a physics body's force accumulator.
-     *
-     * @method applyForce
-     * @param targets {Array.Body}  Array of bodies to apply force to
-     * @param source {Body}         The source of the force
-     */
-    Repulsion.prototype.applyForce = function applyForce(targets, source) {
-        var options     = this.options;
-        var force       = this.force;
-        var disp        = this.disp;
-
-        var strength    = options.strength;
-        var anchor      = options.anchor || source.position;
-        var cap         = options.cap;
-        var cutoff      = options.cutoff;
-        var rMin        = options.range[0];
-        var rMax        = options.range[1];
-        var decayFn     = options.decayFunction;
-
-        if (strength === 0) return;
-
-        for (var index in targets) {
-            var particle = targets[index];
-
-            if (particle === source) continue;
-
-            var m1 = particle.mass;
-            var p1 = particle.position;
-
-            disp.set(p1.sub(anchor));
-            var r = disp.norm();
-
-            if (r < rMax && r > rMin) {
-                force.set(disp.normalize(strength * m1 * decayFn(r, cutoff)).cap(cap));
-                particle.applyForce(force);
-            }
-        }
-
-    };
-
-    module.exports = Repulsion;
-});
-
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- * Owner: david@famo.us
- * @license MPL 2.0
- * @copyright Famous Industries, Inc. 2014
- */
-
-define('famous/physics/forces/RotationalDrag',['require','exports','module','./Drag'],function(require, exports, module) {
-    var Drag = require('./Drag');
-
-    /**
-     * Rotational drag is a force that opposes angular velocity.
-     *   Attach it to a physics body to slow down its rotation.
-     *
-     * @class RotationalDrag
-     * @constructor
-     * @extends Force
-     * @param {Object} options options to set on drag
-     */
-    function RotationalDrag(options) {
-        Drag.call(this, options);
-    }
-
-    RotationalDrag.prototype = Object.create(Drag.prototype);
-    RotationalDrag.prototype.constructor = RotationalDrag;
-
-    RotationalDrag.DEFAULT_OPTIONS = Drag.DEFAULT_OPTIONS;
-    RotationalDrag.FORCE_FUNCTIONS = Drag.FORCE_FUNCTIONS;
-
-    /**
-     * @property Repulsion.FORCE_FUNCTIONS
-     * @type Object
-     * @protected
-     * @static
-     */
-    RotationalDrag.FORCE_FUNCTIONS = {
-
-        /**
-         * A drag force proprtional to the angular velocity
-         * @attribute LINEAR
-         * @type Function
-         * @param {Vector} angularVelocity
-         * @return {Vector} drag force
-         */
-        LINEAR : function(angularVelocity) {
-            return angularVelocity;
-        },
-
-        /**
-         * A drag force proprtional to the square of the angular velocity
-         * @attribute QUADRATIC
-         * @type Function
-         * @param {Vector} angularVelocity
-         * @return {Vector} drag force
-         */
-        QUADRATIC : function(angularVelocity) {
-            return angularVelocity.mult(angularVelocity.norm());
-        }
-    };
-
-    /**
-     * Adds a rotational drag force to a physics body's torque accumulator.
-     *
-     * @method applyForce
-     * @param targets {Array.Body} Array of bodies to apply drag force to.
-     */
-    RotationalDrag.prototype.applyForce = function applyForce(targets) {
-        var strength       = this.options.strength;
-        var forceFunction  = this.options.forceFunction;
-        var force          = this.force;
-
-        //TODO: rotational drag as function of inertia
-        for (var index = 0; index < targets.length; index++) {
-            var particle = targets[index];
-            forceFunction(particle.angularVelocity).mult(-100*strength).put(force);
-            particle.applyTorque(force);
-        }
-    };
-
-    /*
-     * Setter for options.
-     *
-     * @method setOptions
-     * @param {Objects} options
-     */
-    RotationalDrag.prototype.setOptions = function setOptions(options) {
-        for (var key in options) this.options[key] = options[key];
-    };
-
-    module.exports = RotationalDrag;
-});
-
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- * Owner: david@famo.us
- * @license MPL 2.0
- * @copyright Famous Industries, Inc. 2014
- */
-
-define('famous/physics/forces/Spring',['require','exports','module','./Force','famous/math/Vector'],function(require, exports, module) {
-    var Force = require('./Force');
-    var Vector = require('famous/math/Vector');
-
-    /**
-     *  A force that moves a physics body to a location with a spring motion.
-     *    The body can be moved to another physics body, or an anchor point.
-     *
-     *  @class Spring
-     *  @constructor
-     *  @extends Force
-     *  @param {Object} options options to set on drag
-     */
-    function Spring(options) {
-        this.options = Object.create(this.constructor.DEFAULT_OPTIONS);
-        if (options) this.setOptions(options);
-
-        //registers
-        this.disp = new Vector(0,0,0);
-
-        _init.call(this);
-        Force.call(this);
-    }
-
-    Spring.prototype = Object.create(Force.prototype);
-    Spring.prototype.constructor = Spring;
-
-    /** @const */ var pi = Math.PI;
-
-    /**
-     * @property Spring.FORCE_FUNCTIONS
-     * @type Object
-     * @protected
-     * @static
-     */
-    Spring.FORCE_FUNCTIONS = {
-
-        /**
-         * A FENE (Finitely Extensible Nonlinear Elastic) spring force
-         *      see: http://en.wikipedia.org/wiki/FENE
-         * @attribute FENE
-         * @type Function
-         * @param {Number} dist current distance target is from source body
-         * @param {Number} rMax maximum range of influence
-         * @return {Number} unscaled force
-         */
-        FENE : function(dist, rMax) {
-            var rMaxSmall = rMax * .99;
-            var r = Math.max(Math.min(dist, rMaxSmall), -rMaxSmall);
-            return r / (1 - r * r/(rMax * rMax));
-        },
-
-        /**
-         * A Hookean spring force, linear in the displacement
-         *      see: http://en.wikipedia.org/wiki/FENE
-         * @attribute FENE
-         * @type Function
-         * @param {Number} dist current distance target is from source body
-         * @return {Number} unscaled force
-         */
-        HOOK : function(dist) {
-            return dist;
-        }
-    };
-
-    /**
-     * @property Spring.DEFAULT_OPTIONS
-     * @type Object
-     * @protected
-     * @static
-     */
-    Spring.DEFAULT_OPTIONS = {
-
-        /**
-         * The amount of time in milliseconds taken for one complete oscillation
-         * when there is no damping
-         *    Range : [150, Infinity]
-         * @attribute period
-         * @type Number
-         * @default 300
-         */
-        period        : 300,
-
-        /**
-         * The damping of the spring.
-         *    Range : [0, 1]
-         *    0 = no damping, and the spring will oscillate forever
-         *    1 = critically damped (the spring will never oscillate)
-         * @attribute dampingRatio
-         * @type Number
-         * @default 0.1
-         */
-        dampingRatio : 0.1,
-
-        /**
-         * The rest length of the spring
-         *    Range : [0, Infinity]
-         * @attribute length
-         * @type Number
-         * @default 0
-         */
-        length : 0,
-
-        /**
-         * The maximum length of the spring (for a FENE spring)
-         *    Range : [0, Infinity]
-         * @attribute length
-         * @type Number
-         * @default Infinity
-         */
-        maxLength : Infinity,
-
-        /**
-         * The location of the spring's anchor, if not another physics body
-         *
-         * @attribute anchor
-         * @type Array
-         * @optional
-         */
-        anchor : undefined,
-
-        /**
-         * The type of spring force
-         * @attribute forceFunction
-         * @type Function
-         */
-        forceFunction : Spring.FORCE_FUNCTIONS.HOOK
-    };
-
-    function _setForceFunction(fn) {
-        this.forceFunction = fn;
-    }
-
-    function _calcStiffness() {
-        var options = this.options;
-        options.stiffness = Math.pow(2 * pi / options.period, 2);
-    }
-
-    function _calcDamping() {
-        var options = this.options;
-        options.damping = 4 * pi * options.dampingRatio / options.period;
-    }
-
-    function _calcEnergy(strength, dist) {
-        return 0.5 * strength * dist * dist;
-    }
-
-    function _init() {
-        _setForceFunction.call(this, this.options.forceFunction);
-        _calcStiffness.call(this);
-        _calcDamping.call(this);
-    }
-
-    /**
-     * Basic options setter
-     *
-     * @method setOptions
-     * @param options {Objects}
-     */
-    Spring.prototype.setOptions = function setOptions(options) {
-        if (options.anchor !== undefined) {
-            if (options.anchor.position instanceof Vector) this.options.anchor = options.anchor.position;
-            if (options.anchor   instanceof Vector)  this.options.anchor = options.anchor;
-            if (options.anchor   instanceof Array)  this.options.anchor = new Vector(options.anchor);
-        }
-        if (options.period !== undefined) this.options.period = options.period;
-        if (options.dampingRatio !== undefined) this.options.dampingRatio = options.dampingRatio;
-        if (options.length !== undefined) this.options.length = options.length;
-        if (options.forceFunction !== undefined) this.options.forceFunction = options.forceFunction;
-        if (options.maxLength !== undefined) this.options.maxLength = options.maxLength;
-
-        _init.call(this);
-    };
-
-    /**
-     * Adds a spring force to a physics body's force accumulator.
-     *
-     * @method applyForce
-     * @param targets {Array.Body} Array of bodies to apply force to.
-     */
-    Spring.prototype.applyForce = function applyForce(targets, source) {
-        var force        = this.force;
-        var disp         = this.disp;
-        var options      = this.options;
-
-        var stiffness    = options.stiffness;
-        var damping      = options.damping;
-        var restLength   = options.length;
-        var lMax         = options.maxLength;
-        var anchor       = options.anchor || source.position;
-
-        for (var i = 0; i < targets.length; i++) {
-            var target = targets[i];
-            var p2 = target.position;
-            var v2 = target.velocity;
-
-            anchor.sub(p2).put(disp);
-            var dist = disp.norm() - restLength;
-
-            if (dist === 0) return;
-
-            //if dampingRatio specified, then override strength and damping
-            var m      = target.mass;
-            stiffness *= m;
-            damping   *= m;
-
-            disp.normalize(stiffness * this.forceFunction(dist, lMax))
-                .put(force);
-
-            if (damping)
-                if (source) force.add(v2.sub(source.velocity).mult(-damping)).put(force);
-                else force.add(v2.mult(-damping)).put(force);
-
-            target.applyForce(force);
-            if (source) source.applyForce(force.mult(-1));
-
-            this.setEnergy(_calcEnergy(stiffness, dist));
-        }
-    };
-
-    /**
-     * Calculates the potential energy of the spring.
-     *
-     * @method getEnergy
-     * @param target {Body}     The physics body attached to the spring
-     * @return energy {Number}
-     */
-    Spring.prototype.getEnergy = function getEnergy(target) {
-        var options        = this.options;
-        var restLength  = options.length;
-        var anchor      = options.anchor;
-        var strength    = options.stiffness;
-
-        var dist = anchor.sub(target.position).norm() - restLength;
-        return 0.5 * strength * dist * dist;
-    };
-
-    /**
-     * Sets the anchor to a new position
-     *
-     * @method setAnchor
-     * @param anchor {Array}    New anchor of the spring
-     */
-    Spring.prototype.setAnchor = function setAnchor(anchor) {
-        if (!this.options.anchor) this.options.anchor = new Vector();
-        this.options.anchor.set(anchor);
-    };
-
-    module.exports = Spring;
-});
-
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- * Owner: david@famo.us
- * @license MPL 2.0
- * @copyright Famous Industries, Inc. 2014
- */
-
-//TODO: test inheritance
-define('famous/physics/forces/RotationalSpring',['require','exports','module','./Spring'],function(require, exports, module) {
-    var Spring = require('./Spring');
-
-    /**
-     *  A force that rotates a physics body back to target Euler angles.
-     *  Just as a spring translates a body to a particular X, Y, Z, location,
-     *  a rotational spring rotates a body to a particular X, Y, Z Euler angle.
-     *      Note: there is no physical agent that does this in the "real world"
-     *
-     *  @class RotationalSpring
-     *  @constructor
-     *  @extends Spring
-     *  @param {Object} options options to set on drag
-     */
-    function RotationalSpring(options) {
-        Spring.call(this, options);
-    }
-
-    RotationalSpring.prototype = Object.create(Spring.prototype);
-    RotationalSpring.prototype.constructor = RotationalSpring;
-
-    RotationalSpring.DEFAULT_OPTIONS = Spring.DEFAULT_OPTIONS;
-    RotationalSpring.FORCE_FUNCTIONS = Spring.FORCE_FUNCTIONS;
-
-    /**
-     * Adds a torque force to a physics body's torque accumulator.
-     *
-     * @method applyForce
-     * @param targets {Array.Body} Array of bodies to apply torque to.
-     */
-    RotationalSpring.prototype.applyForce = function applyForce(targets) {
-        var force        = this.force;
-        var options      = this.options;
-        var disp         = this.disp;
-
-        var stiffness    = options.stiffness;
-        var damping      = options.damping;
-        var restLength   = options.length;
-        var anchor       = options.anchor;
-
-        for (var i = 0; i < targets.length; i++) {
-            var target = targets[i];
-
-            disp.set(anchor.sub(target.orientation));
-            var dist = disp.norm() - restLength;
-
-            if (dist === 0) return;
-
-            //if dampingRatio specified, then override strength and damping
-            var m      = target.mass;
-            stiffness *= m;
-            damping   *= m;
-
-            force.set(disp.normalize(stiffness * this.forceFunction(dist, this.options.lMax)));
-
-            if (damping) force.set(force.add(target.angularVelocity.mult(-damping)));
-
-            target.applyTorque(force);
-        }
-    };
-
-    /**
-     * Calculates the potential energy of the rotational spring.
-     *
-     * @method getEnergy
-     * @param {Body} target The physics body attached to the spring
-     */
-    RotationalSpring.prototype.getEnergy = function getEnergy(target) {
-        var options     = this.options;
-        var restLength  = options.length;
-        var anchor      = options.anchor;
-        var strength    = options.stiffness;
-
-        var dist = anchor.sub(target.orientation).norm() - restLength;
-        return 0.5 * strength * dist * dist;
-    };
-
-    module.exports = RotationalSpring;
-});
-
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- * Owner: david@famo.us
- * @license MPL 2.0
- * @copyright Famous Industries, Inc. 2014
- */
-
-define('famous/physics/forces/VectorField',['require','exports','module','./Force','famous/math/Vector'],function(require, exports, module) {
-    var Force = require('./Force');
-    var Vector = require('famous/math/Vector');
-
-    /**
-     *  A force that moves a physics body to a location with a spring motion.
-     *    The body can be moved to another physics body, or an anchor point.
-     *
-     *  @class VectorField
-     *  @constructor
-     *  @extends Force
-     *  @param {Object} options options to set on drag
-     */
-    function VectorField(options) {
-        this.options = Object.create(VectorField.DEFAULT_OPTIONS);
-        if (options) this.setOptions(options);
-
-        _setFieldOptions.call(this, this.options.field);
-        Force.call(this);
-
-        //registers
-        this.evaluation = new Vector(0,0,0);
-    }
-
-    VectorField.prototype = Object.create(Force.prototype);
-    VectorField.prototype.constructor = VectorField;
-
-    /**
-     * @property Spring.FORCE_FUNCTIONS
-     * @type Object
-     * @protected
-     * @static
-     */
-    VectorField.FIELDS = {
-        /**
-         * Constant force, e.g., gravity
-         * @attribute CONSTANT
-         * @type Function
-         * @param v {Vector}        Current position of physics body
-         * @param options {Object}  The direction of the force
-         *      Pass a {direction : Vector} into the VectorField options
-         * @return {Number} unscaled force
-         */
-        CONSTANT : function(v, options) {
-            return v.set(options.direction);
-        },
-
-        /**
-         * Linear force
-         * @attribute LINEAR
-         * @type Function
-         * @param v {Vector} Current position of physics body
-         * @return {Number} unscaled force
-         */
-        LINEAR : function(v) {
-            return v;
-        },
-
-        /**
-         * Radial force, e.g., Hookean spring
-         * @attribute RADIAL
-         * @type Function
-         * @param v {Vector} Current position of physics body
-         * @return {Number} unscaled force
-         */
-        RADIAL : function(v) {
-            return v.set(v.mult(-1, v));
-        },
-
-        /**
-         * Spherical force
-         * @attribute SPHERE_ATTRACTOR
-         * @type Function
-         * @param v {Vector}        Current position of physics body
-         * @param options {Object}  An object with the radius of the sphere
-         *      Pass a {radius : Number} into the VectorField options
-         * @return {Number} unscaled force
-         */
-        SPHERE_ATTRACTOR : function(v, options) {
-            return v.set(v.mult((options.radius - v.norm()) / v.norm()));
-        },
-
-        /**
-         * Point attractor force, e.g., Hookean spring with an anchor
-         * @attribute POINT_ATTRACTOR
-         * @type Function
-         * @param v {Vector}        Current position of physics body
-         * @param options {Object}  And object with the position of the attractor
-         *      Pass a {position : Vector} into the VectorField options
-         * @return {Number} unscaled force
-         */
-        POINT_ATTRACTOR : function(v, options) {
-            return v.set(options.position.sub(v));
-        }
-    };
-
-    /**
-     * @property VectorField.DEFAULT_OPTIONS
-     * @type Object
-     * @protected
-     * @static
-     */
-    VectorField.DEFAULT_OPTIONS = {
-
-        /**
-         * The strength of the force
-         *    Range : [0, 10]
-         * @attribute strength
-         * @type Number
-         * @default 1
-         */
-        strength : 1,
-
-        /**
-         * Type of vectorfield
-         *    Range : [0, 100]
-         * @attribute field
-         * @type Function
-         */
-        field : VectorField.FIELDS.CONSTANT
-    };
-
-    /**
-     * Basic options setter
-     *
-     * @method setOptions
-     * @param {Objects} options
-     */
-    VectorField.prototype.setOptions = function setOptions(options) {
-        for (var key in options) this.options[key] = options[key];
-    };
-
-    function _setFieldOptions(field) {
-        var FIELDS = VectorField.FIELDS;
-
-        switch (field) {
-            case FIELDS.CONSTANT:
-                if (!this.options.direction) this.options.direction = new Vector(0,1,0);
-                break;
-            case FIELDS.POINT_ATTRACTOR:
-                if (!this.options.position) this.options.position = new Vector(0,0,0);
-                break;
-            case FIELDS.SPHERE_ATTRACTOR:
-                if (!this.options.radius) this.options.radius = 1;
-                break;
-        }
-    }
-
-    function _evaluate(v) {
-        var evaluation = this.evaluation;
-        var field = this.options.field;
-        evaluation.set(v);
-        return field(evaluation, this.options);
-    }
-
-    /**
-     * Adds the vectorfield's force to a physics body's force accumulator.
-     *
-     * @method applyForce
-     * @param targets {Array.body} Array of bodies to apply force to.
-     */
-    VectorField.prototype.applyForce = function applyForce(targets) {
-        var force = this.force;
-        for (var i = 0; i < targets.length; i++) {
-            var particle = targets[i];
-            force.set(
-                _evaluate.call(this, particle.position)
-                .mult(particle.mass * this.options.strength)
-            );
-            particle.applyForce(force);
-        }
-    };
-
-    module.exports = VectorField;
+    module.exports = famous.physics.PhysicsEngine = PhysicsEngine;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -12261,7 +12412,7 @@ define('famous/surfaces/CanvasSurface',['require','exports','module','famous/cor
         }
     };
 
-    module.exports = CanvasSurface;
+    module.exports = famous.surfaces.CanvasSurface = CanvasSurface;
 });
 
 
@@ -12377,10 +12528,10 @@ define('famous/surfaces/ContainerSurface',['require','exports','module','famous/
         return result;
     };
 
-    module.exports = ContainerSurface;
+    module.exports = famous.surfaces.ContainerSurface = ContainerSurface;
 });
 
-define('famous/surfaces/FormContainerSurface',['require','exports','module','./ContainerSurface'],function(require, exports, module) {
+define('famous/surfaces/FormContainerSurface.js',['require','exports','module','./ContainerSurface'],function(require, exports, module) {
     var ContainerSurface = require('./ContainerSurface');
 
     function FormContainerSurface(options) {
@@ -12398,7 +12549,7 @@ define('famous/surfaces/FormContainerSurface',['require','exports','module','./C
         return ContainerSurface.prototype.deploy.apply(this, arguments);
     };
 
-    module.exports = FormContainerSurface;
+    module.exports = famous.surfaces.FormContainerSurface = FormContainerSurface;
 });
 
 
@@ -12411,7 +12562,7 @@ define('famous/surfaces/FormContainerSurface',['require','exports','module','./C
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/surfaces/ImageSurface',['require','exports','module','famous/core/Surface'],function(require, exports, module) {
+define('famous/surfaces/ImageSurface.js',['require','exports','module','famous/core/Surface'],function(require, exports, module) {
     var Surface = require('famous/core/Surface');
 
     /**
@@ -12429,6 +12580,33 @@ define('famous/surfaces/ImageSurface',['require','exports','module','famous/core
         Surface.apply(this, arguments);
     }
 
+    var urlCache = [];
+    var countCache = [];
+    var nodeCache = [];
+    var cacheEnabled = true;
+
+    ImageSurface.enableCache = function enableCache() {
+        cacheEnabled = true;
+    };
+
+    ImageSurface.disableCache = function disableCache() {
+        cacheEnabled = false;
+    };
+
+    ImageSurface.clearCache = function clearCache() {
+        urlCache = [];
+        countCache = [];
+        nodeCache = [];
+    };
+
+    ImageSurface.getCache = function getCache() {
+        return {
+            urlCache: urlCache,
+            countCache: countCache,
+            nodeCache: countCache
+        };
+    };
+
     ImageSurface.prototype = Object.create(Surface.prototype);
     ImageSurface.prototype.constructor = ImageSurface;
     ImageSurface.prototype.elementType = 'img';
@@ -12440,6 +12618,26 @@ define('famous/surfaces/ImageSurface',['require','exports','module','famous/core
      * @param {string} imageUrl
      */
     ImageSurface.prototype.setContent = function setContent(imageUrl) {
+        var urlIndex = urlCache.indexOf(this._imageUrl);
+        if (urlIndex !== -1) {
+            if (countCache[urlIndex] === 1) {
+                urlCache.splice(urlIndex, 1);
+                countCache.splice(urlIndex, 1);
+                nodeCache.splice(urlIndex, 1);
+            } else {
+                countCache[urlIndex]--;
+            }
+        }
+
+        urlIndex = urlCache.indexOf(imageUrl);
+        if (urlIndex === -1) {
+            urlCache.push(imageUrl);
+            countCache.push(1);
+        }
+        else {
+            countCache[urlIndex]++;
+        }
+
         this._imageUrl = imageUrl;
         this._contentDirty = true;
     };
@@ -12452,6 +12650,13 @@ define('famous/surfaces/ImageSurface',['require','exports','module','famous/core
      * @param {Node} target document parent of this container
      */
     ImageSurface.prototype.deploy = function deploy(target) {
+        var urlIndex = urlCache.indexOf(this._imageUrl);
+        if (nodeCache[urlIndex] === undefined && cacheEnabled) {
+            var img = new Image();
+            img.src = this._imageUrl || '';
+            nodeCache[urlIndex] = img;
+        }
+
         target.src = this._imageUrl || '';
     };
 
@@ -12467,7 +12672,7 @@ define('famous/surfaces/ImageSurface',['require','exports','module','famous/core
         target.src = '';
     };
 
-    module.exports = ImageSurface;
+    module.exports = famous.surfaces.ImageSurface = ImageSurface;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -12629,10 +12834,10 @@ define('famous/surfaces/InputSurface',['require','exports','module','famous/core
         target.name = this._name;
     };
 
-    module.exports = InputSurface;
+    module.exports = famous.surfaces.InputSurface = InputSurface;
 });
 
-define('famous/surfaces/SubmitInputSurface',['require','exports','module','./InputSurface'],function(require, exports, module) {
+define('famous/surfaces/SubmitInputSurface.js',['require','exports','module','./InputSurface'],function(require, exports, module) {
     var InputSurface = require('./InputSurface');
 
     function SubmitInputSurface(options) {
@@ -12653,7 +12858,7 @@ define('famous/surfaces/SubmitInputSurface',['require','exports','module','./Inp
         InputSurface.prototype.deploy.apply(this, arguments);
     };
 
-    module.exports = SubmitInputSurface;
+    module.exports = famous.surfaces.SubmitInputSurface = SubmitInputSurface;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -12665,7 +12870,7 @@ define('famous/surfaces/SubmitInputSurface',['require','exports','module','./Inp
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/surfaces/TextareaSurface',['require','exports','module','famous/core/Surface'],function(require, exports, module) {
+define('famous/surfaces/TextareaSurface.js',['require','exports','module','famous/core/Surface'],function(require, exports, module) {
     var Surface = require('famous/core/Surface');
 
     /**
@@ -12848,7 +13053,7 @@ define('famous/surfaces/TextareaSurface',['require','exports','module','famous/c
         if (this._rows !== '') target.rows = this._rows;
     };
 
-    module.exports = TextareaSurface;
+    module.exports = famous.surfaces.TextareaSurface = TextareaSurface;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -12860,7 +13065,7 @@ define('famous/surfaces/TextareaSurface',['require','exports','module','famous/c
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/surfaces/VideoSurface',['require','exports','module','famous/core/Surface'],function(require, exports, module) {
+define('famous/surfaces/VideoSurface.js',['require','exports','module','famous/core/Surface'],function(require, exports, module) {
     var Surface = require('famous/core/Surface');
 
     /**
@@ -12948,7 +13153,7 @@ define('famous/surfaces/VideoSurface',['require','exports','module','famous/core
         target.src = '';
     };
 
-    module.exports = VideoSurface;
+    module.exports = famous.surfaces.VideoSurface = VideoSurface;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -13000,7 +13205,7 @@ define('famous/transitions/CachedMap',['require','exports','module'],function(re
         return this._cachedOutput;
     };
 
-    module.exports = CachedMap;
+    module.exports = famous.transitions.CachedMap = CachedMap;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -13012,9 +13217,9 @@ define('famous/transitions/CachedMap',['require','exports','module'],function(re
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/transitions/Easing',['require','exports','module'],function(require, exports, module) {
+define('famous/transitions/Easing.js',['require','exports','module'],function(require, exports, module) {
 
-    /*
+    /**
      * A library of curves which map an animation explicitly as a function of time.
      *
      * @class Easing
@@ -13293,7 +13498,7 @@ define('famous/transitions/Easing',['require','exports','module'],function(requi
         }
     };
 
-    module.exports = Easing;
+    module.exports = famous.transitions.Easing = Easing;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -13305,7 +13510,7 @@ define('famous/transitions/Easing',['require','exports','module'],function(requi
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/transitions/SnapTransition',['require','exports','module','famous/physics/PhysicsEngine','famous/physics/bodies/Particle','famous/physics/constraints/Snap','famous/math/Vector'],function(require, exports, module) {
+define('famous/transitions/SnapTransition.js',['require','exports','module','famous/physics/PhysicsEngine','famous/physics/bodies/Particle','famous/physics/constraints/Snap','famous/math/Vector'],function(require, exports, module) {
     var PE = require('famous/physics/PhysicsEngine');
     var Particle = require('famous/physics/bodies/Particle');
     var Spring = require('famous/physics/constraints/Snap');
@@ -13562,7 +13767,7 @@ s     *
         _setCallback.call(this, callback);
     };
 
-    module.exports = SnapTransition;
+    module.exports = famous.transitions.SnapTransition = SnapTransition;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -13576,7 +13781,7 @@ s     *
 
 /*global console*/
 
-define('famous/transitions/SpringTransition',['require','exports','module','famous/physics/PhysicsEngine','famous/physics/bodies/Particle','famous/physics/forces/Spring','famous/math/Vector'],function(require, exports, module) {
+define('famous/transitions/SpringTransition.js',['require','exports','module','famous/physics/PhysicsEngine','famous/physics/bodies/Particle','famous/physics/forces/Spring','famous/math/Vector'],function(require, exports, module) {
     var PE = require('famous/physics/PhysicsEngine');
     var Particle = require('famous/physics/bodies/Particle');
     var Spring = require('famous/physics/forces/Spring');
@@ -13841,7 +14046,7 @@ define('famous/transitions/SpringTransition',['require','exports','module','famo
         _setCallback.call(this, callback);
     };
 
-    module.exports = SpringTransition;
+    module.exports = famous.transitions.SpringTransition = SpringTransition;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -13853,7 +14058,7 @@ define('famous/transitions/SpringTransition',['require','exports','module','famo
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/transitions/WallTransition',['require','exports','module','famous/physics/PhysicsEngine','famous/physics/bodies/Particle','famous/physics/forces/Spring','famous/physics/constraints/Wall','famous/math/Vector'],function(require, exports, module) {
+define('famous/transitions/WallTransition.js',['require','exports','module','famous/physics/PhysicsEngine','famous/physics/bodies/Particle','famous/physics/forces/Spring','famous/physics/constraints/Wall','famous/math/Vector'],function(require, exports, module) {
     var PE = require('famous/physics/PhysicsEngine');
     var Particle = require('famous/physics/bodies/Particle');
     var Spring = require('famous/physics/forces/Spring');
@@ -13941,7 +14146,7 @@ define('famous/transitions/WallTransition',['require','exports','module','famous
          * @type Number
          * @default 0.5
          */
-        resitution : 0.5
+        restitution : 0.5
     };
 
     function _getEnergy() {
@@ -14141,7 +14346,7 @@ define('famous/transitions/WallTransition',['require','exports','module','famous
         _setCallback.call(this, callback);
     };
 
-    module.exports = WallTransition;
+    module.exports = famous.transitions.WallTransition = WallTransition;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -14153,7 +14358,7 @@ define('famous/transitions/WallTransition',['require','exports','module','famous
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/utilities/KeyCodes',['require','exports','module'],function(require, exports, module) {
+define('famous/utilities/KeyCodes.js',['require','exports','module'],function(require, exports, module) {
 
     /**
      * Collection to map keyboard codes in plain english
@@ -14234,7 +14439,7 @@ define('famous/utilities/KeyCodes',['require','exports','module'],function(requi
         TAB: 9
     };
 
-    module.exports = KeyCodes;
+    module.exports = famous.utilities.KeyCodes = KeyCodes;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -14248,7 +14453,7 @@ define('famous/utilities/KeyCodes',['require','exports','module'],function(requi
 // TODO fix func-style
 /*eslint func-style: [0, "declaration"] */
 
-define('famous/utilities/Timer',['require','exports','module','famous/core/Engine'],function(require, exports, module) {
+define('famous/utilities/Timer.js',['require','exports','module','famous/core/Engine'],function(require, exports, module) {
     /**
      * An internal library to reproduce javascript time-based scheduling.
      *   Using standard javascript setTimeout methods can have a negative performance impact
@@ -14262,7 +14467,7 @@ define('famous/utilities/Timer',['require','exports','module','famous/core/Engin
 
     var _event  = 'prerender';
 
-    var getTime = (window.performance) ?
+    var getTime = (window.performance && window.performance.now) ?
         function() {
             return window.performance.now();
         }
@@ -14430,7 +14635,7 @@ define('famous/utilities/Timer',['require','exports','module','famous/core/Engin
         };
     }
 
-    module.exports = {
+    module.exports = famous.utilities.Timer = {
         setTimeout : setTimeout,
         setInterval : setInterval,
         debounce : debounce,
@@ -14445,96 +14650,12 @@ define('famous/utilities/Timer',['require','exports','module','famous/core/Engin
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
- * Owner: mike@famo.us
- * @license MPL 2.0
- * @copyright Famous Industries, Inc. 2014
- */
-
-define('famous/views/ContextualView',['require','exports','module','famous/core/Entity','famous/core/Transform','famous/core/EventHandler','famous/core/OptionsManager'],function(require, exports, module) {
-    var Entity = require('famous/core/Entity');
-    var Transform = require('famous/core/Transform');
-    var EventHandler = require('famous/core/EventHandler');
-    var OptionsManager = require('famous/core/OptionsManager');
-
-    /**
-     * ContextualView is an interface for creating views that need to
-     *   be aware of their parent's transform, size, and/or origin.
-     *   Consists of a OptionsManager paired with an input EventHandler
-     *   and an output EventHandler. Meant to be extended by the developer.
-     * @class ContextualView
-     * @constructor
-     * @param {Options} [options] An object of configurable options.
-     */
-    function ContextualView(options) {
-        this.options = Object.create(this.constructor.DEFAULT_OPTIONS || ContextualView.DEFAULT_OPTIONS);
-        this._optionsManager = new OptionsManager(this.options);
-        if (options) this.setOptions(options);
-
-        this._eventInput = new EventHandler();
-        this._eventOutput = new EventHandler();
-        EventHandler.setInputHandler(this, this._eventInput);
-        EventHandler.setOutputHandler(this, this._eventOutput);
-
-        this._id = Entity.register(this);
-    }
-
-    ContextualView.DEFAULT_OPTIONS = {};
-
-    /**
-     * Patches the ContextualLayout instance's options with the passed-in ones.
-     *
-     * @method setOptions
-     * @param {Options} options An object of configurable options for the ContextualLayout instance.
-     */
-    ContextualView.prototype.setOptions = function setOptions(options) {
-        return this._optionsManager.setOptions(options);
-    };
-
-    /**
-     * Returns ContextualLayout instance's options.
-     *
-     * @method setOptions
-     * @return {Options} options The instance's object of configurable options.
-     */
-    ContextualView.prototype.getOptions = function getOptions() {
-        return this._optionsManager.getOptions();
-    };
-
-    /**
-     * Return the registers Entity id for the ContextualView.
-     *
-     * @private
-     * @method render
-     * @return {Number} Registered Entity id
-     */
-    ContextualView.prototype.render = function render() {
-        return this._id;
-    };
-
-    /**
-     * Apply changes from this component to the corresponding document element.
-     * This includes changes to classes, styles, size, content, opacity, origin,
-     * and matrix transforms.
-     *
-     * @private
-     * @method commit
-     * @param {Context} context commit context
-     */
-    ContextualView.prototype.commit = function commit(context) {};
-
-    module.exports = ContextualView;
-});
-
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
  * Owner: felix@famo.us
  * @license MPL 2.0
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/views/SequentialLayout',['require','exports','module','famous/core/OptionsManager','famous/core/Transform','famous/core/ViewSequence','famous/utilities/Utility'],function(require, exports, module) {
+define('famous/views/SequentialLayout.js',['require','exports','module','famous/core/OptionsManager','famous/core/Transform','famous/core/ViewSequence','famous/utilities/Utility'],function(require, exports, module) {
     var OptionsManager = require('famous/core/OptionsManager');
     var Transform = require('famous/core/Transform');
     var ViewSequence = require('famous/core/ViewSequence');
@@ -14679,7 +14800,7 @@ define('famous/views/SequentialLayout',['require','exports','module','famous/cor
         return this._outputCache;
     };
 
-    module.exports = SequentialLayout;
+    module.exports = famous.views.SequentialLayout = SequentialLayout;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -14691,7 +14812,7 @@ define('famous/views/SequentialLayout',['require','exports','module','famous/cor
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/views/Deck',['require','exports','module','famous/core/Transform','famous/core/OptionsManager','famous/transitions/Transitionable','famous/utilities/Utility','./SequentialLayout'],function(require, exports, module) {
+define('famous/views/Deck.js',['require','exports','module','famous/core/Transform','famous/core/OptionsManager','famous/transitions/Transitionable','famous/utilities/Utility','./SequentialLayout'],function(require, exports, module) {
     var Transform = require('famous/core/Transform');
     var OptionsManager = require('famous/core/OptionsManager');
     var Transitionable = require('famous/transitions/Transitionable');
@@ -14823,7 +14944,7 @@ define('famous/views/Deck',['require','exports','module','famous/core/Transform'
         else this.open(callback);
     };
 
-    module.exports = Deck;
+    module.exports = famous.views.Deck = Deck;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -14835,7 +14956,7 @@ define('famous/views/Deck',['require','exports','module','famous/core/Transform'
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/views/RenderController',['require','exports','module','famous/core/Modifier','famous/core/RenderNode','famous/core/Transform','famous/transitions/Transitionable','famous/core/View'],function(require, exports, module) {
+define('famous/views/RenderController.js',['require','exports','module','famous/core/Modifier','famous/core/RenderNode','famous/core/Transform','famous/transitions/Transitionable','famous/core/View'],function(require, exports, module) {
     var Modifier = require('famous/core/Modifier');
     var RenderNode = require('famous/core/RenderNode');
     var Transform = require('famous/core/Transform');
@@ -15126,7 +15247,7 @@ define('famous/views/RenderController',['require','exports','module','famous/cor
         return result;
     };
 
-    module.exports = RenderController;
+    module.exports = famous.views.RenderController = RenderController;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -15138,7 +15259,7 @@ define('famous/views/RenderController',['require','exports','module','famous/cor
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/views/EdgeSwapper',['require','exports','module','famous/transitions/CachedMap','famous/core/Entity','famous/core/EventHandler','famous/core/Transform','./RenderController'],function(require, exports, module) {
+define('famous/views/EdgeSwapper.js',['require','exports','module','famous/transitions/CachedMap','famous/core/Entity','famous/core/EventHandler','famous/core/Transform','./RenderController'],function(require, exports, module) {
     var CachedMap = require('famous/transitions/CachedMap');
     var Entity = require('famous/core/Entity');
     var EventHandler = require('famous/core/EventHandler');
@@ -15233,7 +15354,7 @@ define('famous/views/EdgeSwapper',['require','exports','module','famous/transiti
         };
     };
 
-    module.exports = EdgeSwapper;
+    module.exports = famous.views.EdgeSwapper = EdgeSwapper;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -15245,7 +15366,7 @@ define('famous/views/EdgeSwapper',['require','exports','module','famous/transiti
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/views/FlexibleLayout',['require','exports','module','famous/core/Entity','famous/core/Transform','famous/core/OptionsManager','famous/core/EventHandler','famous/transitions/Transitionable'],function(require, exports, module) {
+define('famous/views/FlexibleLayout.js',['require','exports','module','famous/core/Entity','famous/core/Transform','famous/core/OptionsManager','famous/core/EventHandler','famous/transitions/Transitionable'],function(require, exports, module) {
     var Entity = require('famous/core/Entity');
     var Transform = require('famous/core/Transform');
     var OptionsManager = require('famous/core/OptionsManager');
@@ -15399,6 +15520,7 @@ define('famous/views/FlexibleLayout',['require','exports','module','famous/core/
         var parentSize = context.size;
         var parentTransform = context.transform;
         var parentOrigin = context.origin;
+        var parentOpacity = context.opacity;
 
         var ratios = this._ratios.get();
         var direction = this.options.direction;
@@ -15431,11 +15553,12 @@ define('famous/views/FlexibleLayout',['require','exports','module','famous/core/
         return {
             transform: parentTransform,
             size: parentSize,
+            opacity: parentOpacity,
             target: result
         };
     };
 
-    module.exports = FlexibleLayout;
+    module.exports = famous.views.FlexibleLayout = FlexibleLayout;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -15447,7 +15570,7 @@ define('famous/views/FlexibleLayout',['require','exports','module','famous/core/
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/views/Flipper',['require','exports','module','famous/core/Transform','famous/transitions/Transitionable','famous/core/RenderNode','famous/core/OptionsManager'],function(require, exports, module) {
+define('famous/views/Flipper.js',['require','exports','module','famous/core/Transform','famous/transitions/Transitionable','famous/core/RenderNode','famous/core/OptionsManager'],function(require, exports, module) {
     var Transform = require('famous/core/Transform');
     var Transitionable = require('famous/transitions/Transitionable');
     var RenderNode = require('famous/core/RenderNode');
@@ -15585,7 +15708,7 @@ define('famous/views/Flipper',['require','exports','module','famous/core/Transfo
         return result;
     };
 
-    module.exports = Flipper;
+    module.exports = famous.views.Flipper = Flipper;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -15804,7 +15927,7 @@ define('famous/views/GridLayout',['require','exports','module','famous/core/Enti
         };
     };
 
-    module.exports = GridLayout;
+    module.exports = famous.views.GridLayout = GridLayout;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -15816,7 +15939,7 @@ define('famous/views/GridLayout',['require','exports','module','famous/core/Enti
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/views/HeaderFooterLayout',['require','exports','module','famous/core/Entity','famous/core/RenderNode','famous/core/Transform','famous/core/OptionsManager'],function(require, exports, module) {
+define('famous/views/HeaderFooterLayout.js',['require','exports','module','famous/core/Entity','famous/core/RenderNode','famous/core/Transform','famous/core/OptionsManager'],function(require, exports, module) {
     var Entity = require('famous/core/Entity');
     var RenderNode = require('famous/core/RenderNode');
     var Transform = require('famous/core/Transform');
@@ -15960,10 +16083,10 @@ define('famous/views/HeaderFooterLayout',['require','exports','module','famous/c
         };
     };
 
-    module.exports = HeaderFooterLayout;
+    module.exports = famous.views.HeaderFooterLayout = HeaderFooterLayout;
 });
 
-define('famous/views/Lightbox',['require','exports','module','famous/core/Transform','famous/core/Modifier','famous/core/RenderNode','famous/utilities/Utility','famous/core/OptionsManager','famous/transitions/Transitionable','famous/transitions/TransitionableTransform'],function(require, exports, module) {
+define('famous/views/Lightbox.js',['require','exports','module','famous/core/Transform','famous/core/Modifier','famous/core/RenderNode','famous/utilities/Utility','famous/core/OptionsManager','famous/transitions/Transitionable','famous/transitions/TransitionableTransform'],function(require, exports, module) {
     var Transform = require('famous/core/Transform');
     var Modifier = require('famous/core/Modifier');
     var RenderNode = require('famous/core/RenderNode');
@@ -16137,10 +16260,10 @@ define('famous/views/Lightbox',['require','exports','module','famous/core/Transf
         return result;
     };
 
-    module.exports = Lightbox;
+    module.exports = famous.views.Lightbox = Lightbox;
 });
 
-define('famous/views/Scroller',['require','exports','module','famous/core/Entity','famous/core/Group','famous/core/OptionsManager','famous/core/Transform','famous/utilities/Utility','famous/core/ViewSequence','famous/core/EventHandler'],function(require, exports, module) {
+define('famous/views/Scroller.js',['require','exports','module','famous/core/Entity','famous/core/Group','famous/core/OptionsManager','famous/core/Transform','famous/utilities/Utility','famous/core/ViewSequence','famous/core/EventHandler'],function(require, exports, module) {
     var Entity = require('famous/core/Entity');
     var Group = require('famous/core/Group');
     var OptionsManager = require('famous/core/OptionsManager');
@@ -16289,7 +16412,7 @@ define('famous/views/Scroller',['require','exports','module','famous/core/Entity
      * Sets the collection of renderables under the Scroller instance's control.
      *
      * @method sequenceFrom
-     * @param {Array|ViewSequence} items Either an array of renderables or a Famous viewSequence.
+     * @param node {Array|ViewSequence} Either an array of renderables or a Famous viewSequence.
      * @chainable
      */
     Scroller.prototype.sequenceFrom = function sequenceFrom(node) {
@@ -16446,7 +16569,7 @@ define('famous/views/Scroller',['require','exports','module','famous/core/Entity
         return result;
     }
 
-    module.exports = Scroller;
+    module.exports = famous.views.Scroller = Scroller;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -16458,7 +16581,7 @@ define('famous/views/Scroller',['require','exports','module','famous/core/Entity
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/views/Scrollview',['require','exports','module','famous/physics/PhysicsEngine','famous/physics/bodies/Particle','famous/physics/forces/Drag','famous/physics/forces/Spring','famous/core/EventHandler','famous/core/OptionsManager','famous/core/ViewSequence','famous/views/Scroller','famous/utilities/Utility','famous/inputs/GenericSync','famous/inputs/ScrollSync','famous/inputs/TouchSync'],function(require, exports, module) {
+define('famous/views/Scrollview.js',['require','exports','module','famous/physics/PhysicsEngine','famous/physics/bodies/Particle','famous/physics/forces/Drag','famous/physics/forces/Spring','famous/core/EventHandler','famous/core/OptionsManager','famous/core/ViewSequence','famous/views/Scroller','famous/utilities/Utility','famous/inputs/GenericSync','famous/inputs/ScrollSync','famous/inputs/TouchSync'],function(require, exports, module) {
     var PhysicsEngine = require('famous/physics/PhysicsEngine');
     var Particle = require('famous/physics/bodies/Particle');
     var Drag = require('famous/physics/forces/Drag');
@@ -16474,6 +16597,16 @@ define('famous/views/Scrollview',['require','exports','module','famous/physics/P
     var ScrollSync = require('famous/inputs/ScrollSync');
     var TouchSync = require('famous/inputs/TouchSync');
     GenericSync.register({scroll : ScrollSync, touch : TouchSync});
+
+    /** @const */
+    var TOLERANCE = 0.5;
+
+    /** @enum */
+    var SpringStates = {
+        NONE: 0,
+        EDGE: 1,
+        PAGE: 2
+    };
 
     /**
      * Scrollview will lay out a collection of renderables sequentially in the specified direction, and will
@@ -16535,7 +16668,7 @@ define('famous/views/Scrollview',['require','exports','module','famous/physics/P
         EventHandler.setOutputHandler(this, this._eventOutput);
 
         this._touchCount = 0;
-        this._springState = 0;
+        this._springState = SpringStates.NONE;
         this._onEdge = 0; // -1 for top, 1 for bottom
         this._pageSpringPosition = 0;
         this._edgeSpringPosition = 0;
@@ -16550,9 +16683,6 @@ define('famous/views/Scrollview',['require','exports','module','famous/physics/P
 
         _bindEvents.call(this);
     }
-
-    /** @const */
-    var TOLERANCE = 0.5;
 
     Scrollview.DEFAULT_OPTIONS = {
         direction: Utility.Direction.Y,
@@ -16570,13 +16700,6 @@ define('famous/views/Scrollview',['require','exports','module','famous/physics/P
         pageSwitchSpeed: 0.5,
         speedLimit: 10,
         groupScroll: false
-    };
-
-    /** @enum */
-    var SpringStates = {
-        NONE: 0,
-        EDGE: 1,
-        PAGE: 2
     };
 
     function _handleStart(event) {
@@ -16931,7 +17054,7 @@ define('famous/views/Scrollview',['require','exports','module','famous/physics/P
         return this._scroller.render();
     };
 
-    module.exports = Scrollview;
+    module.exports = famous.views.Scrollview = Scrollview;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -16943,7 +17066,7 @@ define('famous/views/Scrollview',['require','exports','module','famous/physics/P
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/views/ScrollContainer',['require','exports','module','famous/surfaces/ContainerSurface','famous/core/EventHandler','./Scrollview','famous/utilities/Utility','famous/core/OptionsManager'],function(require, exports, module) {
+define('famous/views/ScrollContainer.js',['require','exports','module','famous/surfaces/ContainerSurface','famous/core/EventHandler','./Scrollview','famous/utilities/Utility','famous/core/OptionsManager'],function(require, exports, module) {
     var ContainerSurface = require('famous/surfaces/ContainerSurface');
     var EventHandler = require('famous/core/EventHandler');
     var Scrollview = require('./Scrollview');
@@ -17005,6 +17128,16 @@ define('famous/views/ScrollContainer',['require','exports','module','famous/surf
     };
 
     /**
+     * Returns the width and the height of the ScrollContainer instance.
+     *
+     * @method getSize
+     * @return {Array} A two value array of the ScrollContainer instance's current width and height (in that order).
+     */
+    ScrollContainer.prototype.getSize = function getSize() {
+        return this.container.getSize.apply(this.container, arguments);
+    };
+
+    /**
      * Generate a render spec from the contents of this component.
      *
      * @private
@@ -17015,7 +17148,7 @@ define('famous/views/ScrollContainer',['require','exports','module','famous/surf
         return this.container.render.apply(this.container, arguments);
     };
 
-    module.exports = ScrollContainer;
+    module.exports = famous.views.ScrollContainer = ScrollContainer;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -17027,7 +17160,7 @@ define('famous/views/ScrollContainer',['require','exports','module','famous/surf
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/widgets/NavigationBar',['require','exports','module','famous/core/Scene','famous/core/Surface','famous/core/Transform','famous/core/View'],function(require, exports, module) {
+define('famous/widgets/NavigationBar.js',['require','exports','module','famous/core/Scene','famous/core/Surface','famous/core/Transform','famous/core/View'],function(require, exports, module) {
     var Scene = require('famous/core/Scene');
     var Surface = require('famous/core/Surface');
     var Transform = require('famous/core/Transform');
@@ -17158,7 +17291,7 @@ define('famous/widgets/NavigationBar',['require','exports','module','famous/core
         return this.title.setContent(content);
     };
 
-    module.exports = NavigationBar;
+    module.exports = famous.widgets.NavigationBar = NavigationBar;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -17170,7 +17303,7 @@ define('famous/widgets/NavigationBar',['require','exports','module','famous/core
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/widgets/Slider',['require','exports','module','famous/core/Surface','famous/surfaces/CanvasSurface','famous/core/Transform','famous/core/EventHandler','famous/math/Utilities','famous/core/OptionsManager','famous/inputs/MouseSync','famous/inputs/TouchSync','famous/inputs/GenericSync'],function(require, exports, module) {
+define('famous/widgets/Slider.js',['require','exports','module','famous/core/Surface','famous/surfaces/CanvasSurface','famous/core/Transform','famous/core/EventHandler','famous/math/Utilities','famous/core/OptionsManager','famous/inputs/MouseSync','famous/inputs/TouchSync','famous/inputs/GenericSync'],function(require, exports, module) {
     var Surface = require('famous/core/Surface');
     var CanvasSurface = require('famous/surfaces/CanvasSurface');
     var Transform = require('famous/core/Transform');
@@ -17295,7 +17428,7 @@ define('famous/widgets/Slider',['require','exports','module','famous/core/Surfac
         };
     };
 
-    module.exports = Slider;
+    module.exports = famous.widgets.Slider = Slider;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -17307,7 +17440,7 @@ define('famous/widgets/Slider',['require','exports','module','famous/core/Surfac
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/widgets/ToggleButton',['require','exports','module','famous/core/Surface','famous/core/EventHandler','famous/views/RenderController'],function(require, exports, module) {
+define('famous/widgets/ToggleButton.js',['require','exports','module','famous/core/Surface','famous/core/EventHandler','famous/views/RenderController'],function(require, exports, module) {
     var Surface = require('famous/core/Surface');
     var EventHandler = require('famous/core/EventHandler');
     var RenderController = require('famous/views/RenderController');
@@ -17455,7 +17588,7 @@ define('famous/widgets/ToggleButton',['require','exports','module','famous/core/
         return this.arbiter.render();
     };
 
-    module.exports = ToggleButton;
+    module.exports = famous.widgets.ToggleButton = ToggleButton;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -17467,7 +17600,7 @@ define('famous/widgets/ToggleButton',['require','exports','module','famous/core/
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/widgets/TabBar',['require','exports','module','famous/utilities/Utility','famous/core/View','famous/views/GridLayout','./ToggleButton'],function(require, exports, module) {
+define('famous/widgets/TabBar.js',['require','exports','module','famous/utilities/Utility','famous/core/View','famous/views/GridLayout','./ToggleButton'],function(require, exports, module) {
     var Utility = require('famous/utilities/Utility');
     var View = require('famous/core/View');
     var GridLayout = require('famous/views/GridLayout');
@@ -17607,6 +17740,6 @@ define('famous/widgets/TabBar',['require','exports','module','famous/utilities/U
         }
     };
 
-    module.exports = TabBar;
+    module.exports = famous.widgets.TabBar = TabBar;
 });
 

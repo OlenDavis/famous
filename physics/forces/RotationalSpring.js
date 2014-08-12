@@ -85,5 +85,5 @@ define(function(require, exports, module) {
         return 0.5 * strength * dist * dist;
     };
 
-    module.exports = RotationalSpring;
+    module.exports = famous.physics.forces.RotationalSpring = RotationalSpring;
 });

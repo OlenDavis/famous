@@ -118,5 +118,5 @@ define(function(require, exports, module) {
         else return {opacity: currOpacity, target: target};
     };
 
-    module.exports = Fader;
+    module.exports = famous.modifiers.Fader = Fader;
 });

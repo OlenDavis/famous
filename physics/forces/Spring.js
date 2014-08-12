@@ -255,5 +255,5 @@ define(function(require, exports, module) {
         this.options.anchor.set(anchor);
     };
 
-    module.exports = Spring;
+    module.exports = famous.physics.forces.Spring = Spring;
 });

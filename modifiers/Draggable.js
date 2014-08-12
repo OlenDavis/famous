@@ -256,5 +256,5 @@ define(function(require, exports, module) {
         };
     };
 
-    module.exports = Draggable;
+    module.exports = famous.modifiers.Draggable = Draggable;
 });

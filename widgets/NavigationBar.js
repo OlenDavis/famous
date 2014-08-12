@@ -138,5 +138,5 @@ define(function(require, exports, module) {
         return this.title.setContent(content);
     };
 
-    module.exports = NavigationBar;
+    module.exports = famous.widgets.NavigationBar = NavigationBar;
 });

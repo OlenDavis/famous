@@ -151,5 +151,5 @@ define(function(require, exports, module) {
         return new Matrix(M);
     };
 
-    module.exports = Matrix;
+    module.exports = famous.math.Matrix = Matrix;
 });

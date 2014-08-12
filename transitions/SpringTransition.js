@@ -274,5 +274,5 @@ define(function(require, exports, module) {
         _setCallback.call(this, callback);
     };
 
-    module.exports = SpringTransition;
+    module.exports = famous.transitions.SpringTransition = SpringTransition;
 });

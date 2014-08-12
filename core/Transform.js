@@ -678,5 +678,5 @@ define(function(require, exports, module) {
      */
     Transform.behind = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, -1e-3, 1];
 
-    module.exports = Transform;
+    module.exports = famous.core.Transform = Transform;
 });

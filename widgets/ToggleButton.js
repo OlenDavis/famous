@@ -155,5 +155,5 @@ define(function(require, exports, module) {
         return this.arbiter.render();
     };
 
-    module.exports = ToggleButton;
+    module.exports = famous.widgets.ToggleButton = ToggleButton;
 });

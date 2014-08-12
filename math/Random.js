@@ -97,5 +97,5 @@ define(function(require, exports, module) {
         return RAND() < prob;
     };
 
-    module.exports = Random;
+    module.exports = famous.math.Random = Random;
 });

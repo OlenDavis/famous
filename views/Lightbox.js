@@ -172,5 +172,5 @@ define(function(require, exports, module) {
         return result;
     };
 
-    module.exports = Lightbox;
+    module.exports = famous.views.Lightbox = Lightbox;
 });

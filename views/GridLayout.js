@@ -214,5 +214,5 @@ define(function(require, exports, module) {
         };
     };
 
-    module.exports = GridLayout;
+    module.exports = famous.views.GridLayout = GridLayout;
 });

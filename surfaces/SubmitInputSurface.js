@@ -19,5 +19,5 @@ define(function(require, exports, module) {
         InputSurface.prototype.deploy.apply(this, arguments);
     };
 
-    module.exports = SubmitInputSurface;
+    module.exports = famous.surfaces.SubmitInputSurface = SubmitInputSurface;
 });

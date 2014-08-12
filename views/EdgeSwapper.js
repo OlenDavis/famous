@@ -102,5 +102,5 @@ define(function(require, exports, module) {
         };
     };
 
-    module.exports = EdgeSwapper;
+    module.exports = famous.views.EdgeSwapper = EdgeSwapper;
 });

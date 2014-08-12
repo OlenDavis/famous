@@ -209,5 +209,5 @@ define(function(require, exports, module) {
         return this.set(this.get());
     };
 
-    module.exports = Transitionable;
+    module.exports = famous.transitions.Transitionable = Transitionable;
 });

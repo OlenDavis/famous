@@ -288,5 +288,5 @@ define(function(require, exports, module) {
         }
     };
 
-    module.exports = Easing;
+    module.exports = famous.transitions.Easing = Easing;
 });

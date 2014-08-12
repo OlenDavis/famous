@@ -298,5 +298,5 @@ define(function(require, exports, module) {
         return result;
     };
 
-    module.exports = RenderController;
+    module.exports = famous.views.RenderController = RenderController;
 });

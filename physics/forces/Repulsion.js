@@ -204,5 +204,5 @@ define(function(require, exports, module) {
 
     };
 
-    module.exports = Repulsion;
+    module.exports = famous.physics.forces.Repulsion = Repulsion;
 });

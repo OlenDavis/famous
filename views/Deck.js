@@ -139,5 +139,5 @@ define(function(require, exports, module) {
         else this.open(callback);
     };
 
-    module.exports = Deck;
+    module.exports = famous.views.Deck = Deck;
 });

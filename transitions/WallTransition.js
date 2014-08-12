@@ -295,5 +295,5 @@ define(function(require, exports, module) {
         _setCallback.call(this, callback);
     };
 
-    module.exports = WallTransition;
+    module.exports = famous.transitions.WallTransition = WallTransition;
 });

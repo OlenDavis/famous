@@ -304,5 +304,5 @@ define(function(require, exports, module) {
         return result;
     }
 
-    module.exports = Scroller;
+    module.exports = famous.views.Scroller = Scroller;
 });

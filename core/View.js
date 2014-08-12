@@ -106,5 +106,5 @@ define(function(require, exports, module) {
         else return this.options.size;
     };
 
-    module.exports = View;
+    module.exports = famous.core.View = View;
 });

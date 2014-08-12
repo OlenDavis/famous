@@ -121,5 +121,5 @@ define(function(require, exports, module) {
                 _addSingleSync.call(this, key, syncs[key]);
     };
 
-    module.exports = GenericSync;
+    module.exports = famous.inputs.GenericSync = GenericSync;
 });

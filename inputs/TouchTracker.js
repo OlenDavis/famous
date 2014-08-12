@@ -106,5 +106,5 @@ define(function(require, exports, module) {
         this.touchHistory[data.identifier] = [data];
     };
 
-    module.exports = TouchTracker;
+    module.exports = famous.inputs.TouchTracker = TouchTracker;
 });

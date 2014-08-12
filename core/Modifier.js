@@ -374,5 +374,5 @@ define(function(require, exports, module) {
         return this._output;
     };
 
-    module.exports = Modifier;
+    module.exports = famous.core.Modifier = Modifier;
 });

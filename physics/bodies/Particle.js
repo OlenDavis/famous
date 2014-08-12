@@ -400,5 +400,5 @@ define(function(require, exports, module) {
         return this.unpipe.apply(this, arguments);
     };
 
-    module.exports = Particle;
+    module.exports = famous.physics.bodies.Particle = Particle;
 });

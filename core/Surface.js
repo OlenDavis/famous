@@ -390,5 +390,5 @@ define(function(require, exports, module) {
         this._sizeDirty = true;
     };
 
-    module.exports = Surface;
+    module.exports = famous.core.Surface = Surface;
 });

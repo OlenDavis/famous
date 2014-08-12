@@ -261,5 +261,5 @@ define(function(require, exports, module) {
         return this._modifier.modify(target);
     };
 
-    module.exports = StateModifier;
+    module.exports = famous.modifiers.StateModifier = StateModifier;
 });

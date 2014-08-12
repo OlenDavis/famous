@@ -178,5 +178,5 @@ define(function(require, exports, module) {
         return this.options;
     };
 
-    module.exports = TouchSync;
+    module.exports = famous.inputs.TouchSync = TouchSync;
 });

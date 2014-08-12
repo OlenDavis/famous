@@ -88,5 +88,5 @@ define(function(require, exports, module) {
         TAB: 9
     };
 
-    module.exports = KeyCodes;
+    module.exports = famous.utilities.KeyCodes = KeyCodes;
 });

@@ -68,7 +68,7 @@ define(function(require, exports, module) {
         set(id, null);
     }
 
-    module.exports = {
+    module.exports = famous.core.Entity = {
         register: register,
         unregister: unregister,
         get: get,

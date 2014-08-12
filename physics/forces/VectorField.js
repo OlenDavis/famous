@@ -180,5 +180,5 @@ define(function(require, exports, module) {
         }
     };
 
-    module.exports = VectorField;
+    module.exports = famous.physics.forces.VectorField = VectorField;
 });

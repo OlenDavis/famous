@@ -375,6 +375,6 @@ define(function(require, exports, module) {
         return this.x;
     };
 
-    module.exports = Vector;
+    module.exports = famous.math.Vector = Vector;
 
 });

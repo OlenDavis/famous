@@ -191,7 +191,7 @@ define(function(require, exports, module) {
         };
     }
 
-    module.exports = {
+    module.exports = famous.utilities.Timer = {
         setTimeout : setTimeout,
         setInterval : setInterval,
         debounce : debounce,

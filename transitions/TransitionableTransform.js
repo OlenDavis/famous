@@ -212,5 +212,5 @@ define(function(require, exports, module) {
         this.scale.halt();
     };
 
-    module.exports = TransitionableTransform;
+    module.exports = famous.transitions.TransitionableTransform = TransitionableTransform;
 });

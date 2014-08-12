@@ -184,5 +184,5 @@ define(function(require, exports, module) {
         }
     };
 
-    module.exports = Wall;
+    module.exports = famous.physics.constraints.Wall = Wall;
 });

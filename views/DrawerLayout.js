@@ -308,5 +308,5 @@ define(function(require, exports, module) {
         ];
     };
 
-    module.exports = DrawerLayout;
+    module.exports = famous.views.DrawerLayout = DrawerLayout;
 });

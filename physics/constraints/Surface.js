@@ -112,5 +112,5 @@ define(function(require, exports, module) {
         }
     };
 
-    module.exports = Surface;
+    module.exports = famous.physics.constraints.Surface = Surface;
 });

@@ -94,5 +94,5 @@ define(function(require, exports, module) {
         if (options.scale !== undefined) this.options.scale = options.scale;
     };
 
-    module.exports = RotateSync;
+    module.exports = famous.inputs.RotateSync = RotateSync;
 });

@@ -86,5 +86,5 @@ define(function(require, exports, module) {
         return this.unpipe.apply(this, arguments);
     };
 
-    module.exports = Constraint;
+    module.exports = famous.physics.constraints.Constraint = Constraint;
 });

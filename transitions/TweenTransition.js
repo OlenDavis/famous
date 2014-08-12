@@ -422,5 +422,5 @@ define(function(require, exports, module) {
         };
     };
 
-    module.exports = TweenTransition;
+    module.exports = famous.transitions.TweenTransition = TweenTransition;
 });

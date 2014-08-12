@@ -152,5 +152,5 @@ define(function(require, exports, module) {
 //        q.normalize.put(q);
     };
 
-    module.exports = SymplecticEuler;
+    module.exports = famous.physics.integrators.SymplecticEuler = SymplecticEuler;
 });

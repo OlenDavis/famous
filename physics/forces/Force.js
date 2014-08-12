@@ -89,5 +89,5 @@ define(function(require, exports, module) {
         return this.unpipe.apply(this, arguments);
     };
 
-    module.exports = Force;
+    module.exports = famous.physics.forces.Force = Force;
 });

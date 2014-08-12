@@ -330,5 +330,5 @@ define(function(require, exports, module) {
         return target;
     };
 
-    module.exports = ElementOutput;
+    module.exports = famous.core.ElementOutput = ElementOutput;
 });

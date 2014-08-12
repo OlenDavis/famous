@@ -56,6 +56,6 @@ define(function(require, exports, module) {
         ]);
     };
 
-    module.exports = Rectangle;
+    module.exports = famous.physics.bodies.Rectangle = Rectangle;
 
 });

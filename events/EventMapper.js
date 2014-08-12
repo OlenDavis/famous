@@ -51,5 +51,5 @@ define(function(require, exports, module) {
      */
     EventMapper.prototype.trigger = EventMapper.prototype.emit;
 
-    module.exports = EventMapper;
+    module.exports = famous.events.EventMapper = EventMapper;
 });

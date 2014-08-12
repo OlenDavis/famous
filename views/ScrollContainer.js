@@ -89,5 +89,5 @@ define(function(require, exports, module) {
         return this.container.render.apply(this.container, arguments);
     };
 
-    module.exports = ScrollContainer;
+    module.exports = famous.views.ScrollContainer = ScrollContainer;
 });

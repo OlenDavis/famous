@@ -95,5 +95,5 @@ define(function(require, exports, module) {
         target.src = '';
     };
 
-    module.exports = VideoSurface;
+    module.exports = famous.surfaces.VideoSurface = VideoSurface;
 });

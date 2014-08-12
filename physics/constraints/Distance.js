@@ -164,5 +164,5 @@ define(function(require, exports, module) {
         }
     };
 
-    module.exports = Distance;
+    module.exports = famous.physics.constraints.Distance = Distance;
 });

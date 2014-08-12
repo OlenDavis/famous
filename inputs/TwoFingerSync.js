@@ -119,5 +119,5 @@ define(function(require, exports, module) {
         }
     };
 
-    module.exports = TwoFingerSync;
+    module.exports = famous.inputs.TwoFingerSync = TwoFingerSync;
 });

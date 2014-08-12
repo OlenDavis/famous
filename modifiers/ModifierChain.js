@@ -66,5 +66,5 @@ define(function(require, exports, module) {
         return result;
     };
 
-    module.exports = ModifierChain;
+    module.exports = famous.modifiers.ModifierChain = ModifierChain;
 });

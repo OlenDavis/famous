@@ -117,5 +117,5 @@ define(function(require, exports, module) {
         return a;
     };
 
-    module.exports = Utility;
+    module.exports = famous.utilities.Utility = Utility;
 });

@@ -111,5 +111,5 @@ define(function(require, exports, module) {
         return result;
     };
 
-    module.exports = ContainerSurface;
+    module.exports = famous.surfaces.ContainerSurface = ContainerSurface;
 });

@@ -102,5 +102,5 @@ define(function(require, exports, module) {
         return this.nodeCount;
     };
 
-    module.exports = ElementAllocator;
+    module.exports = famous.core.ElementAllocator = ElementAllocator;
 });

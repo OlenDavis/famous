@@ -120,5 +120,5 @@ define(function(require, exports, module) {
         return result;
     };
 
-    module.exports = Group;
+    module.exports = famous.core.Group = Group;
 });

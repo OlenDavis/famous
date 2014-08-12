@@ -113,5 +113,5 @@ define(function(require, exports, module) {
         }
     };
 
-    module.exports = CanvasSurface;
+    module.exports = famous.surfaces.CanvasSurface = CanvasSurface;
 });

@@ -157,5 +157,5 @@ define(function(require, exports, module) {
         target.name = this._name;
     };
 
-    module.exports = InputSurface;
+    module.exports = famous.surfaces.InputSurface = InputSurface;
 });

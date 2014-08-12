@@ -202,5 +202,5 @@ define(function(require, exports, module) {
         return this;
     };
 
-    module.exports = EventHandler;
+    module.exports = famous.core.EventHandler = EventHandler;
 });

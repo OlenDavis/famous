@@ -235,5 +235,5 @@ define(function(require, exports, module) {
         });
     };
 
-    module.exports = Walls;
+    module.exports = famous.physics.constraints.Walls = Walls;
 });

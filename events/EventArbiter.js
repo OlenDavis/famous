@@ -80,5 +80,5 @@ define(function(require, exports, module) {
         if (dispatcher) return dispatcher.trigger(eventType, event);
     };
 
-    module.exports = EventArbiter;
+    module.exports = famous.events.EventArbiter = EventArbiter;
 });

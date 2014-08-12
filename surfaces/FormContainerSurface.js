@@ -16,5 +16,5 @@ define(function(require, exports, module) {
         return ContainerSurface.prototype.deploy.apply(this, arguments);
     };
 
-    module.exports = FormContainerSurface;
+    module.exports = famous.surfaces.FormContainerSurface = FormContainerSurface;
 });

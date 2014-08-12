@@ -53,5 +53,5 @@ define(function(require, exports, module) {
      */
     EventFilter.prototype.trigger = EventFilter.prototype.emit;
 
-    module.exports = EventFilter;
+    module.exports = famous.events.EventFilter = EventFilter;
 });

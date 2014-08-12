@@ -376,5 +376,5 @@ define(function(require, exports, module) {
         }
     });
 
-    module.exports = Engine;
+    module.exports = famous.core.Engine = Engine;
 });

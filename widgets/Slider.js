@@ -132,5 +132,5 @@ define(function(require, exports, module) {
         };
     };
 
-    module.exports = Slider;
+    module.exports = famous.widgets.Slider = Slider;
 });

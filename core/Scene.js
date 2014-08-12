@@ -175,5 +175,5 @@ define(function(require, exports, module) {
         return this.node.render.apply(this.node, arguments);
     };
 
-    module.exports = Scene;
+    module.exports = famous.core.Scene = Scene;
 });

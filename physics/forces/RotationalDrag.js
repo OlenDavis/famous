@@ -89,5 +89,5 @@ define(function(require, exports, module) {
         for (var key in options) this.options[key] = options[key];
     };
 
-    module.exports = RotationalDrag;
+    module.exports = famous.physics.forces.RotationalDrag = RotationalDrag;
 });

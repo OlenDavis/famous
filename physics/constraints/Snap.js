@@ -184,5 +184,5 @@ define(function(require, exports, module) {
         }
     };
 
-    module.exports = Snap;
+    module.exports = famous.physics.constraints.Snap = Snap;
 });

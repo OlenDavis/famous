@@ -480,5 +480,5 @@ define(function(require, exports, module) {
         return this._scroller.render();
     };
 
-    module.exports = Scrollview;
+    module.exports = famous.views.Scrollview = Scrollview;
 });

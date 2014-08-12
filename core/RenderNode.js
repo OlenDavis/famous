@@ -163,5 +163,5 @@ define(function(require, exports, module) {
         return this._isModifier ? this._object.modify(result) : result;
     };
 
-    module.exports = RenderNode;
+    module.exports = famous.core.RenderNode = RenderNode;
 });

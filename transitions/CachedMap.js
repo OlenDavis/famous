@@ -47,5 +47,5 @@ define(function(require, exports, module) {
         return this._cachedOutput;
     };
 
-    module.exports = CachedMap;
+    module.exports = famous.transitions.CachedMap = CachedMap;
 });

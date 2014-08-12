@@ -140,5 +140,5 @@ define(function(require, exports, module) {
         }
     };
 
-    module.exports = Collision;
+    module.exports = famous.physics.constraints.Collision = Collision;
 });

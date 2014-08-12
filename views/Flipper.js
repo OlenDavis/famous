@@ -145,5 +145,5 @@ define(function(require, exports, module) {
         return result;
     };
 
-    module.exports = Flipper;
+    module.exports = famous.views.Flipper = Flipper;
 });

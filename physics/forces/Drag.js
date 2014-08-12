@@ -112,5 +112,5 @@ define(function(require, exports, module) {
         for (var key in options) this.options[key] = options[key];
     };
 
-    module.exports = Drag;
+    module.exports = famous.physics.forces.Drag = Drag;
 });

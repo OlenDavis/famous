@@ -93,5 +93,5 @@ define(function(require, exports, module) {
         if (options.scale !== undefined) this.options.scale = options.scale;
     };
 
-    module.exports = PinchSync;
+    module.exports = famous.inputs.PinchSync = PinchSync;
 });

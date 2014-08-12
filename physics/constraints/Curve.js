@@ -129,5 +129,5 @@ define(function(require, exports, module) {
         }
     };
 
-    module.exports = Curve;
+    module.exports = famous.physics.constraints.Curve = Curve;
 });

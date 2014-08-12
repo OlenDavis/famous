@@ -151,5 +151,5 @@ define(function(require, exports, module) {
         };
     };
 
-    module.exports = HeaderFooterLayout;
+    module.exports = famous.views.HeaderFooterLayout = HeaderFooterLayout;
 });

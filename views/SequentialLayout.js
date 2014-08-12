@@ -152,5 +152,5 @@ define(function(require, exports, module) {
         return this._outputCache;
     };
 
-    module.exports = SequentialLayout;
+    module.exports = famous.views.SequentialLayout = SequentialLayout;
 });

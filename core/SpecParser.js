@@ -164,5 +164,5 @@ define(function(require, exports, module) {
         }
     };
 
-    module.exports = SpecParser;
+    module.exports = famous.core.SpecParser = SpecParser;
 });

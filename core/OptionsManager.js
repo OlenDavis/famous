@@ -208,5 +208,5 @@ define(function(require, exports, module) {
         return this.unpipe.apply(this, arguments);
     };
 
-    module.exports = OptionsManager;
+    module.exports = famous.core.OptionsManager = OptionsManager;
 });

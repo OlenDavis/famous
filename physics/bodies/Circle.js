@@ -56,6 +56,6 @@ define(function(require, exports, module) {
         ]);
     };
 
-    module.exports = Circle;
+    module.exports = famous.physics.bodies.Circle = Circle;
 
 });

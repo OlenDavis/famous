@@ -79,5 +79,5 @@ define(function(require, exports, module) {
      */
     ContextualView.prototype.commit = function commit(context) {};
 
-    module.exports = ContextualView;
+    module.exports = famous.views.ContextualView = ContextualView;
 });

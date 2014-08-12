@@ -264,5 +264,5 @@ s     *
         _setCallback.call(this, callback);
     };
 
-    module.exports = SnapTransition;
+    module.exports = famous.transitions.SnapTransition = SnapTransition;
 });

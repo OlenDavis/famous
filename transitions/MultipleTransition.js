@@ -73,5 +73,5 @@ define(function(require, exports, module) {
         }
     };
 
-    module.exports = MultipleTransition;
+    module.exports = famous.transitions.MultipleTransition = MultipleTransition;
 });

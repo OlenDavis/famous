@@ -57,5 +57,5 @@ define(function(require, exports, module) {
         this._state.set(value);
     };
 
-    module.exports = Accumulator;
+    module.exports = famous.inputs.Accumulator = Accumulator;
 });
