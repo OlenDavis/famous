@@ -18,6 +18,16 @@ module.exports = ( grunt ) ->
 				out     : 'build/famous.js'
 				optimize: 'none'
 
+		'regex-replace':
+			fixRequireJs:
+				src    : 'build/famous.js'
+				dest   : 'build/famous.js'
+				actions: [
+					name   : 'remove define paths\' extensions'
+					search : "(define\\('famous/)([\\w/]+).js(',\\[(?:'[^']+',?)*\\],function\\()"
+					replace: "$1$2$3"
+				]
+
 		concat:
 			build: files: [
 				dest: 'dist/famous.js'
@@ -48,8 +58,9 @@ module.exports = ( grunt ) ->
 
 	grunt.loadNpmTasks 'grunt-contrib-copy'
 	grunt.loadNpmTasks 'grunt-contrib-requirejs'
+	grunt.loadNpmTasks 'grunt-regex-replace'
 	grunt.loadNpmTasks 'grunt-contrib-concat'
 	grunt.loadNpmTasks 'grunt-contrib-uglify'
 	grunt.loadNpmTasks 'grunt-contrib-clean'
 
-	grunt.registerTask 'default', [ 'clean', 'copy', 'requirejs', 'concat:build', 'uglify', 'concat:license', 'clean:build' ]
+	grunt.registerTask 'default', [ 'clean', 'copy', 'requirejs', 'regex-replace', 'concat:build', 'uglify', 'concat:license', 'clean:build' ]
