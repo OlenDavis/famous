@@ -7,9 +7,10 @@
  * @copyright Famous Industries, Inc. 2014
  */
 
-define(function(require, exports, module) {
-    var EventHandler = require('famous/core/EventHandler');
-
+(/* @echo umd */)(
+'famous/events/EventArbiter',
+['famous/core/EventHandler'],
+function(EventHandler) {
     /**
      * A switch which wraps several event destinations and
      *  redirects received events to at most one of them.
@@ -80,5 +81,5 @@ define(function(require, exports, module) {
         if (dispatcher) return dispatcher.trigger(eventType, event);
     };
 
-    module.exports = famous.events.EventArbiter = EventArbiter;
+    return EventArbiter;
 });

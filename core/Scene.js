@@ -7,11 +7,10 @@
  * @copyright Famous Industries, Inc. 2014
  */
 
-define(function(require, exports, module) {
-    var Transform = require('./Transform');
-    var Modifier = require('./Modifier');
-    var RenderNode = require('./RenderNode');
-
+(/* @echo umd */)(
+'famous/core/Scene',
+['famous/core/Transform', 'famous/core/Modifier', 'famous/core/RenderNode'],
+function(Transform, Modifier, RenderNode) {
     /**
      * Builds and renders a scene graph based on a declarative structure definition.
      * See the Scene examples in the examples distribution (http://github.com/Famous/examples.git).
@@ -175,5 +174,5 @@ define(function(require, exports, module) {
         return this.node.render.apply(this.node, arguments);
     };
 
-    module.exports = famous.core.Scene = Scene;
+    return Scene;
 });

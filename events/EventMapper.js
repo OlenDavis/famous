@@ -7,9 +7,10 @@
  * @copyright Famous Industries, Inc. 2014
  */
 
-define(function(require, exports, module) {
-    var EventHandler = require('famous/core/EventHandler');
-
+(/* @echo umd */)(
+'famous/events/EventMapper',
+['famous/core/EventHandler'],
+function(EventHandler) {
     /**
      * EventMapper routes events to various event destinations
      *  based on custom logic.  The function signature is arbitrary.
@@ -51,5 +52,5 @@ define(function(require, exports, module) {
      */
     EventMapper.prototype.trigger = EventMapper.prototype.emit;
 
-    module.exports = famous.events.EventMapper = EventMapper;
+    return EventMapper;
 });

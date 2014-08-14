@@ -7,9 +7,10 @@
  * @copyright Famous Industries, Inc. 2014
  */
 
-define(function(require, exports, module) {
-    var EventEmitter = require('./EventEmitter');
-
+(/* @echo umd */)(
+'famous/core/EventHandler',
+['famous/core/EventEmitter'],
+function(EventEmitter) {
     /**
      * EventHandler forwards received events to a set of provided callback functions.
      * It allows events to be captured, processed, and optionally piped through to other event handlers.
@@ -202,5 +203,5 @@ define(function(require, exports, module) {
         return this;
     };
 
-    module.exports = famous.core.EventHandler = EventHandler;
+    return EventHandler;
 });

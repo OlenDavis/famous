@@ -7,13 +7,10 @@
  * @copyright Famous Industries, Inc. 2014
  */
 
-define(function(require, exports, module) {
-    var Transform = require('./Transform');
-
-    /* TODO: remove these dependencies when deprecation complete */
-    var Transitionable = require('famous/transitions/Transitionable');
-    var TransitionableTransform = require('famous/transitions/TransitionableTransform');
-
+(/* @echo umd */)(
+'famous/core/Modifier',
+['famous/core/Transform', 'famous/core/Transitionable', 'famous/core/TransitionableTransform'],
+function(Transform, Transitionable, TransitionableTransform) {
     /**
      *
      *  A collection of visual changes to be
@@ -374,5 +371,5 @@ define(function(require, exports, module) {
         return this._output;
     };
 
-    module.exports = famous.core.Modifier = Modifier;
+    return Modifier;
 });

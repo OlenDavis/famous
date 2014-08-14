@@ -7,12 +7,10 @@
  * @copyright Famous Industries, Inc. 2014
  */
 
-define(function(require, exports, module) {
-    var EventHandler = require('./EventHandler');
-    var OptionsManager = require('./OptionsManager');
-    var RenderNode = require('./RenderNode');
-    var Utility = require('famous/utilities/Utility');
-
+(/* @echo umd */)(
+'famous/core/View',
+['famous/core/EventHandler', 'famous/core/OptionsManager', 'famous/core/RenderNode', 'famous/core/Utility'],
+function(EventHandler, OptionsManager, RenderNode, Utility) {
     /**
      * Useful for quickly creating elements within applications
      *   with large event systems.  Consists of a RenderNode paired with
@@ -106,5 +104,5 @@ define(function(require, exports, module) {
         else return this.options.size;
     };
 
-    module.exports = famous.core.View = View;
+    return View;
 });

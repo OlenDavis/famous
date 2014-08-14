@@ -7,8 +7,10 @@
  * @copyright Famous Industries, Inc. 2014
  */
 
-define(function(require, exports, module) {
-
+(/* @echo umd */)(
+'famous/core/ViewSequence',
+[],
+function() {
     /**
      * Helper object used to iterate through items sequentially. Used in
      *   views that deal with layout.  A ViewSequence object conceptually points
@@ -278,5 +280,5 @@ define(function(require, exports, module) {
         return target ? target.render.apply(target, arguments) : null;
     };
 
-    module.exports = famous.core.ViewSequence = ViewSequence;
+    return ViewSequence;
 });

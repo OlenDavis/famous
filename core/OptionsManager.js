@@ -7,9 +7,10 @@
  * @copyright Famous Industries, Inc. 2014
  */
 
-define(function(require, exports, module) {
-    var EventHandler = require('./EventHandler');
-
+(/* @echo umd */)(
+'famous/core/OptionsManager',
+['famous/core/EventHandler'],
+function(EventHandler) {
     /**
      *  A collection of methods for setting options which can be extended
      *  onto other classes.
@@ -208,5 +209,5 @@ define(function(require, exports, module) {
         return this.unpipe.apply(this, arguments);
     };
 
-    module.exports = famous.core.OptionsManager = OptionsManager;
+    return OptionsManager;
 });

@@ -8,9 +8,10 @@
  * @copyright Famous Industries, Inc. 2014
  */
 
-define(function(require, exports, module) {
-    var Transform = require('./Transform');
-
+(/* @echo umd */)(
+'famous/core/SpecParser',
+['famous/core/Transform'],
+function(Transform) {
     /**
      *
      * This object translates the rendering instructions ("render specs")
@@ -164,5 +165,5 @@ define(function(require, exports, module) {
         }
     };
 
-    module.exports = famous.core.SpecParser = SpecParser;
+    return SpecParser;
 });

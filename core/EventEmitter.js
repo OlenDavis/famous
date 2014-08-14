@@ -7,7 +7,10 @@
  * @copyright Famous Industries, Inc. 2014
  */
 
-define(function(require, exports, module) {
+(/* @echo umd */)(
+'famous/core/EventEmitter',
+[],
+function() {
     /**
      * EventEmitter represents a channel for events.
      *
@@ -91,5 +94,5 @@ define(function(require, exports, module) {
         this._owner = owner;
     };
 
-    module.exports = famous.core.EventEmitter = EventEmitter;
+    return EventEmitter;
 });

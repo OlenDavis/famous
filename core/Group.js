@@ -7,11 +7,10 @@
  * @copyright Famous Industries, Inc. 2014
  */
 
-define(function(require, exports, module) {
-    var Context = require('./Context');
-    var Transform = require('./Transform');
-    var Surface = require('./Surface');
-
+(/* @echo umd */)(
+'famous/core/Group',
+['famous/core/Context', 'famous/core/Transform', 'famous/core/Surface'],
+function(Context, Transform, Surface) {
     /**
      * A Context designed to contain surfaces and set properties
      *   to be applied to all of them at once.
@@ -120,5 +119,5 @@ define(function(require, exports, module) {
         return result;
     };
 
-    module.exports = famous.core.Group = Group;
+    return Group;
 });

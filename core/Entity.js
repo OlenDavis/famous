@@ -71,7 +71,7 @@ function() {
         set(id, null);
     }
 
-    module.exports = famous.core.Entity = {
+    return {
         register: register,
         unregister: unregister,
         get: get,

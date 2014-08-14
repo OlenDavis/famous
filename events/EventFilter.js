@@ -7,9 +7,10 @@
  * @copyright Famous Industries, Inc. 2014
  */
 
-define(function(require, exports, module) {
-    var EventHandler = require('famous/core/EventHandler');
-
+(/* @echo umd */)(
+'famous/events/EventFilter',
+['famous/core/EventHandler'],
+function(EventHandler) {
     /**
      * EventFilter regulates the broadcasting of events based on
      *  a specified condition function of standard event type: function(type, data).
@@ -53,5 +54,5 @@ define(function(require, exports, module) {
      */
     EventFilter.prototype.trigger = EventFilter.prototype.emit;
 
-    module.exports = famous.events.EventFilter = EventFilter;
+    return EventFilter;
 });

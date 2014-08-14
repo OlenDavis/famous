@@ -7,9 +7,10 @@
  * @copyright Famous Industries, Inc. 2014
  */
 
-define(function(require, exports, module) {
-    var ElementOutput = require('./ElementOutput');
-
+(/* @echo umd */)(
+'famous/core/Surface',
+['famous/core/ElementOutput'],
+function(ElementOutput) {
     /**
      * A base class for viewable content and event
      *   targets inside a Famo.us application, containing a renderable document
@@ -390,5 +391,5 @@ define(function(require, exports, module) {
         this._sizeDirty = true;
     };
 
-    module.exports = famous.core.Surface = Surface;
+    return Surface;
 });

@@ -7,10 +7,10 @@
  * @copyright Famous Industries, Inc. 2014
  */
 
-define(function(require, exports, module) {
-    var Entity = require('./Entity');
-    var SpecParser = require('./SpecParser');
-
+(/* @echo umd */)(
+'famous/core/RenderNode',
+['famous/core/Entity', 'famous/core/SpecParser'],
+function(Entity, SpecParser) {
     /**
      * A wrapper for inserting a renderable component (like a Modifer or
      *   Surface) into the render tree.
@@ -163,5 +163,5 @@ define(function(require, exports, module) {
         return this._isModifier ? this._object.modify(result) : result;
     };
 
-    module.exports = famous.core.RenderNode = RenderNode;
+    return RenderNode;
 });
