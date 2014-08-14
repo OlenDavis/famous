@@ -7,7 +7,10 @@
  * @copyright Famous Industries, Inc. 2014
  */
 
-define(function(require, exports, module) {
+(/* @echo umd */)(
+'famous/core/Entity',
+[],
+function() {
     /**
      * A singleton that maintains a global registry of Surfaces.
      *   Private.

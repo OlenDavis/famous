@@ -1,21 +1,41 @@
-this.famous = {
-	core     : {},
-	events   : {},
-	inputs   : {},
-	math     : {},
-	modifiers: {},
-	physics  : {
-		bodies     : {},
-		constraints: {},
-		forces     : {},
-		integrators: {}
-	},
-	surfaces   : {},
-	transitions: {},
-	utilities  : {},
-	views      : {},
-	widgets    : {}
-};
+(function(){
+function umd(target, givenDependencies, definition) {
+    // Turn off strict mode for this function so we can assign to global
+    /* jshint strict: false */
+
+    // This file will function properly as a <script> tag, or a module using CommonJS and NodeJS or
+    // RequireJS module formats.  In Common/Node/RequireJS, the module exports the API, and when
+    // executed as a simple <script>, it creates a global instead.
+
+    var
+	window       = this, // JUST in case we're in a hybrid mobile context
+	dependencies = new Array(), // this will be the arguments to the call to the definition function
+	isRequireJs  = typeof define === "function" && define.amd,
+	isCommonJs   = typeof exports === "object";
+
+	if (isRequireJs || isCommonJs) {
+    	givenDependencies.forEach(function(givenDependency){
+    		dependencies.push(require(givenDependency));
+    	});
+    }
+    else {
+    	givenDependencies.forEach(function(givenDependency){
+    		var dependency = window;
+    		givenDependency.split('/').forEach(function(dependencyPart) {
+    			dependency = dependency[dependencyPart];
+    		});
+    		dependencies.push(dependency);
+    	});
+    }
+
+    if (isCommonJs) {
+        module.exports = definition(dependencies);
+    } else if (isRequireJs) {
+        define(definition.bind(null, dependencies));
+    } else {
+        famous.core.Context = definition(dependencies);
+    }
+}
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -25,7 +45,10 @@ this.famous = {
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/core/Entity',['require','exports','module'],function(require, exports, module) {
+(umd)(
+'famous/core/Entity',
+[],
+function() {
     /**
      * A singleton that maintains a global registry of Surfaces.
      *   Private.
@@ -103,7 +126,7 @@ define('famous/core/Entity',['require','exports','module'],function(require, exp
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/core/Transform',['require','exports','module'],function(require, exports, module) {
+define(function(require, exports, module) {
 
     /**
      *  A high-performance static matrix math library used to calculate
@@ -787,7 +810,7 @@ define('famous/core/Transform',['require','exports','module'],function(require, 
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/core/SpecParser',['require','exports','module','./Transform'],function(require, exports, module) {
+define(function(require, exports, module) {
     var Transform = require('./Transform');
 
     /**
@@ -955,7 +978,7 @@ define('famous/core/SpecParser',['require','exports','module','./Transform'],fun
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/core/RenderNode',['require','exports','module','./Entity','./SpecParser'],function(require, exports, module) {
+define(function(require, exports, module) {
     var Entity = require('./Entity');
     var SpecParser = require('./SpecParser');
 
@@ -1123,7 +1146,7 @@ define('famous/core/RenderNode',['require','exports','module','./Entity','./Spec
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/core/EventEmitter',['require','exports','module'],function(require, exports, module) {
+define(function(require, exports, module) {
     /**
      * EventEmitter represents a channel for events.
      *
@@ -1219,7 +1242,7 @@ define('famous/core/EventEmitter',['require','exports','module'],function(requir
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/core/EventHandler',['require','exports','module','./EventEmitter'],function(require, exports, module) {
+define(function(require, exports, module) {
     var EventEmitter = require('./EventEmitter');
 
     /**
@@ -1426,8 +1449,10 @@ define('famous/core/EventHandler',['require','exports','module','./EventEmitter'
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/core/ElementAllocator',['require','exports','module'],function(require, exports, module) {
-
+(umd)(
+'famous/core/ElementAllocator',
+[],
+function() {
     /**
      * Internal helper object to Context that handles the process of
      *   creating and allocating DOM elements within a managed div.
@@ -1521,7 +1546,7 @@ define('famous/core/ElementAllocator',['require','exports','module'],function(re
         return this.nodeCount;
     };
 
-    module.exports = famous.core.ElementAllocator = ElementAllocator;
+    return ElementAllocator;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -1533,7 +1558,7 @@ define('famous/core/ElementAllocator',['require','exports','module'],function(re
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/utilities/Utility',['require','exports','module'],function(require, exports, module) {
+define(function(require, exports, module) {
     /**
      * This namespace holds standalone functionality.
      *  Currently includes name mapping for transition curves,
@@ -1650,12 +1675,309 @@ define('famous/utilities/Utility',['require','exports','module'],function(requir
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
+ * Owner: mark@famo.us
+ * @license MPL 2.0
+ * @copyright Famous Industries, Inc. 2014
+ */
+
+define(function(require, exports, module) {
+
+    /**
+     * Collection to map keyboard codes in plain english
+     *
+     * @class KeyCodes
+     * @static
+     */
+    var KeyCodes = {
+        0 : 48,
+        1 : 49,
+        2 : 50,
+        3 : 51,
+        4 : 52,
+        5 : 53,
+        6 : 54,
+        7 : 55,
+        8 : 56,
+        9 : 57,
+        a : 97,
+        b : 98,
+        c : 99,
+        d : 100,
+        e : 101,
+        f : 102,
+        g : 103,
+        h : 104,
+        i : 105,
+        j : 106,
+        k : 107,
+        l : 108,
+        m : 109,
+        n : 110,
+        o : 111,
+        p : 112,
+        q : 113,
+        r : 114,
+        s : 115,
+        t : 116,
+        u : 117,
+        v : 118,
+        w : 119,
+        x : 120,
+        y : 121,
+        z : 122,
+        A : 65,
+        B : 66,
+        C : 67,
+        D : 68,
+        E : 69,
+        F : 70,
+        G : 71,
+        H : 72,
+        I : 73,
+        J : 74,
+        K : 75,
+        L : 76,
+        M : 77,
+        N : 78,
+        O : 79,
+        P : 80,
+        Q : 81,
+        R : 82,
+        S : 83,
+        T : 84,
+        U : 85,
+        V : 86,
+        W : 87,
+        X : 88,
+        Y : 89,
+        Z : 90,
+        ENTER : 13,
+        LEFT_ARROW: 37,
+        RIGHT_ARROW: 39,
+        UP_ARROW: 38,
+        DOWN_ARROW: 40,
+        SPACE: 32,
+        SHIFT: 16,
+        TAB: 9
+    };
+
+    module.exports = famous.utilities.KeyCodes = KeyCodes;
+});
+
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Owner: mark@famo.us
+ * @license MPL 2.0
+ * @copyright Famous Industries, Inc. 2014
+ */
+// TODO fix func-style
+/*eslint func-style: [0, "declaration"] */
+
+define(function(require, exports, module) {
+    /**
+     * An internal library to reproduce javascript time-based scheduling.
+     *   Using standard javascript setTimeout methods can have a negative performance impact
+     *   when combined with the Famous rendering process, so instead require Timer and call
+     *   Timer.setTimeout, Timer.setInterval, etc.
+     *
+     * @class Timer
+     * @constructor
+     */
+    var FamousEngine = require('famous/core/Engine');
+
+    var _event  = 'prerender';
+
+    var getTime = (window.performance && window.performance.now) ?
+        function() {
+            return window.performance.now();
+        }
+        : function() {
+            return Date.now();
+        };
+
+    /**
+     * Add a function to be run on every prerender
+     *
+     * @method addTimerFunction
+     *
+     * @param {function} fn function to be run every prerender
+     *
+     * @return {function} function passed in as parameter
+     */
+    function addTimerFunction(fn) {
+        FamousEngine.on(_event, fn);
+        return fn;
+    }
+
+    /**
+     * Wraps a function to be invoked after a certain amount of time.
+     *  After a set duration has passed, it executes the function and
+     *  removes it as a listener to 'prerender'.
+     *
+     * @method setTimeout
+     *
+     * @param {function} fn function to be run after a specified duration
+     * @param {number} duration milliseconds from now to execute the function
+     *
+     * @return {function} function passed in as parameter
+     */
+    function setTimeout(fn, duration) {
+        var t = getTime();
+        var callback = function() {
+            var t2 = getTime();
+            if (t2 - t >= duration) {
+                fn.apply(this, arguments);
+                FamousEngine.removeListener(_event, callback);
+            }
+        };
+        return addTimerFunction(callback);
+    }
+
+    /**
+     * Wraps a function to be invoked after a certain amount of time.
+     *  After a set duration has passed, it executes the function and
+     *  resets the execution time.
+     *
+     * @method setInterval
+     *
+     * @param {function} fn function to be run after a specified duration
+     * @param {number} duration interval to execute function in milliseconds
+     *
+     * @return {function} function passed in as parameter
+     */
+    function setInterval(fn, duration) {
+        var t = getTime();
+        var callback = function() {
+            var t2 = getTime();
+            if (t2 - t >= duration) {
+                fn.apply(this, arguments);
+                t = getTime();
+            }
+        };
+        return addTimerFunction(callback);
+    }
+
+    /**
+     * Wraps a function to be invoked after a certain amount of prerender ticks.
+     *  Similar use to setTimeout but tied to the engine's run speed.
+     *
+     * @method after
+     *
+     * @param {function} fn function to be run after a specified amount of ticks
+     * @param {number} numTicks number of prerender frames to wait
+     *
+     * @return {function} function passed in as parameter
+     */
+    function after(fn, numTicks) {
+        if (numTicks === undefined) return undefined;
+        var callback = function() {
+            numTicks--;
+            if (numTicks <= 0) { //in case numTicks is fraction or negative
+                fn.apply(this, arguments);
+                clear(callback);
+            }
+        };
+        return addTimerFunction(callback);
+    }
+
+    /**
+     * Wraps a function to be continually invoked after a certain amount of prerender ticks.
+     *  Similar use to setInterval but tied to the engine's run speed.
+     *
+     * @method every
+     *
+     * @param {function} fn function to be run after a specified amount of ticks
+     * @param {number} numTicks number of prerender frames to wait
+     *
+     * @return {function} function passed in as parameter
+     */
+    function every(fn, numTicks) {
+        numTicks = numTicks || 1;
+        var initial = numTicks;
+        var callback = function() {
+            numTicks--;
+            if (numTicks <= 0) { //in case numTicks is fraction or negative
+                fn.apply(this, arguments);
+                numTicks = initial;
+            }
+        };
+        return addTimerFunction(callback);
+    }
+
+    /**
+     * Remove a function that gets called every prerender
+     *
+     * @method clear
+     *
+     * @param {function} fn event linstener
+     */
+    function clear(fn) {
+        FamousEngine.removeListener(_event, fn);
+    }
+
+    /**
+     * Executes a function after a certain amount of time. Makes sure
+     *  the function is not run multiple times.
+     *
+     * @method debounce
+     *
+     * @param {function} func function to run after certain amount of time
+     * @param {number} wait amount of time
+     *
+     * @return {function} function that is not able to debounce
+     */
+    function debounce(func, wait) {
+        var timeout;
+        var ctx;
+        var timestamp;
+        var result;
+        var args;
+        return function() {
+            ctx = this;
+            args = arguments;
+            timestamp = getTime();
+
+            var fn = function() {
+                var last = getTime - timestamp;
+
+                if (last < wait) {
+                    timeout = setTimeout(fn, wait - last);
+                } else {
+                    timeout = null;
+                    result = func.apply(ctx, args);
+                }
+            };
+
+            clear(timeout);
+            timeout = setTimeout(fn, wait);
+
+            return result;
+        };
+    }
+
+    module.exports = famous.utilities.Timer = {
+        setTimeout : setTimeout,
+        setInterval : setInterval,
+        debounce : debounce,
+        after : after,
+        every : every,
+        clear : clear
+    };
+
+});
+
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
  * Owner: david@famo.us
  * @license MPL 2.0
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/transitions/MultipleTransition',['require','exports','module','famous/utilities/Utility'],function(require, exports, module) {
+define(function(require, exports, module) {
     var Utility = require('famous/utilities/Utility');
 
     /**
@@ -1733,7 +2055,7 @@ define('famous/transitions/MultipleTransition',['require','exports','module','fa
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/transitions/TweenTransition',['require','exports','module'],function(require, exports, module) {
+define(function(require, exports, module) {
 
     /**
      *
@@ -2160,7 +2482,7 @@ define('famous/transitions/TweenTransition',['require','exports','module'],funct
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/transitions/Transitionable',['require','exports','module','./MultipleTransition','./TweenTransition'],function(require, exports, module) {
+define(function(require, exports, module) {
     var MultipleTransition = require('./MultipleTransition');
     var TweenTransition = require('./TweenTransition');
 
@@ -2369,18 +2691,232 @@ define('famous/transitions/Transitionable',['require','exports','module','./Mult
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
+ * Owner: david@famo.us
+ * @license MPL 2.0
+ * @copyright Famous Industries, Inc. 2014
+ */
+
+define(function(require, exports, module) {
+    var Transitionable = require('./Transitionable');
+    var Transform = require('famous/core/Transform');
+    var Utility = require('famous/utilities/Utility');
+
+    /**
+     * A class for transitioning the state of a Transform by transitioning
+     * its translate, scale, skew and rotate components independently.
+     *
+     * @class TransitionableTransform
+     * @constructor
+     *
+     * @param [transform=Transform.identity] {Transform} The initial transform state
+     */
+    function TransitionableTransform(transform) {
+        this._final = Transform.identity.slice();
+        this.translate = new Transitionable([0, 0, 0]);
+        this.rotate = new Transitionable([0, 0, 0]);
+        this.skew = new Transitionable([0, 0, 0]);
+        this.scale = new Transitionable([1, 1, 1]);
+
+        if (transform) this.set(transform);
+    }
+
+    function _build() {
+        return Transform.build({
+            translate: this.translate.get(),
+            rotate: this.rotate.get(),
+            skew: this.skew.get(),
+            scale: this.scale.get()
+        });
+    }
+
+    /**
+     * An optimized way of setting only the translation component of a Transform
+     *
+     * @method setTranslate
+     * @chainable
+     *
+     * @param translate {Array}     New translation state
+     * @param [transition] {Object} Transition definition
+     * @param [callback] {Function} Callback
+     * @return {TransitionableTransform}
+     */
+    TransitionableTransform.prototype.setTranslate = function setTranslate(translate, transition, callback) {
+        this.translate.set(translate, transition, callback);
+        this._final = this._final.slice();
+        this._final[12] = translate[0];
+        this._final[13] = translate[1];
+        if (translate[2] !== undefined) this._final[14] = translate[2];
+        return this;
+    };
+
+    /**
+     * An optimized way of setting only the scale component of a Transform
+     *
+     * @method setScale
+     * @chainable
+     *
+     * @param scale {Array}         New scale state
+     * @param [transition] {Object} Transition definition
+     * @param [callback] {Function} Callback
+     * @return {TransitionableTransform}
+     */
+    TransitionableTransform.prototype.setScale = function setScale(scale, transition, callback) {
+        this.scale.set(scale, transition, callback);
+        this._final = this._final.slice();
+        this._final[0] = scale[0];
+        this._final[5] = scale[1];
+        if (scale[2] !== undefined) this._final[10] = scale[2];
+        return this;
+    };
+
+    /**
+     * An optimized way of setting only the rotational component of a Transform
+     *
+     * @method setRotate
+     * @chainable
+     *
+     * @param eulerAngles {Array}   Euler angles for new rotation state
+     * @param [transition] {Object} Transition definition
+     * @param [callback] {Function} Callback
+     * @return {TransitionableTransform}
+     */
+    TransitionableTransform.prototype.setRotate = function setRotate(eulerAngles, transition, callback) {
+        this.rotate.set(eulerAngles, transition, callback);
+        this._final = _build.call(this);
+        this._final = Transform.build({
+            translate: this.translate.get(),
+            rotate: eulerAngles,
+            scale: this.scale.get(),
+            skew: this.skew.get()
+        });
+        return this;
+    };
+
+    /**
+     * An optimized way of setting only the skew component of a Transform
+     *
+     * @method setSkew
+     * @chainable
+     *
+     * @param skewAngles {Array}    New skew state
+     * @param [transition] {Object} Transition definition
+     * @param [callback] {Function} Callback
+     * @return {TransitionableTransform}
+     */
+    TransitionableTransform.prototype.setSkew = function setSkew(skewAngles, transition, callback) {
+        this.skew.set(skewAngles, transition, callback);
+        this._final = Transform.build({
+            translate: this.translate.get(),
+            rotate: this.rotate.get(),
+            scale: this.scale.get(),
+            skew: skewAngles
+        });
+        return this;
+    };
+
+    /**
+     * Setter for a TransitionableTransform with optional parameters to transition
+     * between Transforms
+     *
+     * @method set
+     * @chainable
+     *
+     * @param transform {Array}     New transform state
+     * @param [transition] {Object} Transition definition
+     * @param [callback] {Function} Callback
+     * @return {TransitionableTransform}
+     */
+    TransitionableTransform.prototype.set = function set(transform, transition, callback) {
+        this._final = transform;
+        var components = Transform.interpret(transform);
+
+        var _callback = callback ? Utility.after(4, callback) : null;
+        this.translate.set(components.translate, transition, _callback);
+        this.rotate.set(components.rotate, transition, _callback);
+        this.skew.set(components.skew, transition, _callback);
+        this.scale.set(components.scale, transition, _callback);
+        return this;
+    };
+
+    /**
+     * Sets the default transition to use for transitioning betwen Transform states
+     *
+     * @method setDefaultTransition
+     *
+     * @param transition {Object} Transition definition
+     */
+    TransitionableTransform.prototype.setDefaultTransition = function setDefaultTransition(transition) {
+        this.translate.setDefault(transition);
+        this.rotate.setDefault(transition);
+        this.skew.setDefault(transition);
+        this.scale.setDefault(transition);
+    };
+
+    /**
+     * Getter. Returns the current state of the Transform
+     *
+     * @method get
+     *
+     * @return {Transform}
+     */
+    TransitionableTransform.prototype.get = function get() {
+        if (this.isActive()) {
+            return _build.call(this);
+        }
+        else return this._final;
+    };
+
+    /**
+     * Get the destination state of the Transform
+     *
+     * @method getFinal
+     *
+     * @return Transform {Transform}
+     */
+    TransitionableTransform.prototype.getFinal = function getFinal() {
+        return this._final;
+    };
+
+    /**
+     * Determine if the TransitionalTransform is currently transitioning
+     *
+     * @method isActive
+     *
+     * @return {Boolean}
+     */
+    TransitionableTransform.prototype.isActive = function isActive() {
+        return this.translate.isActive() || this.rotate.isActive() || this.scale.isActive() || this.skew.isActive();
+    };
+
+    /**
+     * Halts the transition
+     *
+     * @method halt
+     */
+    TransitionableTransform.prototype.halt = function halt() {
+        this._final = this.get();
+        this.translate.halt();
+        this.rotate.halt();
+        this.skew.halt();
+        this.scale.halt();
+    };
+
+    module.exports = famous.transitions.TransitionableTransform = TransitionableTransform;
+});
+
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
  * Owner: mark@famo.us
  * @license MPL 2.0
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/core/Context',['require','exports','module','./RenderNode','./EventHandler','./ElementAllocator','./Transform','famous/transitions/Transitionable'],function(require, exports, module) {
-    var RenderNode = require('./RenderNode');
-    var EventHandler = require('./EventHandler');
-    var ElementAllocator = require('./ElementAllocator');
-    var Transform = require('./Transform');
-    var Transitionable = require('famous/transitions/Transitionable');
-
+(umd)(
+'famous/core/Context',
+['famous/core/RenderNode', 'famous/core/EventHandler', 'famous/core/ElementAllocator', 'famous/core/Transform', 'famous/transitions/Transitionable'],
+function(RenderNode, EventHandler, ElementAllocator, Transform, Transitionable) {
     var _originZeroZero = [0, 0];
 
     function _getElementSize(element) {
@@ -2590,7 +3126,7 @@ define('famous/core/Context',['require','exports','module','./RenderNode','./Eve
         return this._eventOutput.unpipe(target);
     };
 
-    module.exports = famous.core.Context = Context;
+    return Context;
 });
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -2602,7 +3138,7 @@ define('famous/core/Context',['require','exports','module','./RenderNode','./Eve
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/core/OptionsManager',['require','exports','module','./EventHandler'],function(require, exports, module) {
+define(function(require, exports, module) {
     var EventHandler = require('./EventHandler');
 
     /**
@@ -2815,7 +3351,7 @@ define('famous/core/OptionsManager',['require','exports','module','./EventHandle
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/core/Engine',['require','exports','module','./Context','./EventHandler','./OptionsManager'],function(require, exports, module) {
+define(function(require, exports, module) {
 
     /**
      * The singleton object initiated upon process
@@ -3196,7 +3732,7 @@ define('famous/core/Engine',['require','exports','module','./Context','./EventHa
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/core/ElementOutput',['require','exports','module','./Entity','./EventHandler','./Transform'],function(require, exports, module) {
+define(function(require, exports, module) {
     var Entity = require('./Entity');
     var EventHandler = require('./EventHandler');
     var Transform = require('./Transform');
@@ -3531,7 +4067,7 @@ define('famous/core/ElementOutput',['require','exports','module','./Entity','./E
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/core/Surface',['require','exports','module','./ElementOutput'],function(require, exports, module) {
+define(function(require, exports, module) {
     var ElementOutput = require('./ElementOutput');
 
     /**
@@ -3926,7 +4462,7 @@ define('famous/core/Surface',['require','exports','module','./ElementOutput'],fu
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/core/Group',['require','exports','module','./Context','./Transform','./Surface'],function(require, exports, module) {
+define(function(require, exports, module) {
     var Context = require('./Context');
     var Transform = require('./Transform');
     var Surface = require('./Surface');
@@ -4046,229 +4582,12 @@ define('famous/core/Group',['require','exports','module','./Context','./Transfor
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
- * Owner: david@famo.us
- * @license MPL 2.0
- * @copyright Famous Industries, Inc. 2014
- */
-
-define('famous/transitions/TransitionableTransform',['require','exports','module','./Transitionable','famous/core/Transform','famous/utilities/Utility'],function(require, exports, module) {
-    var Transitionable = require('./Transitionable');
-    var Transform = require('famous/core/Transform');
-    var Utility = require('famous/utilities/Utility');
-
-    /**
-     * A class for transitioning the state of a Transform by transitioning
-     * its translate, scale, skew and rotate components independently.
-     *
-     * @class TransitionableTransform
-     * @constructor
-     *
-     * @param [transform=Transform.identity] {Transform} The initial transform state
-     */
-    function TransitionableTransform(transform) {
-        this._final = Transform.identity.slice();
-        this.translate = new Transitionable([0, 0, 0]);
-        this.rotate = new Transitionable([0, 0, 0]);
-        this.skew = new Transitionable([0, 0, 0]);
-        this.scale = new Transitionable([1, 1, 1]);
-
-        if (transform) this.set(transform);
-    }
-
-    function _build() {
-        return Transform.build({
-            translate: this.translate.get(),
-            rotate: this.rotate.get(),
-            skew: this.skew.get(),
-            scale: this.scale.get()
-        });
-    }
-
-    /**
-     * An optimized way of setting only the translation component of a Transform
-     *
-     * @method setTranslate
-     * @chainable
-     *
-     * @param translate {Array}     New translation state
-     * @param [transition] {Object} Transition definition
-     * @param [callback] {Function} Callback
-     * @return {TransitionableTransform}
-     */
-    TransitionableTransform.prototype.setTranslate = function setTranslate(translate, transition, callback) {
-        this.translate.set(translate, transition, callback);
-        this._final = this._final.slice();
-        this._final[12] = translate[0];
-        this._final[13] = translate[1];
-        if (translate[2] !== undefined) this._final[14] = translate[2];
-        return this;
-    };
-
-    /**
-     * An optimized way of setting only the scale component of a Transform
-     *
-     * @method setScale
-     * @chainable
-     *
-     * @param scale {Array}         New scale state
-     * @param [transition] {Object} Transition definition
-     * @param [callback] {Function} Callback
-     * @return {TransitionableTransform}
-     */
-    TransitionableTransform.prototype.setScale = function setScale(scale, transition, callback) {
-        this.scale.set(scale, transition, callback);
-        this._final = this._final.slice();
-        this._final[0] = scale[0];
-        this._final[5] = scale[1];
-        if (scale[2] !== undefined) this._final[10] = scale[2];
-        return this;
-    };
-
-    /**
-     * An optimized way of setting only the rotational component of a Transform
-     *
-     * @method setRotate
-     * @chainable
-     *
-     * @param eulerAngles {Array}   Euler angles for new rotation state
-     * @param [transition] {Object} Transition definition
-     * @param [callback] {Function} Callback
-     * @return {TransitionableTransform}
-     */
-    TransitionableTransform.prototype.setRotate = function setRotate(eulerAngles, transition, callback) {
-        this.rotate.set(eulerAngles, transition, callback);
-        this._final = _build.call(this);
-        this._final = Transform.build({
-            translate: this.translate.get(),
-            rotate: eulerAngles,
-            scale: this.scale.get(),
-            skew: this.skew.get()
-        });
-        return this;
-    };
-
-    /**
-     * An optimized way of setting only the skew component of a Transform
-     *
-     * @method setSkew
-     * @chainable
-     *
-     * @param skewAngles {Array}    New skew state
-     * @param [transition] {Object} Transition definition
-     * @param [callback] {Function} Callback
-     * @return {TransitionableTransform}
-     */
-    TransitionableTransform.prototype.setSkew = function setSkew(skewAngles, transition, callback) {
-        this.skew.set(skewAngles, transition, callback);
-        this._final = Transform.build({
-            translate: this.translate.get(),
-            rotate: this.rotate.get(),
-            scale: this.scale.get(),
-            skew: skewAngles
-        });
-        return this;
-    };
-
-    /**
-     * Setter for a TransitionableTransform with optional parameters to transition
-     * between Transforms
-     *
-     * @method set
-     * @chainable
-     *
-     * @param transform {Array}     New transform state
-     * @param [transition] {Object} Transition definition
-     * @param [callback] {Function} Callback
-     * @return {TransitionableTransform}
-     */
-    TransitionableTransform.prototype.set = function set(transform, transition, callback) {
-        this._final = transform;
-        var components = Transform.interpret(transform);
-
-        var _callback = callback ? Utility.after(4, callback) : null;
-        this.translate.set(components.translate, transition, _callback);
-        this.rotate.set(components.rotate, transition, _callback);
-        this.skew.set(components.skew, transition, _callback);
-        this.scale.set(components.scale, transition, _callback);
-        return this;
-    };
-
-    /**
-     * Sets the default transition to use for transitioning betwen Transform states
-     *
-     * @method setDefaultTransition
-     *
-     * @param transition {Object} Transition definition
-     */
-    TransitionableTransform.prototype.setDefaultTransition = function setDefaultTransition(transition) {
-        this.translate.setDefault(transition);
-        this.rotate.setDefault(transition);
-        this.skew.setDefault(transition);
-        this.scale.setDefault(transition);
-    };
-
-    /**
-     * Getter. Returns the current state of the Transform
-     *
-     * @method get
-     *
-     * @return {Transform}
-     */
-    TransitionableTransform.prototype.get = function get() {
-        if (this.isActive()) {
-            return _build.call(this);
-        }
-        else return this._final;
-    };
-
-    /**
-     * Get the destination state of the Transform
-     *
-     * @method getFinal
-     *
-     * @return Transform {Transform}
-     */
-    TransitionableTransform.prototype.getFinal = function getFinal() {
-        return this._final;
-    };
-
-    /**
-     * Determine if the TransitionalTransform is currently transitioning
-     *
-     * @method isActive
-     *
-     * @return {Boolean}
-     */
-    TransitionableTransform.prototype.isActive = function isActive() {
-        return this.translate.isActive() || this.rotate.isActive() || this.scale.isActive() || this.skew.isActive();
-    };
-
-    /**
-     * Halts the transition
-     *
-     * @method halt
-     */
-    TransitionableTransform.prototype.halt = function halt() {
-        this._final = this.get();
-        this.translate.halt();
-        this.rotate.halt();
-        this.skew.halt();
-        this.scale.halt();
-    };
-
-    module.exports = famous.transitions.TransitionableTransform = TransitionableTransform;
-});
-
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
  * Owner: mark@famo.us
  * @license MPL 2.0
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/core/Modifier',['require','exports','module','./Transform','famous/transitions/Transitionable','famous/transitions/TransitionableTransform'],function(require, exports, module) {
+define(function(require, exports, module) {
     var Transform = require('./Transform');
 
     /* TODO: remove these dependencies when deprecation complete */
@@ -4647,7 +4966,7 @@ define('famous/core/Modifier',['require','exports','module','./Transform','famou
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/core/Scene',['require','exports','module','./Transform','./Modifier','./RenderNode'],function(require, exports, module) {
+define(function(require, exports, module) {
     var Transform = require('./Transform');
     var Modifier = require('./Modifier');
     var RenderNode = require('./RenderNode');
@@ -4827,7 +5146,7 @@ define('famous/core/Scene',['require','exports','module','./Transform','./Modifi
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/core/View',['require','exports','module','./EventHandler','./OptionsManager','./RenderNode','famous/utilities/Utility'],function(require, exports, module) {
+define(function(require, exports, module) {
     var EventHandler = require('./EventHandler');
     var OptionsManager = require('./OptionsManager');
     var RenderNode = require('./RenderNode');
@@ -4938,7 +5257,7 @@ define('famous/core/View',['require','exports','module','./EventHandler','./Opti
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/core/ViewSequence',['require','exports','module'],function(require, exports, module) {
+define(function(require, exports, module) {
 
     /**
      * Helper object used to iterate through items sequentially. Used in
@@ -5221,7 +5540,7 @@ define('famous/core/ViewSequence',['require','exports','module'],function(requir
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/events/EventArbiter',['require','exports','module','famous/core/EventHandler'],function(require, exports, module) {
+define(function(require, exports, module) {
     var EventHandler = require('famous/core/EventHandler');
 
     /**
@@ -5306,7 +5625,7 @@ define('famous/events/EventArbiter',['require','exports','module','famous/core/E
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/events/EventFilter',['require','exports','module','famous/core/EventHandler'],function(require, exports, module) {
+define(function(require, exports, module) {
     var EventHandler = require('famous/core/EventHandler');
 
     /**
@@ -5364,7 +5683,7 @@ define('famous/events/EventFilter',['require','exports','module','famous/core/Ev
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/events/EventMapper',['require','exports','module','famous/core/EventHandler'],function(require, exports, module) {
+define(function(require, exports, module) {
     var EventHandler = require('famous/core/EventHandler');
 
     /**
@@ -5420,7 +5739,7 @@ define('famous/events/EventMapper',['require','exports','module','famous/core/Ev
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/inputs/FastClick',['require','exports','module'],function(require, exports, module) {
+define(function(require, exports, module) {
     /**
      * FastClick is an override shim which maps event pairs of
      *   'touchstart' and 'touchend' which differ by less than a certain
@@ -5487,7 +5806,7 @@ define('famous/inputs/FastClick',['require','exports','module'],function(require
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/inputs/GenericSync',['require','exports','module','famous/core/EventHandler'],function(require, exports, module) {
+define(function(require, exports, module) {
     var EventHandler = require('famous/core/EventHandler');
 
     /**
@@ -5613,7 +5932,7 @@ define('famous/inputs/GenericSync',['require','exports','module','famous/core/Ev
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/inputs/MouseSync',['require','exports','module','famous/core/EventHandler'],function(require, exports, module) {
+define(function(require, exports, module) {
     var EventHandler = require('famous/core/EventHandler');
 
     /**
@@ -5838,7 +6157,7 @@ define('famous/inputs/MouseSync',['require','exports','module','famous/core/Even
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/inputs/TwoFingerSync',['require','exports','module','famous/core/EventHandler'],function(require, exports, module) {
+define(function(require, exports, module) {
     var EventHandler = require('famous/core/EventHandler');
 
     /**
@@ -5962,7 +6281,7 @@ define('famous/inputs/TwoFingerSync',['require','exports','module','famous/core/
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/inputs/PinchSync',['require','exports','module','./TwoFingerSync'],function(require, exports, module) {
+define(function(require, exports, module) {
     var TwoFingerSync = require('./TwoFingerSync');
 
     /**
@@ -6060,7 +6379,7 @@ define('famous/inputs/PinchSync',['require','exports','module','./TwoFingerSync'
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/inputs/RotateSync',['require','exports','module','./TwoFingerSync'],function(require, exports, module) {
+define(function(require, exports, module) {
     var TwoFingerSync = require('./TwoFingerSync');
 
     /**
@@ -6159,7 +6478,7 @@ define('famous/inputs/RotateSync',['require','exports','module','./TwoFingerSync
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/inputs/ScaleSync',['require','exports','module','./TwoFingerSync'],function(require, exports, module) {
+define(function(require, exports, module) {
     var TwoFingerSync = require('./TwoFingerSync');
 
     /**
@@ -6265,7 +6584,7 @@ define('famous/inputs/ScaleSync',['require','exports','module','./TwoFingerSync'
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/inputs/ScrollSync',['require','exports','module','famous/core/EventHandler','famous/core/Engine'],function(require, exports, module) {
+define(function(require, exports, module) {
     var EventHandler = require('famous/core/EventHandler');
     var Engine = require('famous/core/Engine');
 
@@ -6465,7 +6784,7 @@ define('famous/inputs/ScrollSync',['require','exports','module','famous/core/Eve
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/inputs/TouchTracker',['require','exports','module','famous/core/EventHandler'],function(require, exports, module) {
+define(function(require, exports, module) {
     var EventHandler = require('famous/core/EventHandler');
 
     var _now = Date.now;
@@ -6576,7 +6895,7 @@ define('famous/inputs/TouchTracker',['require','exports','module','famous/core/E
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/inputs/TouchSync',['require','exports','module','./TouchTracker','famous/core/EventHandler'],function(require, exports, module) {
+define(function(require, exports, module) {
     var TouchTracker = require('./TouchTracker');
     var EventHandler = require('famous/core/EventHandler');
 
@@ -6759,7 +7078,7 @@ define('famous/inputs/TouchSync',['require','exports','module','./TouchTracker',
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/math/Vector',['require','exports','module'],function(require, exports, module) {
+define(function(require, exports, module) {
 
     /**
      * Three-element floating point vector.
@@ -7140,7 +7459,7 @@ define('famous/math/Vector',['require','exports','module'],function(require, exp
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/math/Matrix',['require','exports','module','./Vector'],function(require, exports, module) {
+define(function(require, exports, module) {
     var Vector = require('./Vector');
 
     /**
@@ -7296,7 +7615,7 @@ define('famous/math/Matrix',['require','exports','module','./Vector'],function(r
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/math/Quaternion',['require','exports','module','./Matrix'],function(require, exports, module) {
+define(function(require, exports, module) {
     var Matrix = require('./Matrix');
 
     /**
@@ -7729,7 +8048,7 @@ define('famous/math/Quaternion',['require','exports','module','./Matrix'],functi
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/math/Random',['require','exports','module'],function(require, exports, module) {
+define(function(require, exports, module) {
 
     var RAND = Math.random;
 
@@ -7831,7 +8150,7 @@ define('famous/math/Random',['require','exports','module'],function(require, exp
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/math/Utilities',['require','exports','module'],function(require, exports, module) {
+define(function(require, exports, module) {
     /**
      * A few static methods.
      *
@@ -7879,7 +8198,7 @@ define('famous/math/Utilities',['require','exports','module'],function(require, 
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/modifiers/Draggable',['require','exports','module','famous/core/Transform','famous/transitions/Transitionable','famous/core/EventHandler','famous/math/Utilities','famous/inputs/GenericSync','famous/inputs/MouseSync','famous/inputs/TouchSync'],function(require, exports, module) {
+define(function(require, exports, module) {
     var Transform = require('famous/core/Transform');
     var Transitionable = require('famous/transitions/Transitionable');
     var EventHandler = require('famous/core/EventHandler');
@@ -8131,7 +8450,7 @@ define('famous/modifiers/Draggable',['require','exports','module','famous/core/T
     module.exports = famous.modifiers.Draggable = Draggable;
 });
 
-define('famous/modifiers/Fader',['require','exports','module','famous/transitions/Transitionable','famous/core/OptionsManager'],function(require, exports, module) {
+define(function(require, exports, module) {
     var Transitionable = require('famous/transitions/Transitionable');
     var OptionsManager = require('famous/core/OptionsManager');
 
@@ -8263,7 +8582,7 @@ define('famous/modifiers/Fader',['require','exports','module','famous/transition
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/modifiers/ModifierChain',['require','exports','module'],function(require, exports, module) {
+define(function(require, exports, module) {
 
     /**
      * A class to add and remove a chain of modifiers
@@ -8334,7 +8653,7 @@ define('famous/modifiers/ModifierChain',['require','exports','module'],function(
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/modifiers/StateModifier',['require','exports','module','famous/core/Modifier','famous/core/Transform','famous/transitions/Transitionable','famous/transitions/TransitionableTransform'],function(require, exports, module) {
+define(function(require, exports, module) {
     var Modifier = require('famous/core/Modifier');
     var Transform = require('famous/core/Transform');
     var Transitionable = require('famous/transitions/Transitionable');
@@ -8600,7 +8919,7 @@ define('famous/modifiers/StateModifier',['require','exports','module','famous/co
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/physics/integrators/SymplecticEuler',['require','exports','module','famous/core/OptionsManager'],function(require, exports, module) {
+define(function(require, exports, module) {
     var OptionsManager = require('famous/core/OptionsManager');
 
     /**
@@ -8757,7 +9076,7 @@ define('famous/physics/integrators/SymplecticEuler',['require','exports','module
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/physics/bodies/Particle',['require','exports','module','famous/math/Vector','famous/core/Transform','famous/core/EventHandler','../integrators/SymplecticEuler'],function(require, exports, module) {
+define(function(require, exports, module) {
     var Vector = require('famous/math/Vector');
     var Transform = require('famous/core/Transform');
     var EventHandler = require('famous/core/EventHandler');
@@ -9162,7 +9481,7 @@ define('famous/physics/bodies/Particle',['require','exports','module','famous/ma
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/physics/bodies/Body',['require','exports','module','./Particle','famous/core/Transform','famous/math/Vector','famous/math/Quaternion','famous/math/Matrix'],function(require, exports, module) {
+define(function(require, exports, module) {
     var Particle = require('./Particle');
     var Transform = require('famous/core/Transform');
     var Vector = require('famous/math/Vector');
@@ -9396,7 +9715,7 @@ define('famous/physics/bodies/Body',['require','exports','module','./Particle','
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/physics/bodies/Circle',['require','exports','module','./Body','famous/math/Matrix'],function(require, exports, module) {
+define(function(require, exports, module) {
     var Body = require('./Body');
     var Matrix = require('famous/math/Matrix');
 
@@ -9458,7 +9777,7 @@ define('famous/physics/bodies/Circle',['require','exports','module','./Body','fa
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/physics/bodies/Rectangle',['require','exports','module','./Body','famous/math/Matrix'],function(require, exports, module) {
+define(function(require, exports, module) {
     var Body = require('./Body');
     var Matrix = require('famous/math/Matrix');
 
@@ -9520,7 +9839,7 @@ define('famous/physics/bodies/Rectangle',['require','exports','module','./Body',
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/physics/constraints/Constraint',['require','exports','module','famous/core/EventHandler'],function(require, exports, module) {
+define(function(require, exports, module) {
     var EventHandler = require('famous/core/EventHandler');
 
     /**
@@ -9611,7 +9930,7 @@ define('famous/physics/constraints/Constraint',['require','exports','module','fa
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/physics/constraints/Collision',['require','exports','module','./Constraint','famous/math/Vector'],function(require, exports, module) {
+define(function(require, exports, module) {
     var Constraint = require('./Constraint');
     var Vector = require('famous/math/Vector');
 
@@ -9756,7 +10075,7 @@ define('famous/physics/constraints/Collision',['require','exports','module','./C
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/physics/constraints/Curve',['require','exports','module','./Constraint','famous/math/Vector'],function(require, exports, module) {
+define(function(require, exports, module) {
     var Constraint = require('./Constraint');
     var Vector = require('famous/math/Vector');
 
@@ -9890,7 +10209,7 @@ define('famous/physics/constraints/Curve',['require','exports','module','./Const
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/physics/constraints/Distance',['require','exports','module','./Constraint','famous/math/Vector'],function(require, exports, module) {
+define(function(require, exports, module) {
     var Constraint = require('./Constraint');
     var Vector = require('famous/math/Vector');
 
@@ -10059,7 +10378,7 @@ define('famous/physics/constraints/Distance',['require','exports','module','./Co
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/physics/constraints/Snap',['require','exports','module','./Constraint','famous/math/Vector'],function(require, exports, module) {
+define(function(require, exports, module) {
     var Constraint = require('./Constraint');
     var Vector = require('famous/math/Vector');
 
@@ -10248,7 +10567,7 @@ define('famous/physics/constraints/Snap',['require','exports','module','./Constr
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/physics/constraints/Surface',['require','exports','module','./Constraint','famous/math/Vector'],function(require, exports, module) {
+define(function(require, exports, module) {
     var Constraint = require('./Constraint');
     var Vector = require('famous/math/Vector');
 
@@ -10365,7 +10684,7 @@ define('famous/physics/constraints/Surface',['require','exports','module','./Con
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/physics/constraints/Wall',['require','exports','module','./Constraint','famous/math/Vector'],function(require, exports, module) {
+define(function(require, exports, module) {
     var Constraint = require('./Constraint');
     var Vector = require('famous/math/Vector');
 
@@ -10554,7 +10873,7 @@ define('famous/physics/constraints/Wall',['require','exports','module','./Constr
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/physics/constraints/Walls',['require','exports','module','./Constraint','./Wall','famous/math/Vector'],function(require, exports, module) {
+define(function(require, exports, module) {
     var Constraint = require('./Constraint');
     var Wall = require('./Wall');
     var Vector = require('famous/math/Vector');
@@ -10794,7 +11113,7 @@ define('famous/physics/constraints/Walls',['require','exports','module','./Const
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/physics/forces/Force',['require','exports','module','famous/math/Vector','famous/core/EventHandler'],function(require, exports, module) {
+define(function(require, exports, module) {
     var Vector = require('famous/math/Vector');
     var EventHandler = require('famous/core/EventHandler');
 
@@ -10888,7 +11207,7 @@ define('famous/physics/forces/Force',['require','exports','module','famous/math/
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/physics/forces/Drag',['require','exports','module','./Force'],function(require, exports, module) {
+define(function(require, exports, module) {
     var Force = require('./Force');
 
     /**
@@ -11006,7 +11325,7 @@ define('famous/physics/forces/Drag',['require','exports','module','./Force'],fun
  */
 
 //TODO: test options manager
-define('famous/physics/forces/Repulsion',['require','exports','module','./Force','famous/math/Vector'],function(require, exports, module) {
+define(function(require, exports, module) {
     var Force = require('./Force');
     var Vector = require('famous/math/Vector');
 
@@ -11214,7 +11533,7 @@ define('famous/physics/forces/Repulsion',['require','exports','module','./Force'
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/physics/forces/RotationalDrag',['require','exports','module','./Drag'],function(require, exports, module) {
+define(function(require, exports, module) {
     var Drag = require('./Drag');
 
     /**
@@ -11308,7 +11627,7 @@ define('famous/physics/forces/RotationalDrag',['require','exports','module','./D
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/physics/forces/Spring',['require','exports','module','./Force','famous/math/Vector'],function(require, exports, module) {
+define(function(require, exports, module) {
     var Force = require('./Force');
     var Vector = require('famous/math/Vector');
 
@@ -11569,7 +11888,7 @@ define('famous/physics/forces/Spring',['require','exports','module','./Force','f
  */
 
 //TODO: test inheritance
-define('famous/physics/forces/RotationalSpring',['require','exports','module','./Spring'],function(require, exports, module) {
+define(function(require, exports, module) {
     var Spring = require('./Spring');
 
     /**
@@ -11658,7 +11977,7 @@ define('famous/physics/forces/RotationalSpring',['require','exports','module','.
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/physics/forces/VectorField',['require','exports','module','./Force','famous/math/Vector'],function(require, exports, module) {
+define(function(require, exports, module) {
     var Force = require('./Force');
     var Vector = require('famous/math/Vector');
 
@@ -11841,7 +12160,7 @@ define('famous/physics/forces/VectorField',['require','exports','module','./Forc
  * @license MPL 2.0
  * @copyright Famous Industries, Inc. 2014
  */
-define('famous/physics/PhysicsEngine',['require','exports','module','famous/core/EventHandler'],function(require, exports, module) {
+define(function(require, exports, module) {
     var EventHandler = require('famous/core/EventHandler');
 
     /**
@@ -12306,7 +12625,7 @@ define('famous/physics/PhysicsEngine',['require','exports','module','famous/core
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/surfaces/CanvasSurface',['require','exports','module','famous/core/Surface'],function(require, exports, module) {
+define(function(require, exports, module) {
     var Surface = require('famous/core/Surface');
 
     /**
@@ -12425,7 +12744,7 @@ define('famous/surfaces/CanvasSurface',['require','exports','module','famous/cor
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/surfaces/ContainerSurface',['require','exports','module','famous/core/Surface','famous/core/Context'],function(require, exports, module) {
+define(function(require, exports, module) {
     var Surface = require('famous/core/Surface');
     var Context = require('famous/core/Context');
 
@@ -12531,7 +12850,7 @@ define('famous/surfaces/ContainerSurface',['require','exports','module','famous/
     module.exports = famous.surfaces.ContainerSurface = ContainerSurface;
 });
 
-define('famous/surfaces/FormContainerSurface',['require','exports','module','./ContainerSurface'],function(require, exports, module) {
+define(function(require, exports, module) {
     var ContainerSurface = require('./ContainerSurface');
 
     function FormContainerSurface(options) {
@@ -12562,7 +12881,7 @@ define('famous/surfaces/FormContainerSurface',['require','exports','module','./C
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/surfaces/ImageSurface',['require','exports','module','famous/core/Surface'],function(require, exports, module) {
+define(function(require, exports, module) {
     var Surface = require('famous/core/Surface');
 
     /**
@@ -12684,7 +13003,7 @@ define('famous/surfaces/ImageSurface',['require','exports','module','famous/core
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/surfaces/InputSurface',['require','exports','module','famous/core/Surface'],function(require, exports, module) {
+define(function(require, exports, module) {
     var Surface = require('famous/core/Surface');
 
     /**
@@ -12837,7 +13156,7 @@ define('famous/surfaces/InputSurface',['require','exports','module','famous/core
     module.exports = famous.surfaces.InputSurface = InputSurface;
 });
 
-define('famous/surfaces/SubmitInputSurface',['require','exports','module','./InputSurface'],function(require, exports, module) {
+define(function(require, exports, module) {
     var InputSurface = require('./InputSurface');
 
     function SubmitInputSurface(options) {
@@ -12870,7 +13189,7 @@ define('famous/surfaces/SubmitInputSurface',['require','exports','module','./Inp
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/surfaces/TextareaSurface',['require','exports','module','famous/core/Surface'],function(require, exports, module) {
+define(function(require, exports, module) {
     var Surface = require('famous/core/Surface');
 
     /**
@@ -13065,7 +13384,7 @@ define('famous/surfaces/TextareaSurface',['require','exports','module','famous/c
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/surfaces/VideoSurface',['require','exports','module','famous/core/Surface'],function(require, exports, module) {
+define(function(require, exports, module) {
     var Surface = require('famous/core/Surface');
 
     /**
@@ -13165,7 +13484,7 @@ define('famous/surfaces/VideoSurface',['require','exports','module','famous/core
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/transitions/CachedMap',['require','exports','module'],function(require, exports, module) {
+define(function(require, exports, module) {
     /**
      * A simple in-memory object cache.  Used as a helper for Views with
      * provider functions.
@@ -13217,7 +13536,7 @@ define('famous/transitions/CachedMap',['require','exports','module'],function(re
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/transitions/Easing',['require','exports','module'],function(require, exports, module) {
+define(function(require, exports, module) {
 
     /**
      * A library of curves which map an animation explicitly as a function of time.
@@ -13510,7 +13829,7 @@ define('famous/transitions/Easing',['require','exports','module'],function(requi
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/transitions/SnapTransition',['require','exports','module','famous/physics/PhysicsEngine','famous/physics/bodies/Particle','famous/physics/constraints/Snap','famous/math/Vector'],function(require, exports, module) {
+define(function(require, exports, module) {
     var PE = require('famous/physics/PhysicsEngine');
     var Particle = require('famous/physics/bodies/Particle');
     var Spring = require('famous/physics/constraints/Snap');
@@ -13781,7 +14100,7 @@ s     *
 
 /*global console*/
 
-define('famous/transitions/SpringTransition',['require','exports','module','famous/physics/PhysicsEngine','famous/physics/bodies/Particle','famous/physics/forces/Spring','famous/math/Vector'],function(require, exports, module) {
+define(function(require, exports, module) {
     var PE = require('famous/physics/PhysicsEngine');
     var Particle = require('famous/physics/bodies/Particle');
     var Spring = require('famous/physics/forces/Spring');
@@ -14058,7 +14377,7 @@ define('famous/transitions/SpringTransition',['require','exports','module','famo
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/transitions/WallTransition',['require','exports','module','famous/physics/PhysicsEngine','famous/physics/bodies/Particle','famous/physics/forces/Spring','famous/physics/constraints/Wall','famous/math/Vector'],function(require, exports, module) {
+define(function(require, exports, module) {
     var PE = require('famous/physics/PhysicsEngine');
     var Particle = require('famous/physics/bodies/Particle');
     var Spring = require('famous/physics/forces/Spring');
@@ -14353,309 +14672,12 @@ define('famous/transitions/WallTransition',['require','exports','module','famous
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
- * Owner: mark@famo.us
- * @license MPL 2.0
- * @copyright Famous Industries, Inc. 2014
- */
-
-define('famous/utilities/KeyCodes',['require','exports','module'],function(require, exports, module) {
-
-    /**
-     * Collection to map keyboard codes in plain english
-     *
-     * @class KeyCodes
-     * @static
-     */
-    var KeyCodes = {
-        0 : 48,
-        1 : 49,
-        2 : 50,
-        3 : 51,
-        4 : 52,
-        5 : 53,
-        6 : 54,
-        7 : 55,
-        8 : 56,
-        9 : 57,
-        a : 97,
-        b : 98,
-        c : 99,
-        d : 100,
-        e : 101,
-        f : 102,
-        g : 103,
-        h : 104,
-        i : 105,
-        j : 106,
-        k : 107,
-        l : 108,
-        m : 109,
-        n : 110,
-        o : 111,
-        p : 112,
-        q : 113,
-        r : 114,
-        s : 115,
-        t : 116,
-        u : 117,
-        v : 118,
-        w : 119,
-        x : 120,
-        y : 121,
-        z : 122,
-        A : 65,
-        B : 66,
-        C : 67,
-        D : 68,
-        E : 69,
-        F : 70,
-        G : 71,
-        H : 72,
-        I : 73,
-        J : 74,
-        K : 75,
-        L : 76,
-        M : 77,
-        N : 78,
-        O : 79,
-        P : 80,
-        Q : 81,
-        R : 82,
-        S : 83,
-        T : 84,
-        U : 85,
-        V : 86,
-        W : 87,
-        X : 88,
-        Y : 89,
-        Z : 90,
-        ENTER : 13,
-        LEFT_ARROW: 37,
-        RIGHT_ARROW: 39,
-        UP_ARROW: 38,
-        DOWN_ARROW: 40,
-        SPACE: 32,
-        SHIFT: 16,
-        TAB: 9
-    };
-
-    module.exports = famous.utilities.KeyCodes = KeyCodes;
-});
-
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- * Owner: mark@famo.us
- * @license MPL 2.0
- * @copyright Famous Industries, Inc. 2014
- */
-// TODO fix func-style
-/*eslint func-style: [0, "declaration"] */
-
-define('famous/utilities/Timer',['require','exports','module','famous/core/Engine'],function(require, exports, module) {
-    /**
-     * An internal library to reproduce javascript time-based scheduling.
-     *   Using standard javascript setTimeout methods can have a negative performance impact
-     *   when combined with the Famous rendering process, so instead require Timer and call
-     *   Timer.setTimeout, Timer.setInterval, etc.
-     *
-     * @class Timer
-     * @constructor
-     */
-    var FamousEngine = require('famous/core/Engine');
-
-    var _event  = 'prerender';
-
-    var getTime = (window.performance && window.performance.now) ?
-        function() {
-            return window.performance.now();
-        }
-        : function() {
-            return Date.now();
-        };
-
-    /**
-     * Add a function to be run on every prerender
-     *
-     * @method addTimerFunction
-     *
-     * @param {function} fn function to be run every prerender
-     *
-     * @return {function} function passed in as parameter
-     */
-    function addTimerFunction(fn) {
-        FamousEngine.on(_event, fn);
-        return fn;
-    }
-
-    /**
-     * Wraps a function to be invoked after a certain amount of time.
-     *  After a set duration has passed, it executes the function and
-     *  removes it as a listener to 'prerender'.
-     *
-     * @method setTimeout
-     *
-     * @param {function} fn function to be run after a specified duration
-     * @param {number} duration milliseconds from now to execute the function
-     *
-     * @return {function} function passed in as parameter
-     */
-    function setTimeout(fn, duration) {
-        var t = getTime();
-        var callback = function() {
-            var t2 = getTime();
-            if (t2 - t >= duration) {
-                fn.apply(this, arguments);
-                FamousEngine.removeListener(_event, callback);
-            }
-        };
-        return addTimerFunction(callback);
-    }
-
-    /**
-     * Wraps a function to be invoked after a certain amount of time.
-     *  After a set duration has passed, it executes the function and
-     *  resets the execution time.
-     *
-     * @method setInterval
-     *
-     * @param {function} fn function to be run after a specified duration
-     * @param {number} duration interval to execute function in milliseconds
-     *
-     * @return {function} function passed in as parameter
-     */
-    function setInterval(fn, duration) {
-        var t = getTime();
-        var callback = function() {
-            var t2 = getTime();
-            if (t2 - t >= duration) {
-                fn.apply(this, arguments);
-                t = getTime();
-            }
-        };
-        return addTimerFunction(callback);
-    }
-
-    /**
-     * Wraps a function to be invoked after a certain amount of prerender ticks.
-     *  Similar use to setTimeout but tied to the engine's run speed.
-     *
-     * @method after
-     *
-     * @param {function} fn function to be run after a specified amount of ticks
-     * @param {number} numTicks number of prerender frames to wait
-     *
-     * @return {function} function passed in as parameter
-     */
-    function after(fn, numTicks) {
-        if (numTicks === undefined) return undefined;
-        var callback = function() {
-            numTicks--;
-            if (numTicks <= 0) { //in case numTicks is fraction or negative
-                fn.apply(this, arguments);
-                clear(callback);
-            }
-        };
-        return addTimerFunction(callback);
-    }
-
-    /**
-     * Wraps a function to be continually invoked after a certain amount of prerender ticks.
-     *  Similar use to setInterval but tied to the engine's run speed.
-     *
-     * @method every
-     *
-     * @param {function} fn function to be run after a specified amount of ticks
-     * @param {number} numTicks number of prerender frames to wait
-     *
-     * @return {function} function passed in as parameter
-     */
-    function every(fn, numTicks) {
-        numTicks = numTicks || 1;
-        var initial = numTicks;
-        var callback = function() {
-            numTicks--;
-            if (numTicks <= 0) { //in case numTicks is fraction or negative
-                fn.apply(this, arguments);
-                numTicks = initial;
-            }
-        };
-        return addTimerFunction(callback);
-    }
-
-    /**
-     * Remove a function that gets called every prerender
-     *
-     * @method clear
-     *
-     * @param {function} fn event linstener
-     */
-    function clear(fn) {
-        FamousEngine.removeListener(_event, fn);
-    }
-
-    /**
-     * Executes a function after a certain amount of time. Makes sure
-     *  the function is not run multiple times.
-     *
-     * @method debounce
-     *
-     * @param {function} func function to run after certain amount of time
-     * @param {number} wait amount of time
-     *
-     * @return {function} function that is not able to debounce
-     */
-    function debounce(func, wait) {
-        var timeout;
-        var ctx;
-        var timestamp;
-        var result;
-        var args;
-        return function() {
-            ctx = this;
-            args = arguments;
-            timestamp = getTime();
-
-            var fn = function() {
-                var last = getTime - timestamp;
-
-                if (last < wait) {
-                    timeout = setTimeout(fn, wait - last);
-                } else {
-                    timeout = null;
-                    result = func.apply(ctx, args);
-                }
-            };
-
-            clear(timeout);
-            timeout = setTimeout(fn, wait);
-
-            return result;
-        };
-    }
-
-    module.exports = famous.utilities.Timer = {
-        setTimeout : setTimeout,
-        setInterval : setInterval,
-        debounce : debounce,
-        after : after,
-        every : every,
-        clear : clear
-    };
-
-});
-
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
  * Owner: felix@famo.us
  * @license MPL 2.0
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/views/SequentialLayout',['require','exports','module','famous/core/OptionsManager','famous/core/Transform','famous/core/ViewSequence','famous/utilities/Utility'],function(require, exports, module) {
+define(function(require, exports, module) {
     var OptionsManager = require('famous/core/OptionsManager');
     var Transform = require('famous/core/Transform');
     var ViewSequence = require('famous/core/ViewSequence');
@@ -14812,7 +14834,7 @@ define('famous/views/SequentialLayout',['require','exports','module','famous/cor
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/views/Deck',['require','exports','module','famous/core/Transform','famous/core/OptionsManager','famous/transitions/Transitionable','famous/utilities/Utility','./SequentialLayout'],function(require, exports, module) {
+define(function(require, exports, module) {
     var Transform = require('famous/core/Transform');
     var OptionsManager = require('famous/core/OptionsManager');
     var Transitionable = require('famous/transitions/Transitionable');
@@ -14956,7 +14978,7 @@ define('famous/views/Deck',['require','exports','module','famous/core/Transform'
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/views/RenderController',['require','exports','module','famous/core/Modifier','famous/core/RenderNode','famous/core/Transform','famous/transitions/Transitionable','famous/core/View'],function(require, exports, module) {
+define(function(require, exports, module) {
     var Modifier = require('famous/core/Modifier');
     var RenderNode = require('famous/core/RenderNode');
     var Transform = require('famous/core/Transform');
@@ -15259,7 +15281,7 @@ define('famous/views/RenderController',['require','exports','module','famous/cor
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/views/EdgeSwapper',['require','exports','module','famous/transitions/CachedMap','famous/core/Entity','famous/core/EventHandler','famous/core/Transform','./RenderController'],function(require, exports, module) {
+define(function(require, exports, module) {
     var CachedMap = require('famous/transitions/CachedMap');
     var Entity = require('famous/core/Entity');
     var EventHandler = require('famous/core/EventHandler');
@@ -15366,7 +15388,7 @@ define('famous/views/EdgeSwapper',['require','exports','module','famous/transiti
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/views/FlexibleLayout',['require','exports','module','famous/core/Entity','famous/core/Transform','famous/core/OptionsManager','famous/core/EventHandler','famous/transitions/Transitionable'],function(require, exports, module) {
+define(function(require, exports, module) {
     var Entity = require('famous/core/Entity');
     var Transform = require('famous/core/Transform');
     var OptionsManager = require('famous/core/OptionsManager');
@@ -15570,7 +15592,7 @@ define('famous/views/FlexibleLayout',['require','exports','module','famous/core/
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/views/Flipper',['require','exports','module','famous/core/Transform','famous/transitions/Transitionable','famous/core/RenderNode','famous/core/OptionsManager'],function(require, exports, module) {
+define(function(require, exports, module) {
     var Transform = require('famous/core/Transform');
     var Transitionable = require('famous/transitions/Transitionable');
     var RenderNode = require('famous/core/RenderNode');
@@ -15720,7 +15742,7 @@ define('famous/views/Flipper',['require','exports','module','famous/core/Transfo
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/views/GridLayout',['require','exports','module','famous/core/Entity','famous/core/RenderNode','famous/core/Transform','famous/core/ViewSequence','famous/core/EventHandler','famous/core/Modifier','famous/core/OptionsManager','famous/transitions/Transitionable','famous/transitions/TransitionableTransform'],function(require, exports, module) {
+define(function(require, exports, module) {
     var Entity = require('famous/core/Entity');
     var RenderNode = require('famous/core/RenderNode');
     var Transform = require('famous/core/Transform');
@@ -15939,7 +15961,7 @@ define('famous/views/GridLayout',['require','exports','module','famous/core/Enti
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/views/HeaderFooterLayout',['require','exports','module','famous/core/Entity','famous/core/RenderNode','famous/core/Transform','famous/core/OptionsManager'],function(require, exports, module) {
+define(function(require, exports, module) {
     var Entity = require('famous/core/Entity');
     var RenderNode = require('famous/core/RenderNode');
     var Transform = require('famous/core/Transform');
@@ -16086,7 +16108,7 @@ define('famous/views/HeaderFooterLayout',['require','exports','module','famous/c
     module.exports = famous.views.HeaderFooterLayout = HeaderFooterLayout;
 });
 
-define('famous/views/Lightbox',['require','exports','module','famous/core/Transform','famous/core/Modifier','famous/core/RenderNode','famous/utilities/Utility','famous/core/OptionsManager','famous/transitions/Transitionable','famous/transitions/TransitionableTransform'],function(require, exports, module) {
+define(function(require, exports, module) {
     var Transform = require('famous/core/Transform');
     var Modifier = require('famous/core/Modifier');
     var RenderNode = require('famous/core/RenderNode');
@@ -16263,7 +16285,7 @@ define('famous/views/Lightbox',['require','exports','module','famous/core/Transf
     module.exports = famous.views.Lightbox = Lightbox;
 });
 
-define('famous/views/Scroller',['require','exports','module','famous/core/Entity','famous/core/Group','famous/core/OptionsManager','famous/core/Transform','famous/utilities/Utility','famous/core/ViewSequence','famous/core/EventHandler'],function(require, exports, module) {
+define(function(require, exports, module) {
     var Entity = require('famous/core/Entity');
     var Group = require('famous/core/Group');
     var OptionsManager = require('famous/core/OptionsManager');
@@ -16581,7 +16603,7 @@ define('famous/views/Scroller',['require','exports','module','famous/core/Entity
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/views/Scrollview',['require','exports','module','famous/physics/PhysicsEngine','famous/physics/bodies/Particle','famous/physics/forces/Drag','famous/physics/forces/Spring','famous/core/EventHandler','famous/core/OptionsManager','famous/core/ViewSequence','famous/views/Scroller','famous/utilities/Utility','famous/inputs/GenericSync','famous/inputs/ScrollSync','famous/inputs/TouchSync'],function(require, exports, module) {
+define(function(require, exports, module) {
     var PhysicsEngine = require('famous/physics/PhysicsEngine');
     var Particle = require('famous/physics/bodies/Particle');
     var Drag = require('famous/physics/forces/Drag');
@@ -17066,7 +17088,7 @@ define('famous/views/Scrollview',['require','exports','module','famous/physics/P
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/views/ScrollContainer',['require','exports','module','famous/surfaces/ContainerSurface','famous/core/EventHandler','./Scrollview','famous/utilities/Utility','famous/core/OptionsManager'],function(require, exports, module) {
+define(function(require, exports, module) {
     var ContainerSurface = require('famous/surfaces/ContainerSurface');
     var EventHandler = require('famous/core/EventHandler');
     var Scrollview = require('./Scrollview');
@@ -17160,7 +17182,7 @@ define('famous/views/ScrollContainer',['require','exports','module','famous/surf
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/widgets/NavigationBar',['require','exports','module','famous/core/Scene','famous/core/Surface','famous/core/Transform','famous/core/View'],function(require, exports, module) {
+define(function(require, exports, module) {
     var Scene = require('famous/core/Scene');
     var Surface = require('famous/core/Surface');
     var Transform = require('famous/core/Transform');
@@ -17303,7 +17325,7 @@ define('famous/widgets/NavigationBar',['require','exports','module','famous/core
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/widgets/Slider',['require','exports','module','famous/core/Surface','famous/surfaces/CanvasSurface','famous/core/Transform','famous/core/EventHandler','famous/math/Utilities','famous/core/OptionsManager','famous/inputs/MouseSync','famous/inputs/TouchSync','famous/inputs/GenericSync'],function(require, exports, module) {
+define(function(require, exports, module) {
     var Surface = require('famous/core/Surface');
     var CanvasSurface = require('famous/surfaces/CanvasSurface');
     var Transform = require('famous/core/Transform');
@@ -17440,7 +17462,7 @@ define('famous/widgets/Slider',['require','exports','module','famous/core/Surfac
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/widgets/ToggleButton',['require','exports','module','famous/core/Surface','famous/core/EventHandler','famous/views/RenderController'],function(require, exports, module) {
+define(function(require, exports, module) {
     var Surface = require('famous/core/Surface');
     var EventHandler = require('famous/core/EventHandler');
     var RenderController = require('famous/views/RenderController');
@@ -17600,7 +17622,7 @@ define('famous/widgets/ToggleButton',['require','exports','module','famous/core/
  * @copyright Famous Industries, Inc. 2014
  */
 
-define('famous/widgets/TabBar',['require','exports','module','famous/utilities/Utility','famous/core/View','famous/views/GridLayout','./ToggleButton'],function(require, exports, module) {
+define(function(require, exports, module) {
     var Utility = require('famous/utilities/Utility');
     var View = require('famous/core/View');
     var GridLayout = require('famous/views/GridLayout');
@@ -17743,3 +17765,4 @@ define('famous/widgets/TabBar',['require','exports','module','famous/utilities/U
     module.exports = famous.widgets.TabBar = TabBar;
 });
 
+})()

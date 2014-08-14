@@ -7,13 +7,10 @@
  * @copyright Famous Industries, Inc. 2014
  */
 
-define(function(require, exports, module) {
-    var RenderNode = require('./RenderNode');
-    var EventHandler = require('./EventHandler');
-    var ElementAllocator = require('./ElementAllocator');
-    var Transform = require('./Transform');
-    var Transitionable = require('famous/transitions/Transitionable');
-
+(/* @echo umd */)(
+'famous/core/Context',
+['famous/core/RenderNode', 'famous/core/EventHandler', 'famous/core/ElementAllocator', 'famous/core/Transform', 'famous/transitions/Transitionable'],
+function(RenderNode, EventHandler, ElementAllocator, Transform, Transitionable) {
     var _originZeroZero = [0, 0];
 
     function _getElementSize(element) {
@@ -223,5 +220,5 @@ define(function(require, exports, module) {
         return this._eventOutput.unpipe(target);
     };
 
-    module.exports = famous.core.Context = Context;
+    return Context;
 });

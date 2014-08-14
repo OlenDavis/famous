@@ -7,11 +7,10 @@
  * @copyright Famous Industries, Inc. 2014
  */
 
-define(function(require, exports, module) {
-    var Entity = require('./Entity');
-    var EventHandler = require('./EventHandler');
-    var Transform = require('./Transform');
-
+(/* @echo umd */)(
+'famous/core/ElementOutput',
+['famous/core/Entity', 'famous/core/EventHandler', 'famous/core/Transform'],
+function(Entity, EventHandler, Transform) {
     var usePrefix = document.body.style.webkitTransform !== undefined;
     var devicePixelRatio = window.devicePixelRatio || 1;
 
@@ -330,5 +329,5 @@ define(function(require, exports, module) {
         return target;
     };
 
-    module.exports = famous.core.ElementOutput = ElementOutput;
+    return ElementOutput;
 });

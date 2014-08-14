@@ -32,6 +32,8 @@
     "grunt-contrib-clean": "~0.6.0",
     "grunt-contrib-concat": "~0.5.0",
     "grunt-contrib-uglify": "~0.5.1",
-    "grunt-regex-replace": "~0.2.6"
+    "grunt-regex-replace": "~0.2.6",
+    "grunt-preprocess": "~4.0.0",
+    "grunt-wrap": "~0.3.0"
   }
 }

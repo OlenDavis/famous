@@ -7,8 +7,10 @@
  * @copyright Famous Industries, Inc. 2014
  */
 
-define(function(require, exports, module) {
-
+(/* @echo umd */)(
+'famous/core/ElementAllocator',
+[],
+function() {
     /**
      * Internal helper object to Context that handles the process of
      *   creating and allocating DOM elements within a managed div.
@@ -102,5 +104,5 @@ define(function(require, exports, module) {
         return this.nodeCount;
     };
 
-    module.exports = famous.core.ElementAllocator = ElementAllocator;
+    return ElementAllocator;
 });

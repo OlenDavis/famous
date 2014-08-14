@@ -7,8 +7,10 @@
  * @copyright Famous Industries, Inc. 2014
  */
 
-define(function(require, exports, module) {
-
+(/* @echo umd */)(
+'famous/core/ElementOutput',
+['famous/core/Context', 'famous/core/EventHandler', 'famous/core/OptionsManager'],
+function(Context, EventHandler, OptionsManager) {
     /**
      * The singleton object initiated upon process
      *   startup which manages all active Context instances, runs
@@ -24,9 +26,6 @@ define(function(require, exports, module) {
      * @static
      * @class Engine
      */
-    var Context = require('./Context');
-    var EventHandler = require('./EventHandler');
-    var OptionsManager = require('./OptionsManager');
 
     var Engine = {};
 
@@ -376,5 +375,5 @@ define(function(require, exports, module) {
         }
     });
 
-    module.exports = famous.core.Engine = Engine;
+    return Engine;
 });
